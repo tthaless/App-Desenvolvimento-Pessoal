@@ -1,4 +1,4 @@
--- Confere se o banco está igual ao schema.sql.
+-- Confere se o banco está igual ao schema.sql + 03-feed.sql.
 -- Rode no SQL Editor: todas as linhas devem mostrar "ok".
 with checks(item, ok) as (
   select 'colunas de app_config',
@@ -15,12 +15,12 @@ with checks(item, ok) as (
     = 'id,user_id,activity,photo_path,caption,day,created_at'
   union all select 'nenhuma tabela a mais ou a menos',
     (select count(*) from information_schema.tables
-       where table_schema = 'public' and table_type = 'BASE TABLE') = 3
+       where table_schema = 'public' and table_type = 'BASE TABLE') = 7
   union all select 'proteção por linha (RLS) ligada',
     (select bool_and(relrowsecurity) from pg_class
-       where oid in ('public.app_config'::regclass, 'public.profiles'::regclass, 'public.posts'::regclass))
+       where relnamespace = 'public'::regnamespace and relkind = 'r')
   union all select 'regras de acesso das tabelas',
-    (select count(*) from pg_policies where schemaname = 'public') = 5
+    (select count(*) from pg_policies where schemaname = 'public') = 17
   union all select 'regras de acesso das fotos',
     (select count(*) from pg_policies
        where schemaname = 'storage' and tablename = 'objects'
@@ -39,9 +39,15 @@ with checks(item, ok) as (
     exists (select 1 from storage.buckets where id = 'provas')
   union all select 'código de convite definido',
     exists (select 1 from public.app_config where key = 'invite_code')
-  union all select 'stories em tempo real',
-    exists (select 1 from pg_publication_tables
-       where pubname = 'supabase_realtime' and schemaname = 'public' and tablename = 'posts')
+  union all select 'stories e feed em tempo real',
+    (select count(*) from pg_publication_tables
+       where pubname = 'supabase_realtime' and schemaname = 'public'
+         and tablename in ('posts', 'feed_posts', 'feed_comments', 'feed_post_likes', 'feed_comment_likes')) = 5
+  union all select 'feed some depois de 24h',
+    exists (select 1 from pg_policies
+       where tablename = 'feed_posts' and cmd = 'SELECT' and qual like '%24:00:00%')
+  union all select 'limpeza automática do feed agendada',
+    exists (select 1 from cron.job where jobname = 'limpar-feed')
 )
 select item, case when ok then 'ok' else 'DIFERENTE' end as status
 from checks;
