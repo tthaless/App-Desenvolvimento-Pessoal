@@ -7,7 +7,9 @@ import { STORY_LABEL } from '../types'
 import type { Member, StoryItem } from '../types'
 import Avatar from './Avatar'
 import StoryChat from './StoryChat'
-import { MessageCircle, X } from 'lucide-react'
+import { MessageCircle, Trash2, X } from 'lucide-react'
+import { deleteStory } from '../lib/stories'
+import { errorMessage } from '../lib/utils'
 import ActivityIcon from './ActivityIcon'
 import { useDragToClose } from '../lib/useDragToClose'
 import { SkeletonBlock } from './Skeleton'
@@ -21,11 +23,13 @@ interface Props {
   members: Member[]
   onSeen: (id: string) => void
   onClose: () => void
+  /** Depois de apagar uma prova minha. */
+  onDeleted?: (item: StoryItem) => void
 }
 
 const DURATION = 5000
 
-export default function StoryViewer({ posts, start, startInChat = false, currentUserId, members, onSeen, onClose }: Props) {
+export default function StoryViewer({ posts, start, startInChat = false, currentUserId, members, onSeen, onClose, onDeleted }: Props) {
   const [index, setIndex] = useState(start)
   const [urls, setUrls] = useState<Record<string, string>>({})
   const [loadedId, setLoadedId] = useState<string | null>(null)
@@ -34,6 +38,11 @@ export default function StoryViewer({ posts, start, startInChat = false, current
   // Muda ao fechar o chat, para o story recomeçar a contagem.
   const [round, setRound] = useState(0)
   const [counts, setCounts] = useState<Record<string, number>>({})
+  const [confirming, setConfirming] = useState(false)
+  const [deleting, setDeleting] = useState(false)
+  const [deleteError, setDeleteError] = useState<string | null>(null)
+  // Pausa enquanto lê os comentários ou confirma a exclusão.
+  const paused = chatOpen || confirming
   const post = posts[index]
 
   const refreshCounts = useCallback(() => {
@@ -65,16 +74,17 @@ export default function StoryViewer({ posts, start, startInChat = false, current
 
   // Avança sozinho 5s depois que a foto carregou, menos com os comentários abertos.
   useEffect(() => {
-    if (!post || loadedId !== post.id || chatOpen) return
+    if (!post || loadedId !== post.id || paused) return
     const t = setTimeout(() => next(), DURATION)
     return () => clearTimeout(t)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loadedId, post, chatOpen, round])
+  }, [loadedId, post, paused, round])
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (chatOpen) return
-      if (e.key === 'Escape') onClose()
+      if (e.key === 'Escape') return confirming ? cancelDelete() : onClose()
+      if (confirming) return
       if (e.key === 'ArrowRight') next()
       if (e.key === 'ArrowLeft') prev()
     }
@@ -85,6 +95,26 @@ export default function StoryViewer({ posts, start, startInChat = false, current
   function closeChat() {
     setChatOpen(false)
     setRound((r) => r + 1)
+  }
+
+  function cancelDelete() {
+    setConfirming(false)
+    setDeleteError(null)
+    setRound((r) => r + 1)
+  }
+
+  async function confirmDelete() {
+    if (!post) return
+    setDeleting(true)
+    setDeleteError(null)
+    try {
+      await deleteStory(post)
+      onDeleted?.(post)
+      onClose()
+    } catch (e) {
+      setDeleteError(errorMessage(e))
+      setDeleting(false)
+    }
   }
 
   function next() {
@@ -110,7 +140,7 @@ export default function StoryViewer({ posts, start, startInChat = false, current
           <span key={p.id} className="bar">
             <span
               key={`${p.id}-${round}`}
-              className={`fill ${i < index ? 'full' : i === index && loadedId === post.id ? `run ${chatOpen ? 'paused' : ''}` : ''}`}
+              className={`fill ${i < index ? 'full' : i === index && loadedId === post.id ? `run ${paused ? 'paused' : ''}` : ''}`}
               style={{ animationDuration: `${DURATION}ms` }}
             />
           </span>
@@ -131,6 +161,11 @@ export default function StoryViewer({ posts, start, startInChat = false, current
           <ActivityIcon activity={post.activity} size={13} /> {STORY_LABEL[post.activity]}
         </span>
         <span className="muted">{timeAgo(post.created_at)}</span>
+        {post.user_id === currentUserId && (
+          <button className="viewer-delete" onClick={() => setConfirming(true)} aria-label="Excluir esta prova">
+            <Trash2 size={21} aria-hidden />
+          </button>
+        )}
         <button className="viewer-close" onClick={onClose} aria-label="Fechar">
           <X size={24} aria-hidden />
         </button>
@@ -156,6 +191,24 @@ export default function StoryViewer({ posts, start, startInChat = false, current
             : 'Comentar…'}
         </button>
       </div>
+
+      {confirming && (
+        <div className="viewer-confirm" role="alertdialog" aria-label="Excluir prova">
+          <p className="viewer-confirm-title">Excluir esta {post.activity === 'desafio' ? 'foto do desafio' : 'prova'}?</p>
+          <p className="muted small">
+            A foto e os comentários somem. Se era a única do dia, o dia deixa de contar na sequência e no ranking.
+          </p>
+          {deleteError && <p className="msg error">{deleteError}</p>}
+          <div className="row">
+            <button className="btn ghost" onClick={cancelDelete} disabled={deleting}>
+              Cancelar
+            </button>
+            <button className="btn danger" onClick={confirmDelete} disabled={deleting}>
+              <Trash2 size={16} aria-hidden /> {deleting ? 'Excluindo…' : 'Excluir'}
+            </button>
+          </div>
+        </div>
+      )}
 
       {chatOpen && (
         <StoryChat

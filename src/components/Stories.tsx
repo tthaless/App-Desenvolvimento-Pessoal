@@ -138,6 +138,7 @@ export default function Stories({ userId }: { userId: string }) {
           members={members}
           onSeen={markSeen}
           onClose={() => setViewerStart(null)}
+          onDeleted={(item) => setPosts((prev) => prev.filter((p) => p.key !== item.key))}
         />
       )}
     </>
