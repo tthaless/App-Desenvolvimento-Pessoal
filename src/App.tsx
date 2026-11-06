@@ -3,6 +3,7 @@ import type { Session } from '@supabase/supabase-js'
 import { supabase } from './lib/supabase'
 import Auth from './components/Auth'
 import ActivityTab from './components/ActivityTab'
+import ReadingTab from './components/ReadingTab'
 import Challenges from './components/Challenges'
 import Feed from './components/Feed'
 import Ranking from './components/Ranking'
@@ -60,7 +61,7 @@ export default function App() {
     <div className="app" data-tab={tab}>
       <main className="content">
         {tab === 'exercicio' && <ActivityTab key="exercicio" activity="exercicio" userId={userId} />}
-        {tab === 'leitura' && <ActivityTab key="leitura" activity="leitura" userId={userId} />}
+        {tab === 'leitura' && <ReadingTab userId={userId} />}
         {tab === 'desafio' && <Challenges userId={userId} />}
         {tab === 'feed' && <Feed userId={userId} />}
         {tab === 'ranking' && <Ranking userId={userId} />}

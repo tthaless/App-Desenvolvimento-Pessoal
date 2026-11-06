@@ -1,33 +1,43 @@
 import { useCallback, useEffect, useState } from 'react'
-import type { FormEvent } from 'react'
 import { abandonBook, daysBetween, fetchCurrentBook, finishBook, formatRating, startBook } from '../lib/books'
-import type { Book } from '../lib/books'
+import type { Book, BookDraft } from '../lib/books'
 import { refreshMembers } from '../lib/members'
 import { errorMessage } from '../lib/utils'
+import BookCover from './BookCover'
+import BookSearch from './BookSearch'
+import PdfAttachment from './PdfAttachment'
 
-/** Livro em andamento no meu perfil: começar, terminar com nota ou largar. */
-export default function CurrentBook({ userId, onShelfChanged }: { userId: string; onShelfChanged: () => void }) {
+interface Props {
+  userId: string
+  /** Muda quando um livro começa por fora (pela lista Quero ler). */
+  refreshKey?: number
+  onShelfChanged: () => void
+  onLoaded?: (book: Book | null) => void
+}
+
+/** Livro em andamento na minha biblioteca: começar, terminar com nota, largar e anexar PDF. */
+export default function CurrentBook({ userId, refreshKey, onShelfChanged, onLoaded }: Props) {
   const [book, setBook] = useState<Book | null>(null)
   const [loaded, setLoaded] = useState(false)
   const [starting, setStarting] = useState(false)
   const [finishing, setFinishing] = useState(false)
-  const [title, setTitle] = useState('')
-  const [author, setAuthor] = useState('')
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const load = useCallback(async () => {
     try {
-      setBook(await fetchCurrentBook(userId))
+      const b = await fetchCurrentBook(userId)
+      setBook(b)
+      onLoaded?.(b)
     } catch (e) {
       setError(errorMessage(e))
     }
     setLoaded(true)
-  }, [userId])
+  }, [userId, onLoaded])
 
   useEffect(() => {
     load()
-  }, [load])
+  }, [load, refreshKey])
 
   async function afterChange() {
     await load()
@@ -35,15 +45,11 @@ export default function CurrentBook({ userId, onShelfChanged }: { userId: string
     onShelfChanged()
   }
 
-  async function start(e: FormEvent) {
-    e.preventDefault()
-    if (!title.trim()) return
+  async function start(draft: BookDraft) {
     setBusy(true)
     setError(null)
     try {
-      await startBook(title, author)
-      setTitle('')
-      setAuthor('')
+      await startBook(draft)
       setStarting(false)
       await afterChange()
     } catch (err) {
@@ -72,12 +78,19 @@ export default function CurrentBook({ userId, onShelfChanged }: { userId: string
 
       {book ? (
         <>
-          <p className="book-title">{book.title}</p>
-          {book.author && <p className="muted small">{book.author}</p>}
-          <p className="muted small book-meta">
-            Há {daysBetween(book.started_at, new Date().toISOString())} {daysBetween(book.started_at, new Date().toISOString()) === 1 ? 'dia' : 'dias'} ·{' '}
-            {book.proofs} {book.proofs === 1 ? 'prova de leitura' : 'provas de leitura'}
-          </p>
+          <div className="current-top">
+            <BookCover url={book.cover_url} title={book.title} size="lg" />
+            <div className="current-info">
+              <p className="book-title">{book.title}</p>
+              {book.author && <p className="muted small">{book.author}</p>}
+              <p className="muted small book-meta">
+                Há {daysBetween(book.started_at, new Date().toISOString())}{' '}
+                {daysBetween(book.started_at, new Date().toISOString()) === 1 ? 'dia' : 'dias'} · {book.proofs}{' '}
+                {book.proofs === 1 ? 'prova de leitura' : 'provas de leitura'}
+              </p>
+            </div>
+          </div>
+          <PdfAttachment book={book} viewerId={userId} onChanged={load} />
           <div className="row book-actions">
             <button className="btn ghost" onClick={abandon}>
               Larguei
@@ -88,18 +101,7 @@ export default function CurrentBook({ userId, onShelfChanged }: { userId: string
           </div>
         </>
       ) : starting ? (
-        <form className="book-form" onSubmit={start}>
-          <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Título do livro" maxLength={120} required autoFocus />
-          <input value={author} onChange={(e) => setAuthor(e.target.value)} placeholder="Autor (opcional)" maxLength={80} />
-          <div className="row">
-            <button type="button" className="btn ghost" onClick={() => setStarting(false)} disabled={busy}>
-              Cancelar
-            </button>
-            <button className="btn primary" disabled={busy || !title.trim()}>
-              {busy ? 'Salvando…' : 'Começar'}
-            </button>
-          </div>
-        </form>
+        <BookSearch submitLabel="Começar" busy={busy} onSubmit={start} onCancel={() => setStarting(false)} />
       ) : (
         <>
           <p className="muted">Nenhum livro em andamento.</p>
@@ -177,7 +179,7 @@ function FinishSheet({ book, onClose, onDone }: { book: Book; onClose: () => voi
           <textarea value={review} onChange={(e) => setReview(e.target.value)} maxLength={500} rows={4} placeholder="Recomendaria? O que ficou de lição?" />
           <span className="counter">{review.length}/500</span>
         </label>
-        <p className="muted small">Vai aparecer na sua estante, com a nota e o comentário.</p>
+        <p className="muted small">Vai pra sua estante, e o Streak avisa o grupo no feed.</p>
         {error && <p className="msg error">{error}</p>}
         <div className="row">
           <button className="btn ghost" onClick={onClose} disabled={busy}>

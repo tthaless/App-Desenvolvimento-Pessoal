@@ -10,9 +10,11 @@ import Stories from './Stories'
 interface Props {
   activity: Activity
   userId: string
+  /** Na aba Leitura o título fica acima das subabas. */
+  hideHeader?: boolean
 }
 
-export default function ActivityTab({ activity, userId }: Props) {
+export default function ActivityTab({ activity, userId, hideHeader }: Props) {
   const meta = ACTIVITY[activity]
   const members = useMembers()
   const [doneToday, setDoneToday] = useState<Set<string>>(new Set())
@@ -104,11 +106,13 @@ export default function ActivityTab({ activity, userId }: Props) {
 
   return (
     <div className={`activity act-${activity}`}>
-      <header className="page-head">
-        <h1>
-          <span aria-hidden>{meta.emoji}</span> {meta.label}
-        </h1>
-      </header>
+      {!hideHeader && (
+        <header className="page-head">
+          <h1>
+            <span aria-hidden>{meta.emoji}</span> {meta.label}
+          </h1>
+        </header>
+      )}
 
       {loadError && <p className="msg error">{loadError}</p>}
 
