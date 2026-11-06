@@ -527,7 +527,7 @@ textarea:focus { border-color: var(--accent); }
 @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
 @keyframes sheet-in { from { transform: translateY(100%); } to { transform: none; } }
 .sheet-backdrop, .story-chat-backdrop { animation: fade-in .2s ease-out both; }
-.sheet, .story-chat { animation: sheet-in .32s cubic-bezier(.2, .9, .25, 1) backwards; will-change: transform; touch-action: pan-y; }
+.sheet, .story-chat { animation: sheet-in .32s cubic-bezier(.2, .9, .25, 1) backwards; touch-action: pan-y; }
 .sheet .sheet-grip { flex: none; }
 .sheet { overscroll-behavior: contain; }
 @keyframes viewer-in { from { opacity: 0; transform: scale(.96); } to { opacity: 1; transform: none; } }
@@ -627,12 +627,11 @@ textarea:focus { border-color: var(--accent); }
 .notif-empty p:first-of-type { color: var(--text); font-weight: 600; }
 
 /* Plano de fundo no topo do perfil */
-.profile-hero { position: relative; border-radius: 22px; overflow: hidden; isolation: isolate; }
+.profile-hero { position: relative; border-radius: 22px; overflow: hidden; isolation: isolate; flex: none; }
 .profile-hero .hero-content { position: relative; z-index: 1; }
 .profile-hero.has-cover { margin: 0 -4px; }
 .profile-hero.has-cover .hero-content { padding: 72px 16px 18px; }
-.hero-cover { position: absolute; inset: 0; z-index: 0; }
-.hero-cover img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.hero-cover { position: absolute; inset: 0; z-index: 0; background-size: cover; background-position: center; transform: translateZ(0); }
 .hero-cover::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(27, 27, 31, .05) 0%, rgba(27, 27, 31, .35) 35%, rgba(27, 27, 31, .82) 70%, rgba(27, 27, 31, .94) 100%); }
 .profile-hero.has-cover .profile-name, .profile-hero.has-cover .profile-bio { text-shadow: 0 1px 12px rgba(0, 0, 0, .55); }
 .profile-hero.has-cover .muted { color: #c9c9cf; }
@@ -836,3 +835,4 @@ button:focus:not(:focus-visible) { outline: none; }
 .month-legend { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
 .month-legend > span { display: inline-flex; align-items: center; gap: 6px; }
 .month-legend .month-day { width: 12px; height: 12px; border-radius: 3px; display: inline-block; box-shadow: none; }
+.profile-sheet > * { flex-shrink: 0; }

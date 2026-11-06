@@ -12,9 +12,9 @@ export default function ProfileHero({ coverUrl, corner, children }: Props) {
   return (
     <section className={`profile-hero ${coverUrl ? 'has-cover' : ''}`}>
       {coverUrl && (
-        <div className="hero-cover" aria-hidden>
-          <img src={coverUrl} alt="" />
-        </div>
+        // Fundo pintado direto no bloco: no Safari, uma <img> dentro da janela que sobe
+        // animada às vezes só aparecia depois de outro toque na tela.
+        <div className="hero-cover" aria-hidden style={{ backgroundImage: `url("${coverUrl}")` }} />
       )}
       {corner && <div className="hero-corner">{corner}</div>}
       <div className="hero-content profile-top">{children}</div>
