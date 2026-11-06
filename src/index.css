@@ -915,3 +915,5 @@ button:focus:not(:focus-visible) { outline: none; }
 .cover-picker-error { position: absolute; top: 100%; left: 0; width: 200px; margin-top: 8px; font-size: 12px; color: var(--danger); z-index: 3; }
 .want-paper .cover-picker-badge { background: #efe3c8; color: #3a2a18; border-color: #e6d6b4; }
 .preview-note { display: flex; align-items: center; justify-content: center; gap: 6px; margin: 0; font-size: 13px; color: var(--muted); }
+/* No próprio perfil "como o grupo vê", sem convite pra querer ler o próprio livro. */
+.profile-preview .want-too, .profile-preview .want-done { display: none; }
