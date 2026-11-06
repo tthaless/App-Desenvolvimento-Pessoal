@@ -74,6 +74,9 @@ export default function ActivityTab({ activity, userId, hideHeader }: Props) {
   const me = members.find((m) => m.id === userId)
   const myStreak = streakOf(userId)
   const iDidToday = doneToday.has(userId)
+  // 0 = domingo ... 6 = sábado, no fuso de São Paulo.
+  const weekday = new Date(`${todaySP()}T12:00:00`).getDay()
+  const weekend = weekday === 0 || weekday === 6
   const current = myStreak?.current_streak ?? 0
 
   const board = [...members].sort(
@@ -144,11 +147,17 @@ export default function ActivityTab({ activity, userId, hideHeader }: Props) {
           <span className="unit">{current === 1 ? 'dia' : 'dias'}</span>
         </div>
         <p className="hero-sub">
-          {iDidToday
-            ? 'Feito hoje. Volte amanhã pra manter o streak.'
-            : current > 0
-              ? 'Ainda falta hoje! Poste antes da meia-noite.'
-              : 'Comece seu streak hoje.'}
+          {weekend
+            ? iDidToday
+              ? 'Feito! No fim de semana é bônus: soma pontos e dias.'
+              : 'Fim de semana: postar soma pontos e dias, faltar não quebra o streak.'
+            : iDidToday
+              ? weekday === 5
+                ? 'Feito hoje. O fim de semana é livre: faltar não quebra o streak.'
+                : 'Feito hoje. Volte amanhã pra manter o streak.'
+              : current > 0
+                ? 'Ainda falta hoje! Poste antes da meia-noite.'
+                : 'Comece seu streak hoje.'}
         </p>
         {myStreak && myStreak.best_streak > 0 && <p className="muted small hero-best">Recorde: {myStreak.best_streak} dias</p>}
         {context ? (
