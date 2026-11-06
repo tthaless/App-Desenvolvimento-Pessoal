@@ -25,6 +25,11 @@ export default function Bookshelf({ books, viewerId, onChanged, showReader, empt
 
   return (
     <div className="bookcase">
+      <div className="bookcase-top" aria-hidden>
+        <span className="finial" />
+        <span className="pediment" />
+        <span className="finial" />
+      </div>
       <div className="bookcase-crown" aria-hidden />
       <ul className="shelf-list bookcase-shelves">
       {books.map((b) => {

@@ -776,3 +776,37 @@ textarea:focus { border-color: var(--accent); }
 .want-paper .want-names { color: #6f5a40; }
 .want-list li { flex-wrap: wrap; }
 .want-list li .want-others { flex-basis: 100%; padding-left: 48px; margin-top: -4px; }
+
+/* Topo entalhado da estante: frontão em arco com medalhão de latão e pináculos nas pontas */
+.bookcase-top { display: flex; align-items: flex-end; justify-content: space-between; height: 34px; margin: 0 -2px -1px; position: relative; z-index: 1; }
+.bookcase-top .pediment {
+  position: relative; width: min(58%, 240px); height: 34px;
+  border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+  background: var(--grain-h), linear-gradient(180deg, #7d4b2a, var(--mahogany-2) 40%, var(--mahogany) 80%, #3a1f0f);
+  box-shadow: inset 0 2px 0 rgba(255, 210, 160, .3), inset 0 -2px 4px rgba(0, 0, 0, .4);
+}
+/* friso entalhado acompanhando o arco */
+.bookcase-top .pediment::before {
+  content: ''; position: absolute; inset: 6px 12px 0;
+  border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+  border: 2px solid rgba(20, 10, 4, .55); border-bottom: 0;
+  box-shadow: 0 1px 0 rgba(255, 200, 150, .18), inset 0 1px 0 rgba(255, 200, 150, .12);
+}
+/* medalhão de latão */
+.bookcase-top .pediment::after {
+  content: ''; position: absolute; left: 50%; bottom: 5px; width: 18px; height: 18px; transform: translateX(-50%); border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #fff1c2, #e2b85c 35%, #a87a2c 70%, #6e4d17);
+  box-shadow: 0 0 0 2px rgba(30, 15, 5, .6), 0 0 10px rgba(255, 190, 90, .35);
+}
+/* pináculos torneados nas pontas */
+.bookcase-top .finial {
+  width: 16px; height: 22px; margin: 0 6px; position: relative;
+  background: radial-gradient(circle at 50% 30%, #9a6338, var(--mahogany-2) 45%, #2e180b 75%);
+  border-radius: 50% 50% 40% 40% / 60% 60% 40% 40%;
+  box-shadow: inset 0 1px 0 rgba(255, 210, 160, .35);
+}
+.bookcase-top .finial::after {
+  content: ''; position: absolute; left: 50%; top: -6px; width: 6px; height: 8px; transform: translateX(-50%);
+  border-radius: 50%; background: radial-gradient(circle at 40% 35%, #f6d98f, #b88a36 60%, #6e4d17);
+}
+.bookcase-crown { border-radius: 2px; }
