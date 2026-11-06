@@ -44,7 +44,7 @@ export default function Auth() {
   return (
     <div className="auth">
       <div className="auth-hero">
-        <PotionMark size={72} className="auth-flame" />
+        <PotionMark size={56} className="auth-flame" />
         <h1>streak</h1>
         <p>Treinou? Leu? Prova com foto.<br />Quem não falta, ganha.</p>
       </div>

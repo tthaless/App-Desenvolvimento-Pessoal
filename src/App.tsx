@@ -62,7 +62,7 @@ export default function App() {
   if (loading)
     return (
       <div className="splash">
-        <PotionMark size={64} />
+        <PotionMark size={52} />
       </div>
     )
   if (!session) return <Auth />

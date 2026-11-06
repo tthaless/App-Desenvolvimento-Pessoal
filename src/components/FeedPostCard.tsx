@@ -112,7 +112,7 @@ function BookFinishedPost({ post, book, userId, onOpenThread }: { post: FeedPost
   return (
     <article className="post post-auto">
       <span className="streak-avatar" aria-hidden>
-        <PotionMark size={26} />
+        <PotionMark size={22} />
       </span>
       <div className="post-main">
         <header className="post-head">
