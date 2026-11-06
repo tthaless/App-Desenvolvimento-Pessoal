@@ -3,6 +3,7 @@ import type { FormEvent } from 'react'
 import { supabase } from '../lib/supabase'
 import { errorMessage } from '../lib/utils'
 import { ArrowMark } from './Logo'
+import InstallGuide from './InstallGuide'
 
 export default function Auth() {
   const [mode, setMode] = useState<'entrar' | 'cadastrar'>('entrar')
@@ -94,6 +95,8 @@ export default function Auth() {
           {busy ? 'Aguarde…' : mode === 'entrar' ? 'Entrar' : 'Criar conta'}
         </button>
       </form>
+
+      <InstallGuide />
     </div>
   )
 }

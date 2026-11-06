@@ -795,3 +795,21 @@ textarea:focus { border-color: var(--accent); }
 /* Celular: sem o quadrado de destaque ao tocar */
 button, a, label, [role='button'] { -webkit-tap-highlight-color: transparent; }
 button:focus:not(:focus-visible) { outline: none; }
+
+/* Tutorial de instalar como app */
+.install-guide { padding: 0; overflow: hidden; }
+.install-guide summary { list-style: none; display: flex; align-items: center; gap: 12px; padding: 14px 16px; cursor: pointer; }
+.install-guide summary::-webkit-details-marker { display: none; }
+.install-guide summary > svg { flex: none; color: var(--brand); }
+.install-guide summary > span { display: flex; flex-direction: column; gap: 2px; }
+.install-guide summary::after { content: ''; margin-left: auto; width: 8px; height: 8px; border-right: 2px solid var(--muted); border-bottom: 2px solid var(--muted); transform: rotate(45deg); transition: transform .2s; }
+.install-guide[open] summary::after { transform: rotate(-135deg); }
+.install-guide[open] > :not(summary) { margin-left: 16px; margin-right: 16px; }
+.install-tabs { margin-bottom: 12px; }
+.install-now { width: calc(100% - 32px); margin-bottom: 12px; }
+.install-steps { list-style: none; padding: 0; margin: 0 0 10px; display: flex; flex-direction: column; gap: 10px; }
+.install-steps li { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; line-height: 1.45; }
+.install-num { flex: none; width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; background: color-mix(in srgb, var(--brand) 18%, var(--surface-2)); color: var(--brand); font-weight: 800; font-size: 13px; }
+.inline-icon { display: inline-block; vertical-align: -3px; margin: 0 1px; }
+.install-note { display: flex; align-items: center; gap: 6px; margin: 0 16px 16px !important; }
+.install-note svg { flex: none; }
