@@ -81,8 +81,8 @@ export default function InstallGuide() {
       <summary>
         <Download size={18} aria-hidden />
         <span>
-          <strong>Instalar como app</strong>
-          <span className="muted small">Ícone na tela inicial, sem barra do navegador</span>
+          <strong>Como instalar</strong>
+          <span className="muted small">Coloque o Streak na tela do celular, como um app</span>
         </span>
       </summary>
 
