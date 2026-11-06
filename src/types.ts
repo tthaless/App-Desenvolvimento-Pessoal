@@ -18,6 +18,8 @@ export interface Post {
 /** Item dos stories: prova de exercício, de leitura ou check-in do desafio. */
 export interface StoryItem {
   id: string
+  /** Identifica a prova nos comentários: "post:<id>" ou "desafio:<ideia>:<pessoa>:<dia>". */
+  key: string
   user_id: string
   activity: Activity | 'desafio'
   photo_path: string

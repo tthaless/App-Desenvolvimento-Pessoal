@@ -27,11 +27,12 @@ export default function Stories({ userId }: { userId: string }) {
         .gte('created_at', since),
     ])
     const items: StoryItem[] = [
-      ...((provas.data ?? []) as StoryItem[]),
+      ...((provas.data ?? []) as Omit<StoryItem, 'key'>[]).map((p) => ({ ...p, key: `post:${p.id}` })),
       ...(desafios.data ?? []).map((row) => {
         const c = row as unknown as { idea_id: string; user_id: string; day: string; photo_path: string; created_at: string; challenge_ideas: { title: string } | null }
         return {
           id: `desafio-${c.idea_id}-${c.user_id}-${c.day}`,
+          key: `desafio:${c.idea_id}:${c.user_id}:${c.day}`,
           user_id: c.user_id,
           activity: 'desafio' as const,
           photo_path: c.photo_path,

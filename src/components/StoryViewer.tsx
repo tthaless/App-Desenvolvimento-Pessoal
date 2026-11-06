@@ -1,10 +1,12 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { openProfile } from '../lib/members'
+import { fetchCommentCounts } from '../lib/storyComments'
 import { timeAgo } from '../lib/utils'
 import { STORY_LABEL } from '../types'
 import type { Member, StoryItem } from '../types'
 import Avatar from './Avatar'
+import StoryChat from './StoryChat'
 
 interface Props {
   posts: StoryItem[]
@@ -21,7 +23,19 @@ export default function StoryViewer({ posts, start, currentUserId, members, onSe
   const [index, setIndex] = useState(start)
   const [urls, setUrls] = useState<Record<string, string>>({})
   const [loadedId, setLoadedId] = useState<string | null>(null)
+  const [chatOpen, setChatOpen] = useState(false)
+  // Muda ao fechar o chat, para o story recomeçar a contagem.
+  const [round, setRound] = useState(0)
+  const [counts, setCounts] = useState<Record<string, number>>({})
   const post = posts[index]
+
+  const refreshCounts = useCallback(() => {
+    fetchCommentCounts(posts.map((p) => p.key)).then(setCounts)
+  }, [posts])
+
+  useEffect(() => {
+    refreshCounts()
+  }, [refreshCounts])
 
   // Links temporários (1h) para as fotos, que ficam num bucket privado.
   useEffect(() => {
@@ -42,16 +56,17 @@ export default function StoryViewer({ posts, start, currentUserId, members, onSe
     if (post) onSeen(post.id)
   }, [post, onSeen])
 
-  // Avança sozinho 5s depois que a foto carregou.
+  // Avança sozinho 5s depois que a foto carregou, menos com os comentários abertos.
   useEffect(() => {
-    if (!post || loadedId !== post.id) return
+    if (!post || loadedId !== post.id || chatOpen) return
     const t = setTimeout(() => next(), DURATION)
     return () => clearTimeout(t)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loadedId, post])
+  }, [loadedId, post, chatOpen, round])
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
+      if (chatOpen) return
       if (e.key === 'Escape') onClose()
       if (e.key === 'ArrowRight') next()
       if (e.key === 'ArrowLeft') prev()
@@ -59,6 +74,11 @@ export default function StoryViewer({ posts, start, currentUserId, members, onSe
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   })
+
+  function closeChat() {
+    setChatOpen(false)
+    setRound((r) => r + 1)
+  }
 
   function next() {
     if (index >= posts.length - 1) onClose()
@@ -82,7 +102,8 @@ export default function StoryViewer({ posts, start, currentUserId, members, onSe
         {sameUser.map(({ p, i }) => (
           <span key={p.id} className="bar">
             <span
-              className={`fill ${i < index ? 'full' : i === index && loadedId === post.id ? 'run' : ''}`}
+              key={`${p.id}-${round}`}
+              className={`fill ${i < index ? 'full' : i === index && loadedId === post.id ? `run ${chatOpen ? 'paused' : ''}` : ''}`}
               style={{ animationDuration: `${DURATION}ms` }}
             />
           </span>
@@ -114,10 +135,29 @@ export default function StoryViewer({ posts, start, currentUserId, members, onSe
         )}
       </div>
 
-      {post.caption && <p className="viewer-caption">{post.caption}</p>}
-
       <button className="tap left" onClick={prev} aria-label="Anterior" />
       <button className="tap right" onClick={next} aria-label="Próxima" />
+
+      <div className="viewer-bottom">
+        {post.caption && <p className="viewer-caption">{post.caption}</p>}
+        <button className="comment-bar" onClick={() => setChatOpen(true)}>
+          <span aria-hidden>💬</span>
+          {counts[post.key]
+            ? `${counts[post.key]} ${counts[post.key] === 1 ? 'comentário' : 'comentários'}`
+            : 'Comentar…'}
+        </button>
+      </div>
+
+      {chatOpen && (
+        <StoryChat
+          storyKey={post.key}
+          ownerId={post.user_id}
+          currentUserId={currentUserId}
+          members={members}
+          onClose={closeChat}
+          onChanged={refreshCounts}
+        />
+      )}
     </div>
   )
 }
