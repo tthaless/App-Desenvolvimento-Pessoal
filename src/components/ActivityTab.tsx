@@ -159,7 +159,6 @@ export default function ActivityTab({ activity, userId, hideHeader }: Props) {
                 ? 'Ainda falta hoje! Poste antes da meia-noite.'
                 : 'Comece seu streak hoje.'}
         </p>
-        {myStreak && myStreak.best_streak > 0 && <p className="muted small hero-best">Recorde: {myStreak.best_streak} dias</p>}
         <StreakBonusLine streakDay={iDidToday ? current : current + 1} done={iDidToday} />
         {context ? (
           <p className="hero-context">
