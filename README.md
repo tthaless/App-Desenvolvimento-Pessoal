@@ -20,7 +20,7 @@ App fechado para um grupo de amigos manter a constância em desenvolvimento pess
 ## Configurando o Supabase
 
 1. Crie um projeto em [supabase.com](https://supabase.com) (região **South America (São Paulo)**).
-2. Abra **SQL Editor → New query**, cole o conteúdo de [`supabase/schema.sql`](supabase/schema.sql) e clique em **Run**.
+2. Abra **SQL Editor → New query**, cole o conteúdo de [`supabase/schema.sql`](supabase/schema.sql) e clique em **Run**. (Bancos criados antes da versão com perfis precisam rodar também o [`02-perfil-e-varias-provas.sql`](supabase/02-perfil-e-varias-provas.sql).)
 3. Troque o código de convite (é ele que você passa para os amigos):
    ```sql
    update app_config set value = 'SEU-CODIGO' where key = 'invite_code';
@@ -38,10 +38,11 @@ npm run dev
 
 ## Regras
 
-- **Uma prova por atividade por dia.** O dia é sempre o de São Paulo e vem do servidor, então não dá para postar com data atrasada.
+- **Pode postar várias fotos por dia**, mas cada atividade conta ponto uma vez por dia. O dia é sempre o de São Paulo e vem do servidor, então não dá para postar com data atrasada.
 - **Streak** conta dias seguidos. Se você ainda não postou hoje, ele continua valendo até meia-noite.
-- **Pontos**: 10 por prova, +5 no dia em que faz exercício e leitura. A semana começa na segunda.
-- **Stories** mostram as provas das últimas 24 horas.
+- **Pontos**: 10 por atividade feita no dia, +5 no dia em que faz exercício e leitura. A semana começa na segunda.
+- **Stories** juntam exercício e leitura das últimas 24 horas numa barra só.
+- **Perfil**: foto, descrição, livro que está lendo e exercícios que faz. Toque no nome de alguém para ver o perfil.
 
 ## Roadmap
 
@@ -52,6 +53,8 @@ npm run dev
 5. [x] Stories de 24h
 6. [x] Streaks e pontos
 7. [x] Ranking semanal/mensal
-8. [ ] Apagar fotos com mais de 24h automaticamente
-9. [ ] PWA (instalar na tela do celular) + deploy
-10. [ ] Vencedor da semana/mês passados no ranking
+8. [x] Perfis com foto, descrição, livro e exercícios
+9. [x] Stories de exercício e leitura juntos
+10. [ ] Apagar fotos com mais de 24h automaticamente
+11. [ ] PWA (instalar na tela do celular) + deploy
+12. [ ] Vencedor da semana/mês passados no ranking
