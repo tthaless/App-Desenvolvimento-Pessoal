@@ -2,7 +2,7 @@ import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { supabase } from '../lib/supabase'
 import { errorMessage } from '../lib/utils'
-import { PotionMark } from './Logo'
+import { ArrowMark } from './Logo'
 
 export default function Auth() {
   const [mode, setMode] = useState<'entrar' | 'cadastrar'>('entrar')
@@ -44,7 +44,7 @@ export default function Auth() {
   return (
     <div className="auth">
       <div className="auth-hero">
-        <PotionMark size={56} className="auth-flame" />
+        <ArrowMark size={68} className="auth-flame" />
         <h1>streak</h1>
         <p>Treinou? Leu? Prova com foto.<br />Quem não falta, ganha.</p>
       </div>

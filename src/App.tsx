@@ -14,7 +14,7 @@ import { cleanupMyFeedPhotos } from './lib/feed'
 import { BookOpen, Dumbbell, MessageCircle, Target, Trophy, User } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import Avatar from './components/Avatar'
-import { PotionMark } from './components/Logo'
+import { ArrowMark } from './components/Logo'
 import { useMembers } from './lib/members'
 
 type Tab = 'exercicio' | 'leitura' | 'desafio' | 'feed' | 'ranking' | 'perfil'
@@ -62,7 +62,7 @@ export default function App() {
   if (loading)
     return (
       <div className="splash">
-        <PotionMark size={52} />
+        <ArrowMark size={60} />
       </div>
     )
   if (!session) return <Auth />

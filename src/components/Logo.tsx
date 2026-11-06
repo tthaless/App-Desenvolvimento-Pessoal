@@ -8,175 +8,31 @@ export function FlameMark({ size = 24, className = '' }: { size?: number; classN
   )
 }
 
-/** Cores da poção, na ordem usada pelos pixels abaixo. */
-const POTION_COLORS = ["#1b1b1f", "#d64e18", "#dededa", "#f7c84a", "#ff6a2b", "#ffaa50", "#fff3c8", "#ffffff"]
-
-/** Pixels da poção: [x, y, largura, cor]. Cada linha é um trecho horizontal de 1px de altura. */
-const POTION_PIXELS: [number, number, number, number][] = [
-  [11, 0, 8, 0],
-  [10, 1, 1, 0],
-  [11, 1, 8, 2],
-  [19, 1, 1, 0],
-  [10, 2, 1, 0],
-  [11, 2, 1, 2],
-  [12, 2, 2, 7],
-  [14, 2, 5, 2],
-  [19, 2, 1, 0],
-  [10, 3, 1, 0],
-  [11, 3, 8, 2],
-  [19, 3, 1, 0],
-  [11, 4, 1, 0],
-  [12, 4, 6, 2],
-  [18, 4, 1, 0],
-  [11, 5, 1, 0],
-  [12, 5, 6, 2],
-  [18, 5, 1, 0],
-  [11, 6, 1, 0],
-  [12, 6, 6, 2],
-  [18, 6, 1, 0],
-  [11, 7, 1, 0],
-  [12, 7, 6, 2],
-  [18, 7, 1, 0],
-  [11, 8, 1, 0],
-  [12, 8, 6, 2],
-  [18, 8, 1, 0],
-  [10, 9, 2, 0],
-  [12, 9, 6, 2],
-  [18, 9, 2, 0],
-  [9, 10, 1, 0],
-  [10, 10, 10, 2],
-  [20, 10, 1, 0],
-  [8, 11, 1, 0],
-  [9, 11, 12, 2],
-  [21, 11, 1, 0],
-  [7, 12, 1, 0],
-  [8, 12, 2, 2],
-  [10, 12, 1, 7],
-  [11, 12, 4, 2],
-  [15, 12, 1, 3],
-  [16, 12, 6, 2],
-  [22, 12, 1, 0],
-  [6, 13, 1, 0],
-  [7, 13, 2, 2],
-  [9, 13, 1, 7],
-  [10, 13, 4, 2],
-  [14, 13, 3, 3],
-  [17, 13, 6, 2],
-  [23, 13, 1, 0],
-  [6, 14, 1, 0],
-  [7, 14, 2, 2],
-  [9, 14, 1, 7],
-  [10, 14, 5, 2],
-  [15, 14, 1, 3],
-  [16, 14, 7, 2],
-  [23, 14, 1, 0],
-  [6, 15, 1, 0],
-  [7, 15, 2, 2],
-  [9, 15, 1, 7],
-  [10, 15, 13, 2],
-  [23, 15, 1, 0],
-  [6, 16, 1, 0],
-  [7, 16, 16, 2],
-  [23, 16, 1, 0],
-  [6, 17, 1, 0],
-  [7, 17, 1, 2],
-  [8, 17, 14, 3],
-  [22, 17, 1, 2],
-  [23, 17, 1, 0],
-  [6, 18, 1, 0],
-  [7, 18, 1, 2],
-  [8, 18, 14, 5],
-  [22, 18, 1, 2],
-  [23, 18, 1, 0],
-  [6, 19, 1, 0],
-  [7, 19, 1, 2],
-  [8, 19, 10, 4],
-  [18, 19, 4, 1],
-  [22, 19, 1, 2],
-  [23, 19, 1, 0],
-  [6, 20, 1, 0],
-  [7, 20, 1, 2],
-  [8, 20, 3, 4],
-  [11, 20, 2, 3],
-  [13, 20, 4, 4],
-  [17, 20, 1, 6],
-  [18, 20, 4, 1],
-  [22, 20, 1, 2],
-  [23, 20, 1, 0],
-  [6, 21, 1, 0],
-  [7, 21, 1, 2],
-  [8, 21, 2, 4],
-  [10, 21, 4, 3],
-  [14, 21, 2, 4],
-  [16, 21, 3, 6],
-  [19, 21, 3, 1],
-  [22, 21, 1, 2],
-  [23, 21, 1, 0],
-  [6, 22, 1, 0],
-  [7, 22, 1, 2],
-  [8, 22, 2, 4],
-  [10, 22, 4, 3],
-  [14, 22, 3, 4],
-  [17, 22, 1, 6],
-  [18, 22, 4, 1],
-  [22, 22, 1, 2],
-  [23, 22, 1, 0],
-  [6, 23, 1, 0],
-  [7, 23, 1, 2],
-  [8, 23, 3, 4],
-  [11, 23, 2, 3],
-  [13, 23, 5, 4],
-  [18, 23, 4, 1],
-  [22, 23, 1, 2],
-  [23, 23, 1, 0],
-  [6, 24, 1, 0],
-  [7, 24, 1, 2],
-  [8, 24, 7, 4],
-  [15, 24, 1, 3],
-  [16, 24, 1, 4],
-  [17, 24, 5, 1],
-  [22, 24, 1, 2],
-  [23, 24, 1, 0],
-  [6, 25, 1, 0],
-  [7, 25, 1, 2],
-  [8, 25, 6, 4],
-  [14, 25, 3, 3],
-  [17, 25, 5, 1],
-  [22, 25, 1, 2],
-  [23, 25, 1, 0],
-  [7, 26, 1, 0],
-  [8, 26, 1, 2],
-  [9, 26, 6, 4],
-  [15, 26, 1, 3],
-  [16, 26, 5, 1],
-  [21, 26, 1, 2],
-  [22, 26, 1, 0],
-  [8, 27, 1, 0],
-  [9, 27, 1, 2],
-  [10, 27, 6, 4],
-  [16, 27, 4, 1],
-  [20, 27, 1, 2],
-  [21, 27, 1, 0],
-  [9, 28, 1, 0],
-  [10, 28, 10, 2],
-  [20, 28, 1, 0],
-  [10, 29, 10, 0],
-]
-
-/** Poção em pixel art, a marca do app. */
-export function PotionMark({ size = 24, className = '' }: { size?: number; className?: string }) {
+/** Frasco em forma de seta para cima, a marca do app. */
+export function ArrowMark({ size = 24, className = '' }: { size?: number; className?: string }) {
+  // Em tamanhos pequenos, sem bolhas e brilho, e com o contorno mais grosso.
+  const small = size < 40
   return (
-    <svg
-      className={`potion-mark ${className}`}
-      width={size}
-      height={size}
-      viewBox="0 0 30 30"
-      shapeRendering="crispEdges"
-      aria-hidden
-    >
-      {POTION_PIXELS.map(([x, y, w, c], i) => (
-        <rect key={i} x={x} y={y} width={w} height={1} fill={POTION_COLORS[c]} />
-      ))}
+    <svg className={`arrow-mark ${className}`} width={size} height={size} viewBox="8 8 104 104" aria-hidden>
+      <path
+        d="M38 52 Q49 46 60 52 T82 52 L87 59 Q89 62 85 62 H66 V102 Q66 105 63 105 H57 Q54 105 54 102 V62 H35 Q31 62 33 59 Z"
+        fill="var(--brand)"
+      />
+      {!small && (
+        <>
+          <circle cx="60" cy="92" r="2.6" fill="var(--gold)" />
+          <circle cx="58" cy="78" r="2" fill="var(--gold)" />
+          <circle cx="66" cy="57" r="2" fill="var(--gold)" />
+        </>
+      )}
+      <path
+        d="M60 12 L91 60 Q94 66 87 66 H70 V104 Q70 110 64 110 H56 Q50 110 50 104 V66 H33 Q26 66 29 60 Z"
+        fill="none"
+        stroke="var(--text)"
+        strokeWidth={small ? 8 : 5}
+        strokeLinejoin="round"
+      />
+      {!small && <path d="M98 12 L100 18 L106 20 L100 22 L98 28 L96 22 L90 20 L96 18 Z" fill="var(--gold)" />}
     </svg>
   )
 }
@@ -185,7 +41,7 @@ export function PotionMark({ size = 24, className = '' }: { size?: number; class
 export default function Logo({ size = 26 }: { size?: number }) {
   return (
     <span className="logo" style={{ fontSize: size }}>
-      <PotionMark size={size * 1.1} />
+      <ArrowMark size={size * 1.15} />
       <span className="logo-word">streak</span>
     </span>
   )
