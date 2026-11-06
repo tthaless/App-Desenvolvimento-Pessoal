@@ -24,7 +24,9 @@ export default function Bookshelf({ books, viewerId, onChanged, showReader, empt
   if (books.length === 0) return <p className="muted small center empty">{emptyText}</p>
 
   return (
-    <ul className="shelf-list bookcase">
+    <div className="bookcase">
+      <div className="bookcase-crown" aria-hidden />
+      <ul className="shelf-list bookcase-shelves">
       {books.map((b) => {
         const expanded = open === b.id
         const days = daysBetween(b.started_at, b.finished_at!)
@@ -66,6 +68,8 @@ export default function Bookshelf({ books, viewerId, onChanged, showReader, empt
           </li>
         )
       })}
-    </ul>
+      </ul>
+      <div className="bookcase-base" aria-hidden />
+    </div>
   )
 }

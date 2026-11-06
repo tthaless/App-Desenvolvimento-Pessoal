@@ -663,51 +663,79 @@ textarea:focus { border-color: var(--accent); }
 .tabbar { background: color-mix(in srgb, var(--chrome) 96%, transparent); border-top-color: #34343b; }
 .topbar .bell { background: #34343b; border-color: #3e3e46; }
 
-/* Estante de madeira: cada prateleira é um livro lido */
+/* Estante de madeira escura, aconchegante, com luz de lamparina */
 .bookcase {
-  --wood-1: #6b4428; --wood-2: #8a5a34; --wood-3: #5a3820; --wood-dark: #3d2614;
-  margin-top: 8px;
-  padding: 12px 10px 0;
-  border-radius: 12px 12px 6px 6px;
-  background:
-    repeating-linear-gradient(90deg, rgba(0, 0, 0, .06) 0 2px, transparent 2px 9px),
-    linear-gradient(90deg, var(--wood-3), var(--wood-2) 18%, var(--wood-1) 50%, var(--wood-2) 82%, var(--wood-3));
-  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .45), inset 0 2px 0 rgba(255, 220, 170, .18), 0 14px 28px rgba(0, 0, 0, .45);
-  position: relative;
+  --grain-h: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='360' height='360'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.006 0.32' numOctaves='4' seed='7'/%3E%3CfeColorMatrix values='0 0 0 0 0.09 0 0 0 0 0.045 0 0 0 0 0.015 1.25 0 0 0 -0.32'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+  --grain-v: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='360' height='360'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.32 0.006' numOctaves='4' seed='3'/%3E%3CfeColorMatrix values='0 0 0 0 0.09 0 0 0 0 0.045 0 0 0 0 0.015 1.25 0 0 0 -0.32'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+  --mahogany: #4a2a17; --mahogany-2: #5e3720; --mahogany-dark: #2a160b; --mahogany-edge: #7a4a2a;
+  --parchment: #f1e2c4; --parchment-dim: #c7ad8a;
+  position: relative; margin: 18px 2px 22px; filter: drop-shadow(0 18px 24px rgba(0, 0, 0, .5));
 }
-/* coroa em cima */
-.bookcase::before {
-  content: ''; position: absolute; left: -4px; right: -4px; top: -8px; height: 12px; border-radius: 6px 6px 2px 2px;
-  background: linear-gradient(180deg, #a06b40, var(--wood-1) 60%, var(--wood-dark));
-  box-shadow: 0 3px 6px rgba(0, 0, 0, .4);
+/* coroa com moldura em degraus */
+.bookcase-crown {
+  height: 26px; margin: 0 -8px; position: relative; border-radius: 3px 3px 0 0;
+  background: var(--grain-h), linear-gradient(180deg, #8a5532 0, #6b3e22 3px, var(--mahogany-2) 7px, #3b2010 9px, var(--mahogany) 11px, var(--mahogany-2) 17px, #331b0d 20px, var(--mahogany) 22px, #2a160b 26px);
+  box-shadow: inset 0 1px 0 rgba(255, 210, 160, .35);
 }
-.bookcase > li {
+.bookcase-crown::after {
+  content: ''; position: absolute; left: 6px; right: 6px; bottom: -6px; height: 6px;
+  background: linear-gradient(180deg, #1e0f06, rgba(30, 15, 6, 0));
+}
+/* rodapé */
+.bookcase-base {
+  height: 22px; margin: 0 -6px; border-radius: 0 0 3px 3px;
+  background: var(--grain-h), linear-gradient(180deg, #2a160b 0, var(--mahogany-2) 4px, var(--mahogany) 12px, #6a3f23 14px, var(--mahogany) 16px, #24120a 22px);
+  box-shadow: inset 0 1px 0 rgba(255, 210, 160, .2);
+}
+/* laterais (pilares) */
+.bookcase-shelves {
+  margin: 0 !important; padding: 0 14px !important;
+  background: var(--grain-v), linear-gradient(90deg, #2b170c 0, var(--mahogany-2) 3px, var(--mahogany) 9px, #3a2010 14px, transparent 14px, transparent calc(100% - 14px), #3a2010 calc(100% - 14px), var(--mahogany) calc(100% - 9px), var(--mahogany-2) calc(100% - 3px), #2b170c 100%);
+}
+.bookcase-shelves > li {
   position: relative;
   border-top: 0 !important;
-  padding: 14px 12px 12px !important;
-  margin-bottom: 14px;
-  /* fundo do nicho, escuro, com sombra da prateleira de cima e das laterais */
+  padding: 16px 14px 14px !important;
+  margin-bottom: 16px;
+  /* fundo do nicho: tábuas verticais escuras, iluminadas de cima por uma lamparina */
   background:
-    repeating-linear-gradient(90deg, rgba(255, 255, 255, .015) 0 1px, transparent 1px 22px),
-    linear-gradient(180deg, #120d0a, #1e1611 60%, #241a14);
-  box-shadow: inset 0 12px 16px -10px rgba(0, 0, 0, .9), inset 10px 0 12px -10px rgba(0, 0, 0, .8), inset -10px 0 12px -10px rgba(0, 0, 0, .8);
-  border-radius: 2px;
+    radial-gradient(ellipse 70% 85% at 50% -10%, rgba(255, 176, 92, .22), rgba(255, 150, 70, .06) 55%, transparent 75%),
+    linear-gradient(rgba(16, 8, 3, .4), rgba(16, 8, 3, .4)),
+    var(--grain-v),
+    repeating-linear-gradient(90deg, rgba(0, 0, 0, .35) 0 1px, transparent 1px 46px),
+    linear-gradient(180deg, #1a0e07, #23130a 55%, #1c0f08);
+  box-shadow: inset 0 14px 18px -12px rgba(0, 0, 0, .95), inset 12px 0 14px -12px rgba(0, 0, 0, .9), inset -12px 0 14px -12px rgba(0, 0, 0, .9);
 }
-/* a tábua onde o livro fica apoiado */
-.bookcase > li::after {
-  content: ''; position: absolute; left: -10px; right: -10px; bottom: -14px; height: 14px;
-  background: linear-gradient(180deg, #b07a4a 0, #9a6539 2px, var(--wood-1) 6px, var(--wood-dark) 14px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, .55);
-  z-index: 1;
+/* a prateleira, com borda da frente iluminada */
+.bookcase-shelves > li::after {
+  content: ''; position: absolute; left: -14px; right: -14px; bottom: -16px; height: 16px; z-index: 1;
+  background: var(--grain-h), linear-gradient(180deg, #a2683c 0, #8a542f 1px, var(--mahogany-edge) 3px, var(--mahogany-2) 8px, var(--mahogany) 12px, #2a160b 16px);
+  box-shadow: 0 5px 8px rgba(0, 0, 0, .6);
 }
-.bookcase > li:last-child { margin-bottom: 0; }
-.bookcase > li:last-child::after { height: 16px; bottom: -16px; border-radius: 0 0 6px 6px; }
-.bookcase { margin-bottom: 18px; }
+.bookcase-shelves > li:last-child { margin-bottom: 0; }
+.bookcase-shelves > li:last-child::after { display: none; }
 .bookcase .shelf-item { align-items: flex-end; }
-.bookcase .cover { box-shadow: 0 0 0 1px rgba(0, 0, 0, .5), 3px 0 0 rgba(0, 0, 0, .35), 0 6px 10px rgba(0, 0, 0, .6); border-radius: 2px 4px 4px 2px; }
-.bookcase .shelf-title { color: #f6ead8; }
-.bookcase .muted { color: #b9a691; }
-.bookcase .shelf-review { color: #c9b8a4; }
-.bookcase .shelf-review.open { color: #f6ead8; }
-.bookcase .rating-badge { align-self: flex-start; }
+.bookcase .cover {
+  border-radius: 1px 3px 3px 1px;
+  box-shadow: inset 3px 0 0 rgba(255, 255, 255, .12), inset 5px 0 3px rgba(0, 0, 0, .25), 0 0 0 1px rgba(0, 0, 0, .55), 4px 2px 0 rgba(0, 0, 0, .25), 0 8px 12px rgba(0, 0, 0, .65);
+}
+.bookcase .shelf-title { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 20px; line-height: 1.1; font-weight: 700; color: var(--parchment); letter-spacing: .01em; }
+.bookcase .muted { color: var(--parchment-dim); }
+.bookcase .shelf-review { font-family: 'Cormorant Garamond', Georgia, serif; font-style: italic; font-size: 17px; color: #d8c3a1; }
+.bookcase .shelf-review.open { color: var(--parchment); }
+.bookcase .shelf-reader strong { color: var(--parchment); }
+/* plaquinha de latão com a nota */
+.bookcase .rating-badge {
+  align-self: flex-start; font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 700; font-size: 19px;
+  color: #3a2208; background: linear-gradient(160deg, #f3d48a, #c99a44 45%, #a97a2c 55%, #e0b866);
+  border: 0; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .55), inset 0 -1px 0 rgba(0, 0, 0, .25), 0 2px 4px rgba(0, 0, 0, .6);
+  text-shadow: 0 1px 0 rgba(255, 240, 200, .5);
+}
+.bookcase .like-count { color: #ff8fa3; }
+.bookcase .pdf-chip, .bookcase .pdf-add { background: rgba(0, 0, 0, .35); border-color: rgba(241, 226, 196, .18); color: var(--parchment); }
+@media (prefers-reduced-motion: no-preference) {
+  .bookcase-shelves > li { animation: lamp 5s ease-in-out infinite; }
+  .bookcase-shelves > li:nth-child(2n) { animation-delay: -2.3s; }
+}
+@keyframes lamp { 50% { filter: brightness(1.06); } }
 .notif-app { background: color-mix(in srgb, var(--brand) 16%, var(--surface-2)); box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--brand) 50%, transparent); display: grid; place-items: center; }
