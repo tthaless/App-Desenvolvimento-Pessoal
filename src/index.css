@@ -406,7 +406,7 @@ textarea:focus { border-color: var(--accent); }
 .topbar-right { display: flex; align-items: center; gap: 8px; }
 .logo { display: inline-flex; align-items: center; gap: 4px; line-height: 1; }
 .logo-word { font-family: var(--display); font-weight: 800; letter-spacing: -0.05em; }
-.flame-mark { display: block; flex: none; }
+.flame-mark, .potion-mark { display: block; flex: none; }
 
 /* Seções sem caixa */
 .section { display: flex; flex-direction: column; }

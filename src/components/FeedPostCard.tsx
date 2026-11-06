@@ -8,7 +8,7 @@ import type { FeedBook, FeedPost } from '../lib/feed'
 import { errorMessage, timeAgo } from '../lib/utils'
 import Avatar from './Avatar'
 import BookCover from './BookCover'
-import { FlameMark } from './Logo'
+import { PotionMark } from './Logo'
 import PdfAttachment from './PdfAttachment'
 import { SkeletonBlock } from './Skeleton'
 
@@ -112,7 +112,7 @@ function BookFinishedPost({ post, book, userId, onOpenThread }: { post: FeedPost
   return (
     <article className="post post-auto">
       <span className="streak-avatar" aria-hidden>
-        <FlameMark size={24} />
+        <PotionMark size={26} />
       </span>
       <div className="post-main">
         <header className="post-head">
