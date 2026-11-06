@@ -13,6 +13,7 @@
   --ok: #34d399;
   --danger: #ff5d73;
   --accent: var(--brand);
+  --accent-rgb: 255, 106, 43;
   --radius: 16px;
   --display: 'Bricolage Grotesque', system-ui, sans-serif;
   --body: 'Inter', system-ui, sans-serif;
@@ -87,7 +88,7 @@ input:focus { border-color: var(--accent); }
 .avatar.xl { width: 96px; height: 96px; font-size: 38px; }
 
 /* Card principal do streak */
-.hero { position: relative; overflow: hidden; background: radial-gradient(120% 90% at 100% 0%, color-mix(in srgb, var(--accent) 22%, transparent), transparent 60%), var(--surface); }
+.hero { position: relative; overflow: hidden; background: radial-gradient(120% 90% at 100% 0%, rgba(var(--accent-rgb), .22), transparent 60%), var(--surface); }
 .hero-streak { display: flex; align-items: baseline; gap: 8px; }
 .hero-streak .flame { font-size: 34px; }
 .hero-streak .big { font-family: var(--display); font-size: 72px; font-weight: 800; line-height: .9; }
@@ -136,15 +137,15 @@ textarea:focus { border-color: var(--accent); }
 .info-list { display: flex; flex-direction: column; gap: 14px; }
 .info { display: flex; gap: 12px; align-items: flex-start; }
 .info p { margin: 0; }
-.info-icon { width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; background: color-mix(in srgb, var(--accent) 16%, transparent); flex: none; }
-.act-exercicio.info { --accent: var(--exercise); }
+.info-icon { width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; background: rgba(var(--accent-rgb), .16); flex: none; }
+.act-exercicio.info { --accent: var(--exercise); --accent-rgb: 255, 106, 43; }
 .info-value { font-weight: 600; margin-top: 2px !important; line-height: 1.35; }
 .profile-sheet { max-height: 88dvh; overflow-y: auto; gap: 14px; }
 .profile-sheet .profile-top { padding-bottom: 4px; }
 .sheet-grip { width: 40px; height: 4px; border-radius: 2px; background: var(--line); align-self: center; }
 .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 .stat { border-top: 3px solid var(--accent); }
-.act-exercicio.stat { --accent: var(--exercise); }
+.act-exercicio.stat { --accent: var(--exercise); --accent-rgb: 255, 106, 43; }
 .stat-big { font-family: var(--display); font-size: 32px; font-weight: 800; margin: 6px 0; }
 
 /* Barra de abas */
@@ -171,9 +172,9 @@ textarea:focus { border-color: var(--accent); }
 @keyframes fill { to { width: 100%; } }
 .viewer-head { display: flex; align-items: center; gap: 10px; padding: 12px; position: relative; z-index: 2; font-size: 14px; }
 .viewer-user { display: flex; align-items: center; gap: 8px; background: none; border: 0; padding: 0; }
-.chip { font-size: 12px; font-weight: 600; padding: 3px 9px; border-radius: 99px; background: color-mix(in srgb, var(--accent) 28%, rgba(0, 0, 0, .4)); }
-.chip.act-exercicio { --accent: var(--exercise); }
-.chip.act-desafio { --accent: var(--challenge); }
+.chip { font-size: 12px; font-weight: 600; padding: 3px 9px; border-radius: 99px; background: linear-gradient(rgba(var(--accent-rgb), .28), rgba(var(--accent-rgb), .28)), rgba(0, 0, 0, .4); }
+.chip.act-exercicio { --accent: var(--exercise); --accent-rgb: 255, 106, 43; }
+.chip.act-desafio { --accent: var(--challenge); --accent-rgb: 232, 106, 168; }
 .viewer-close { margin-left: auto; background: none; border: 0; font-size: 22px; padding: 4px 8px; }
 .viewer-photo { flex: 1; display: grid; place-items: center; min-height: 0; }
 .viewer-photo img { max-width: 100%; max-height: 100%; object-fit: contain; }
@@ -260,7 +261,7 @@ textarea:focus { border-color: var(--accent); }
 
 /* Desafios */
 .challenges { display: flex; flex-direction: column; gap: 14px; }
-.challenge-hero { display: flex; flex-direction: column; gap: 8px; background: radial-gradient(120% 90% at 100% 0%, color-mix(in srgb, var(--accent) 22%, transparent), transparent 60%), var(--surface); }
+.challenge-hero { display: flex; flex-direction: column; gap: 8px; background: radial-gradient(120% 90% at 100% 0%, rgba(var(--accent-rgb), .22), transparent 60%), var(--surface); }
 .challenge-hero p { margin: 0; }
 .challenge-title { font-family: var(--display); font-size: 28px; font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; }
 .challenge-desc { line-height: 1.45; }
@@ -825,7 +826,7 @@ button:focus:not(:focus-visible) { outline: none; }
 .month-cal-head h3 { margin: 0; font-family: var(--display); font-size: 17px; font-weight: 800; text-transform: capitalize; }
 .month-grid { display: grid; grid-template-columns: repeat(7, 22px); justify-content: start; gap: 5px; }
 .month-wd { text-align: center; font-size: 10px; font-weight: 600; color: var(--muted); }
-.month-day { aspect-ratio: 1; width: 100%; border: 0; padding: 0; border-radius: 5px; background: var(--surface-2); display: block; }
+.month-day { aspect-ratio: 1; width: 100%; height: 22px; border: 0; padding: 0; border-radius: 5px; background: var(--surface-2); display: block; }
 .month-day.lv1 { background: color-mix(in srgb, var(--brand) 42%, var(--surface-2)); }
 .month-day.lv2 { background: var(--brand); box-shadow: 0 0 10px color-mix(in srgb, var(--brand) 35%, transparent); }
 .month-day.future { background: transparent; box-shadow: inset 0 0 0 1px var(--line); }
