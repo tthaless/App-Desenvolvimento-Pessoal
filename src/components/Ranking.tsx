@@ -81,7 +81,7 @@ export default function Ranking({ userId }: { userId: string }) {
       </section>
 
       <p className="muted small rules">
-        10 pontos por atividade feita no dia (várias fotos contam uma vez só) · +5 de bônus no dia em que você faz as duas. A semana começa na segunda.
+        10 pontos por atividade feita no dia (várias fotos contam uma vez só) · +5 no dia em que você faz as duas · desafio da semana: +30 com 5 dias, +40 com 7. A semana começa na segunda.
       </p>
     </div>
   )

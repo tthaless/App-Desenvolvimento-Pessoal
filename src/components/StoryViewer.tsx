@@ -2,12 +2,12 @@ import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { openProfile } from '../lib/members'
 import { timeAgo } from '../lib/utils'
-import { ACTIVITY } from '../types'
-import type { Member, Post } from '../types'
+import { STORY_LABEL } from '../types'
+import type { Member, StoryItem } from '../types'
 import Avatar from './Avatar'
 
 interface Props {
-  posts: Post[]
+  posts: StoryItem[]
   start: number
   currentUserId: string
   members: Member[]
@@ -75,7 +75,6 @@ export default function StoryViewer({ posts, start, currentUserId, members, onSe
   const member = members.find((m) => m.id === post.user_id)
   const name = post.user_id === currentUserId ? 'Você' : (member?.username ?? '?')
   const url = urls[post.photo_path]
-  const act = ACTIVITY[post.activity]
 
   return (
     <div className="viewer" role="dialog" aria-label={`Story de ${name}`}>
@@ -100,9 +99,7 @@ export default function StoryViewer({ posts, start, currentUserId, members, onSe
           <Avatar name={member?.username ?? '?'} url={member?.avatar_url} size="sm" />
           <strong>{name}</strong>
         </button>
-        <span className={`chip act-${post.activity}`}>
-          {act.emoji} {act.label}
-        </span>
+        <span className={`chip act-${post.activity}`}>{STORY_LABEL[post.activity]}</span>
         <span className="muted">{timeAgo(post.created_at)}</span>
         <button className="viewer-close" onClick={onClose} aria-label="Fechar">
           ✕
