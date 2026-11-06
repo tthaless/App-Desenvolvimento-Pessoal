@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { daysBetween, formatRating } from '../lib/books'
 import type { Book } from '../lib/books'
 import { openProfile, useMembers } from '../lib/members'
+import Avatar from './Avatar'
 import BookCover from './BookCover'
 import PdfAttachment from './PdfAttachment'
 
@@ -47,6 +48,7 @@ export default function Bookshelf({ books, viewerId, onChanged, showReader, empt
             </button>
             {showReader && reader && (
               <button className="by shelf-reader" onClick={() => openProfile(b.user_id)}>
+                <Avatar name={reader.username} url={reader.avatar_url} size="sm" />
                 <span className="muted small">lido por</span> <strong className="small">{reader.username}</strong>
               </button>
             )}

@@ -354,7 +354,8 @@ textarea:focus { border-color: var(--accent); }
 .shelf-book { display: flex; flex-direction: column; gap: 8px; }
 .shelf-badges { display: flex; gap: 10px; align-items: center; margin-top: 2px; }
 .like-count { font-size: 12px; font-weight: 700; color: #ff6b8a; }
-.shelf-reader { padding-left: 64px; gap: 4px; }
+.shelf-reader { padding-left: 64px; gap: 6px; }
+.shelf-reader .avatar.sm { width: 24px; height: 24px; font-size: 11px; }
 .shelf-review { margin: 0 0 0 64px !important; }
 
 .want-list { list-style: none; margin: 4px 0 0; padding: 0; display: flex; flex-direction: column; }
