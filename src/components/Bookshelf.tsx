@@ -5,6 +5,7 @@ import type { Book } from '../lib/books'
 import { openProfile, useMembers } from '../lib/members'
 import Avatar from './Avatar'
 import BookCover from './BookCover'
+import CoverPicker from './CoverPicker'
 import PdfAttachment from './PdfAttachment'
 import { Check, FileText, GripVertical, Heart, Pencil, Trash2 } from 'lucide-react'
 
@@ -34,7 +35,9 @@ export default function Bookshelf({ books, viewerId, onChanged, showReader, edit
   const listRef = useRef<HTMLUListElement>(null)
 
   useEffect(() => {
+    // Fora da edição segue a ordem salva; durante, mantém a ordem arrastada e só atualiza os dados (ex.: capa nova).
     if (!editing) setOrder(books)
+    else setOrder((prev) => prev.flatMap((p) => books.filter((b) => b.id === p.id)))
   }, [books, editing])
 
   // Arrastar pela alça: o livro troca de lugar quando o dedo passa do meio do vizinho.
@@ -136,7 +139,7 @@ export default function Bookshelf({ books, viewerId, onChanged, showReader, edit
                 >
                   <GripVertical size={18} aria-hidden />
                 </button>
-                <BookCover url={b.cover_url} title={b.title} size="sm" />
+                <CoverPicker table="books" id={b.id} userId={viewerId} url={b.cover_url} title={b.title} size="sm" onChanged={onChanged} />
                 <span className="shelf-edit-title">{b.title}</span>
                 <button className="icon-btn shelf-trash" onClick={() => setConfirming(confirming === b.id ? null : b.id)} aria-label={`Excluir ${b.title}`}>
                   <Trash2 size={16} aria-hidden />

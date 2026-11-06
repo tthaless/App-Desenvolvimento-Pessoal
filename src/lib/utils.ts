@@ -72,6 +72,27 @@ export async function compressImage(file: File, maxSize = 1080, quality = 0.72):
   }
 }
 
+/** Recorta a foto no formato de capa em pé (2:3) e reduz, para a capa do livro. */
+export async function portraitCover(file: File, width = 300): Promise<Blob> {
+  const img = await decodeImage(file)
+  try {
+    const ratio = 2 / 3
+    let w = img.width
+    let h = img.height
+    if (w / h > ratio) w = h * ratio
+    else h = w / ratio
+    const canvas = document.createElement('canvas')
+    canvas.width = Math.min(width, Math.round(w))
+    canvas.height = Math.round(canvas.width / ratio)
+    canvas
+      .getContext('2d')!
+      .drawImage(img.source, (img.width - w) / 2, (img.height - h) / 2, w, h, 0, 0, canvas.width, canvas.height)
+    return await toJpeg(canvas, 0.8)
+  } finally {
+    img.done()
+  }
+}
+
 /** Recorta o centro da foto em quadrado, para a foto de perfil. */
 export async function squareAvatar(file: File, size = 400): Promise<Blob> {
   const img = await decodeImage(file)

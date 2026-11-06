@@ -5,6 +5,7 @@ import { refreshMembers, useMembers } from '../lib/members'
 import Avatar from './Avatar'
 import { errorMessage } from '../lib/utils'
 import BookCover from './BookCover'
+import CoverPicker from './CoverPicker'
 import BookSearch from './BookSearch'
 import { Bookmark, Check, Plus, X } from 'lucide-react'
 import { SkeletonRows } from './Skeleton'
@@ -93,7 +94,11 @@ export default function WantList({ loading, ownerId, viewerId, all, onChanged, o
           const alreadyMine = mine.some((m) => sameTitle(m.title, w.title))
           return (
             <li key={w.id}>
-              <BookCover url={w.cover_url} title={w.title} size="sm" />
+              {isMe ? (
+                <CoverPicker table="want_to_read" id={w.id} userId={viewerId} url={w.cover_url} title={w.title} size="sm" onChanged={onChanged} />
+              ) : (
+                <BookCover url={w.cover_url} title={w.title} size="sm" />
+              )}
               <div className="want-info">
                 <span className="shelf-title">{w.title}</span>
                 {w.author && <span className="muted small">{w.author}</span>}

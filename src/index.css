@@ -906,3 +906,11 @@ button:focus:not(:focus-visible) { outline: none; }
 .drag-handle:active { cursor: grabbing; color: var(--text); }
 .shelf-trash { width: 34px; height: 34px; color: var(--muted); }
 .shelf-edit-list .shelf-delete p { color: var(--text); }
+
+/* Trocar a capa do livro */
+.cover-picker { position: relative; display: inline-flex; flex-direction: column; flex: none; }
+.cover-picker-btn { position: relative; background: none; border: 0; padding: 0; border-radius: 6px; }
+.cover-picker-badge { position: absolute; right: -6px; bottom: -6px; width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; background: var(--surface-2); color: var(--text); border: 2px solid var(--surface); box-shadow: 0 2px 6px rgba(0, 0, 0, .4); }
+.cover.sm + .cover-picker-badge { width: 20px; height: 20px; right: -5px; bottom: -5px; }
+.cover-picker-error { position: absolute; top: 100%; left: 0; width: 200px; margin-top: 8px; font-size: 12px; color: var(--danger); z-index: 3; }
+.want-paper .cover-picker-badge { background: #efe3c8; color: #3a2a18; border-color: #e6d6b4; }

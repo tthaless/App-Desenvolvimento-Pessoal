@@ -3,7 +3,7 @@ import { abandonBook, daysBetween, fetchCurrentBook, finishBook, formatRating, s
 import type { Book, BookDraft } from '../lib/books'
 import { refreshMembers } from '../lib/members'
 import { errorMessage } from '../lib/utils'
-import BookCover from './BookCover'
+import CoverPicker from './CoverPicker'
 import BookSearch from './BookSearch'
 import PdfAttachment from './PdfAttachment'
 import { Check } from 'lucide-react'
@@ -82,7 +82,7 @@ export default function CurrentBook({ userId, refreshKey, onShelfChanged, onLoad
       {book ? (
         <>
           <div className="current-top">
-            <BookCover url={book.cover_url} title={book.title} size="lg" />
+            <CoverPicker table="books" id={book.id} userId={userId} url={book.cover_url} title={book.title} size="lg" onChanged={load} />
             <div className="current-info">
               <p className="book-title">{book.title}</p>
               {book.author && <p className="muted small">{book.author}</p>}
