@@ -84,6 +84,7 @@ export default function Ranking({ userId }: { userId: string }) {
         <ul>
           <li>10 pontos por atividade feita no dia (várias fotos contam uma vez só)</li>
           <li>+5 no dia em que você faz exercício e leitura</li>
+          <li>Bônus de streak, por atividade, em cada dia com prova: +2 a partir do 3º dia seguido, +3 a partir do 7º, +4 a partir do 14º e +5 a partir do 30º</li>
           <li>Desafio da semana: +30 com 5 dias, +40 com os 7</li>
           <li>A semana começa na segunda</li>
           <li>Fim de semana é livre: postar no sábado ou domingo soma pontos e dias no streak, e não postar não tira ponto nem quebra o streak</li>

@@ -865,3 +865,5 @@ button:focus:not(:focus-visible) { outline: none; }
 .push-offer-close { position: absolute; top: 10px; right: 10px; background: none; border: 0; color: var(--muted); padding: 6px; display: grid; place-items: center; }
 .push-offer .row { margin-top: 4px; grid-template-columns: 1fr 1fr; }
 .info.act-wins .info-icon { color: var(--gold); background: rgba(247, 200, 74, .14); }
+.hero-bonus { margin: 2px 0 0; color: var(--gold); }
+.hero-bonus strong { font-family: var(--display); font-weight: 800; }

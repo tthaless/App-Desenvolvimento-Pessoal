@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { LONG_CACHE } from '../lib/signed'
 import { supabase } from '../lib/supabase'
 import { openProfile, refreshMembers, useMembers } from '../lib/members'
-import { compressImage, errorMessage, todaySP } from '../lib/utils'
+import { compressImage, errorMessage, nextBonusStep, streakBonus, todaySP } from '../lib/utils'
 import { ACTIVITY } from '../types'
 import type { Activity, StreakRow } from '../types'
 import Avatar from './Avatar'
@@ -160,6 +160,7 @@ export default function ActivityTab({ activity, userId, hideHeader }: Props) {
                 : 'Comece seu streak hoje.'}
         </p>
         {myStreak && myStreak.best_streak > 0 && <p className="muted small hero-best">Recorde: {myStreak.best_streak} dias</p>}
+        <StreakBonusLine streakDay={iDidToday ? current : current + 1} done={iDidToday} />
         {context ? (
           <p className="hero-context">
             <ActivityIcon activity={activity} size={16} />
@@ -255,5 +256,28 @@ export default function ActivityTab({ activity, userId, hideHeader }: Props) {
         />
       )}
     </div>
+  )
+}
+
+/** "Seu streak vale +3 por dia" e quanto falta pro próximo degrau. */
+function StreakBonusLine({ streakDay, done }: { streakDay: number; done: boolean }) {
+  const bonus = streakBonus(streakDay)
+  const next = nextBonusStep(streakDay)
+  return (
+    <p className="hero-bonus small">
+      {bonus > 0 ? (
+        <>
+          <strong>+{bonus}</strong> de bônus de streak {done ? 'hoje' : 'se postar hoje'}
+        </>
+      ) : (
+        'Com 3 dias seguidos o streak começa a dar bônus'
+      )}
+      {bonus > 0 && next && (
+        <span className="muted">
+          {' '}
+          · +{next.bonus} em {next.in} {next.in === 1 ? 'dia' : 'dias'}
+        </span>
+      )}
+    </p>
   )
 }

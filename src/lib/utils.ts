@@ -122,3 +122,18 @@ export function saveSeen(seen: Set<string>) {
     /* sem armazenamento: tudo bem, só não lembra o que já viu */
   }
 }
+
+/** Bônus de pontos pelo tamanho do streak naquele dia (igual à conta do banco). */
+export function streakBonus(day: number): number {
+  if (day >= 30) return 5
+  if (day >= 14) return 4
+  if (day >= 7) return 3
+  if (day >= 3) return 2
+  return 0
+}
+
+/** Quantos dias faltam pro próximo degrau do bônus. */
+export function nextBonusStep(day: number): { in: number; bonus: number } | null {
+  for (const step of [3, 7, 14, 30]) if (day < step) return { in: step - day, bonus: streakBonus(step) }
+  return null
+}
