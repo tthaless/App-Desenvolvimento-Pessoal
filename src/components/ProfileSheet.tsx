@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react'
+import type { MouseEvent } from 'react'
+import { Eye } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { useMembers } from '../lib/members'
 import type { StreakRow } from '../types'
@@ -8,6 +10,11 @@ import FeedList from './FeedList'
 import ProfileDetails from './ProfileDetails'
 import ProfileTabs from './ProfileTabs'
 import { useDragToClose } from '../lib/useDragToClose'
+
+// Um "visitante" que não é ninguém do grupo: assim nada aparece como se fosse seu.
+const VISITOR = '00000000-0000-0000-0000-000000000000'
+// No modo "como o grupo vê" só dá pra navegar e olhar.
+const ALLOWED_IN_PREVIEW = '.subtabs button, .shelf-item, .pdf-chip, .pdf-viewer, .month-day, .want-others, .viewer-close'
 
 interface Props {
   userId: string
@@ -33,19 +40,46 @@ export default function ProfileSheet({ userId, viewerId, onClose }: Props) {
 
   if (!member) return null
 
+  // Abrindo o próprio perfil: mostra exatamente como um amigo vê (sem botões de dono)
+  // e sem deixar fazer nada além de olhar.
+  const isSelf = userId === viewerId
+  const asViewer = isSelf ? VISITOR : viewerId
+
+  function blockActions(e: MouseEvent<HTMLDivElement>) {
+    if (!isSelf) return
+    const el = e.target as HTMLElement
+    if (el.closest(ALLOWED_IN_PREVIEW)) return
+    if (el.closest('button, a, input, label, textarea, select')) {
+      e.preventDefault()
+      e.stopPropagation()
+    }
+  }
+
   return (
     <div className="sheet-backdrop" onClick={onClose}>
-      <div className="sheet profile-sheet" ref={sheetRef} onClick={(e) => e.stopPropagation()} role="dialog" aria-label={`Perfil de ${member.username}`}>
+      <div
+        className={`sheet profile-sheet ${isSelf ? 'profile-preview' : ''}`}
+        ref={sheetRef}
+        onClick={(e) => e.stopPropagation()}
+        onClickCapture={blockActions}
+        role="dialog"
+        aria-label={isSelf ? 'Seu perfil como o grupo vê' : `Perfil de ${member.username}`}
+      >
         <span className="sheet-grip" aria-hidden />
+        {isSelf && (
+          <p className="preview-note">
+            <Eye size={14} aria-hidden /> É assim que o grupo vê o seu perfil
+          </p>
+        )}
         <ProfileHero coverUrl={member.cover_url}>
           <Avatar name={member.username} url={member.avatar_url} size="xl" />
           <p className="profile-name">{member.username}</p>
           {member.bio && <p className="profile-bio">{member.bio}</p>}
         </ProfileHero>
-        <ProfileTabs member={member} viewerId={viewerId}>
+        <ProfileTabs member={member} viewerId={asViewer}>
           <ProfileDetails member={member} streaks={streaks} />
           <h2 className="section-title">Posts das últimas 24h</h2>
-          <FeedList userId={viewerId} authorId={userId} emptyText={`${member.username} não postou nada no feed hoje.`} />
+          <FeedList userId={asViewer} authorId={userId} emptyText={`${member.username} não postou nada no feed hoje.`} />
         </ProfileTabs>
       </div>
     </div>
