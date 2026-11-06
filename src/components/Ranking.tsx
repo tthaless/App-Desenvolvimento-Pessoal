@@ -86,6 +86,8 @@ export default function Ranking({ userId }: { userId: string }) {
           <li>+5 no dia em que você faz exercício e leitura</li>
           <li>Desafio da semana: +30 com 5 dias, +40 com os 7</li>
           <li>A semana começa na segunda</li>
+          <li>Fim de semana é livre: postar no sábado ou domingo soma pontos e dias no streak, e não postar não tira ponto nem quebra o streak</li>
+          <li>O streak só quebra quando falta um dia de segunda a sexta</li>
         </ul>
       </details>
     </div>
