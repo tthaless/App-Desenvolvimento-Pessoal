@@ -419,7 +419,8 @@ textarea:focus { border-color: var(--accent); }
 .btn.primary { background: var(--brand); color: #1a0a02; }
 .btn.ghost { background: var(--surface-2); color: var(--text); }
 .icon-text { display: inline-flex; align-items: center; gap: 4px; }
-.icon-btn { display: inline-grid; place-items: center; }
+.icon-btn { display: inline-grid; place-items: center; padding: 0; flex: none; line-height: 0; }
+.icon-btn svg { display: block; }
 .viewer-close { display: grid; place-items: center; color: var(--text); }
 .msg { display: flex; align-items: center; gap: 8px; }
 
