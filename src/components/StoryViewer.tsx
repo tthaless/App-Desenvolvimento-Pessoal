@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
-import { supabase } from '../lib/supabase'
 import { openProfile } from '../lib/members'
 import { fetchCommentCounts } from '../lib/storyComments'
+import { signPaths } from '../lib/signed'
 import { timeAgo } from '../lib/utils'
 import { STORY_LABEL } from '../types'
 import type { Member, StoryItem } from '../types'
@@ -55,17 +55,11 @@ export default function StoryViewer({ posts, start, startInChat = false, current
 
   // Links temporários (1h) para as fotos, que ficam num bucket privado.
   useEffect(() => {
-    const paths = posts.map((p) => p.photo_path)
-    supabase.storage
-      .from('provas')
-      .createSignedUrls(paths, 3600)
-      .then(({ data }) => {
-        const map: Record<string, string> = {}
-        data?.forEach((d) => {
-          if (d.path && d.signedUrl) map[d.path] = d.signedUrl
-        })
-        setUrls(map)
-      })
+    let active = true
+    signPaths(posts.map((p) => p.photo_path)).then((u) => active && setUrls(u))
+    return () => {
+      active = false
+    }
   }, [posts])
 
   useEffect(() => {

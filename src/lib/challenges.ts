@@ -1,4 +1,5 @@
 import { supabase } from './supabase'
+import { LONG_CACHE } from './signed'
 import { compressImage, todaySP } from './utils'
 
 export interface Challenge {
@@ -116,7 +117,7 @@ export async function removeVote(userId: string) {
 export async function checkin(userId: string, ideaId: string, file: File) {
   const path = `${userId}/desafio-${Date.now()}.jpg`
   const blob = await compressImage(file)
-  const up = await supabase.storage.from('provas').upload(path, blob, { contentType: 'image/jpeg' })
+  const up = await supabase.storage.from('provas').upload(path, blob, { contentType: 'image/jpeg', ...LONG_CACHE })
   if (up.error) throw up.error
   const { error } = await supabase.from('challenge_checkins').insert({ idea_id: ideaId, photo_path: path })
   if (error) {

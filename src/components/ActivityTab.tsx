@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { LONG_CACHE } from '../lib/signed'
 import { supabase } from '../lib/supabase'
 import { openProfile, refreshMembers, useMembers } from '../lib/members'
 import { compressImage, errorMessage, todaySP } from '../lib/utils'
@@ -100,7 +101,7 @@ export default function ActivityTab({ activity, userId, hideHeader }: Props) {
     const path = `${userId}/${activity}-${Date.now()}.jpg`
     try {
       const blob = await compressImage(draft.file)
-      const up = await supabase.storage.from('provas').upload(path, blob, { contentType: 'image/jpeg' })
+      const up = await supabase.storage.from('provas').upload(path, blob, { contentType: 'image/jpeg', ...LONG_CACHE })
       if (up.error) throw up.error
       const ins = await supabase.from('posts').insert({ activity, photo_path: path, caption: caption.trim() || null })
       if (ins.error) {

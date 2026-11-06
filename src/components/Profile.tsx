@@ -3,6 +3,7 @@ import type { FormEvent } from 'react'
 import { supabase } from '../lib/supabase'
 import { clearMembers, refreshMembers, useMembers } from '../lib/members'
 import { compressImage, errorMessage, squareAvatar } from '../lib/utils'
+import { LONG_CACHE } from '../lib/signed'
 import type { StreakRow } from '../types'
 import Avatar from './Avatar'
 import FeedList from './FeedList'
@@ -67,7 +68,7 @@ export default function Profile({ userId }: { userId: string }) {
     const path = `${userId}/avatar/${Date.now()}.jpg`
     try {
       const blob = await squareAvatar(file)
-      const up = await supabase.storage.from('provas').upload(path, blob, { contentType: 'image/jpeg' })
+      const up = await supabase.storage.from('provas').upload(path, blob, { contentType: 'image/jpeg', ...LONG_CACHE })
       if (up.error) throw up.error
       const { error } = await supabase.from('profiles').update({ avatar_path: path }).eq('id', userId)
       if (error) {
@@ -90,8 +91,8 @@ export default function Profile({ userId }: { userId: string }) {
     setError(null)
     const path = `${userId}/capa/${Date.now()}.jpg`
     try {
-      const blob = await compressImage(file, 1280, 0.78)
-      const up = await supabase.storage.from('provas').upload(path, blob, { contentType: 'image/jpeg' })
+      const blob = await compressImage(file, 1080, 0.78)
+      const up = await supabase.storage.from('provas').upload(path, blob, { contentType: 'image/jpeg', ...LONG_CACHE })
       if (up.error) throw up.error
       const { error } = await supabase.from('profiles').update({ cover_path: path }).eq('id', userId)
       if (error) {

@@ -57,8 +57,8 @@ function toJpeg(canvas: HTMLCanvasElement, quality: number): Promise<Blob> {
   )
 }
 
-/** Reduz a foto para no máximo 1280px e ~150-250 KB antes de enviar. */
-export async function compressImage(file: File, maxSize = 1280, quality = 0.75): Promise<Blob> {
+/** Reduz a foto para no máximo 1080px e ~100-150 KB antes de enviar. */
+export async function compressImage(file: File, maxSize = 1080, quality = 0.72): Promise<Blob> {
   const img = await decodeImage(file)
   try {
     const scale = Math.min(1, maxSize / Math.max(img.width, img.height))
@@ -73,7 +73,7 @@ export async function compressImage(file: File, maxSize = 1280, quality = 0.75):
 }
 
 /** Recorta o centro da foto em quadrado, para a foto de perfil. */
-export async function squareAvatar(file: File, size = 512): Promise<Blob> {
+export async function squareAvatar(file: File, size = 400): Promise<Blob> {
   const img = await decodeImage(file)
   try {
     const side = Math.min(img.width, img.height)
@@ -82,7 +82,7 @@ export async function squareAvatar(file: File, size = 512): Promise<Blob> {
     canvas
       .getContext('2d')!
       .drawImage(img.source, (img.width - side) / 2, (img.height - side) / 2, side, side, 0, 0, canvas.width, canvas.height)
-    return await toJpeg(canvas, 0.8)
+    return await toJpeg(canvas, 0.82)
   } finally {
     img.done()
   }

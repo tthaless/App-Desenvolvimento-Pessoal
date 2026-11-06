@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { supabase } from './supabase'
+import { signPaths } from './signed'
 import type { Member } from '../types'
 
 // Lista de membros do grupo compartilhada entre as telas,
@@ -26,13 +27,8 @@ async function fetchMembers(): Promise<Member[]> {
     current_book: books.get(r.id) ?? null,
   }))
   const paths = rows.flatMap((r) => [r.avatar_path, r.cover_path]).filter((p): p is string => !!p)
-  const urls: Record<string, string> = {}
-  if (paths.length) {
-    const { data: signed } = await supabase.storage.from('provas').createSignedUrls(paths, 60 * 60 * 24)
-    signed?.forEach((s) => {
-      if (s.path && s.signedUrl) urls[s.path] = s.signedUrl
-    })
-  }
+  // Link de 7 dias, reaproveitado: a foto de perfil não é baixada de novo a cada abertura.
+  const urls = paths.length ? await signPaths(paths, 7 * 24 * 60 * 60) : {}
   return rows.map((r) => ({
     ...r,
     avatar_url: r.avatar_path ? (urls[r.avatar_path] ?? null) : null,

@@ -1,32 +1,60 @@
 import { useEffect, useState } from 'react'
 import { supabase } from './supabase'
 
-// Links temporários para fotos do bucket privado, com cache para não pedir de novo.
-const TTL = 60 * 60 // 1h
-const cache = new Map<string, { url: string; expires: number }>()
+// Links temporários para as fotos do bucket privado.
+// Ficam guardados (também entre aberturas do app) para o link não mudar à toa:
+// com o mesmo link, o navegador reaproveita a foto que já baixou em vez de baixar de novo.
+
+type Entry = { url: string; expires: number }
+const STORE_KEY = 'streak:links'
+const cache = new Map<string, Entry>(load())
+
+function load(): [string, Entry][] {
+  try {
+    const raw = JSON.parse(localStorage.getItem(STORE_KEY) ?? '{}') as Record<string, Entry>
+    const now = Date.now()
+    return Object.entries(raw).filter(([, e]) => e.expires > now)
+  } catch {
+    return []
+  }
+}
+
+function persist() {
+  try {
+    const now = Date.now()
+    const live = [...cache.entries()].filter(([, e]) => e.expires > now).slice(-400)
+    localStorage.setItem(STORE_KEY, JSON.stringify(Object.fromEntries(live)))
+  } catch {
+    /* sem armazenamento: guarda só enquanto o app está aberto */
+  }
+}
+
+/**
+ * Devolve links para as fotos, pedindo ao servidor só as que não têm link válido.
+ * `ttl` em segundos; um link é reaproveitado enquanto tiver mais de 1/4 da validade pela frente.
+ */
+export async function signPaths(paths: string[], ttl = 60 * 60): Promise<Record<string, string>> {
+  const now = Date.now()
+  const margin = (ttl * 1000) / 4
+  const unique = [...new Set(paths.filter(Boolean))]
+  const missing = unique.filter((p) => (cache.get(p)?.expires ?? 0) < now + margin)
+  if (missing.length) {
+    const { data } = await supabase.storage.from('provas').createSignedUrls(missing, ttl)
+    data?.forEach((d) => {
+      if (d.path && d.signedUrl) cache.set(d.path, { url: d.signedUrl, expires: Date.now() + ttl * 1000 })
+    })
+    persist()
+  }
+  return fromCache(unique)
+}
 
 export function useSignedUrls(paths: (string | null | undefined)[]): Record<string, string> {
   const key = paths.filter(Boolean).sort().join('|')
   const [urls, setUrls] = useState<Record<string, string>>(() => fromCache(paths))
 
   useEffect(() => {
-    const wanted = key ? key.split('|') : []
-    const now = Date.now()
-    const missing = wanted.filter((p) => (cache.get(p)?.expires ?? 0) < now + 60_000)
-    if (!missing.length) {
-      setUrls(fromCache(wanted))
-      return
-    }
     let active = true
-    supabase.storage
-      .from('provas')
-      .createSignedUrls(missing, TTL)
-      .then(({ data }) => {
-        data?.forEach((d) => {
-          if (d.path && d.signedUrl) cache.set(d.path, { url: d.signedUrl, expires: Date.now() + TTL * 1000 })
-        })
-        if (active) setUrls(fromCache(wanted))
-      })
+    signPaths(key ? key.split('|') : []).then((u) => active && setUrls(u))
     return () => {
       active = false
     }
@@ -43,3 +71,6 @@ function fromCache(paths: (string | null | undefined)[]) {
   }
   return out
 }
+
+/** Arquivos novos têm nome único, então o navegador pode guardar por muito tempo. */
+export const LONG_CACHE = { cacheControl: '31536000' }
