@@ -23,6 +23,9 @@ import { errorMessage, todaySP } from '../lib/utils'
 import Avatar from './Avatar'
 import { Camera, Check, Crown, Plus, Target } from 'lucide-react'
 import TopBar from './TopBar'
+import { useDragToClose } from '../lib/useDragToClose'
+import Celebration from './Celebration'
+import { SkeletonCard, SkeletonRows } from './Skeleton'
 
 export default function Challenges({ userId }: { userId: string }) {
   const [view, setView] = useState<'semana' | 'votacao'>('semana')
@@ -54,6 +57,9 @@ function ThisWeek({ userId, onGoVote }: { userId: string; onGoVote: () => void }
   const [draft, setDraft] = useState<{ file: File; url: string } | null>(null)
   const [sending, setSending] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
+  const [celebrate, setCelebrate] = useState<{ from: number; to: number } | null>(null)
+  const endCelebration = useCallback(() => setCelebrate(null), [])
+  const sheetRef = useDragToClose<HTMLDivElement>(() => !sending && closeDraft(), !!draft)
 
   const load = useCallback(async () => {
     try {
@@ -90,7 +96,9 @@ function ThisWeek({ userId, onGoVote }: { userId: string; onGoVote: () => void }
     setError(null)
     try {
       await checkin(userId, challenge.id, draft.file)
+      const before = checkins.filter((c) => c.user_id === userId).length
       closeDraft()
+      setCelebrate({ from: before, to: before + 1 })
       await load()
     } catch (e) {
       setError(errorMessage(e))
@@ -99,7 +107,7 @@ function ThisWeek({ userId, onGoVote }: { userId: string; onGoVote: () => void }
     }
   }
 
-  if (!loaded) return null
+  if (!loaded) return <SkeletonCard height={300} />
 
   if (!challenge) {
     return (
@@ -204,7 +212,8 @@ function ThisWeek({ userId, onGoVote }: { userId: string; onGoVote: () => void }
 
       {draft && (
         <div className="sheet-backdrop" onClick={() => !sending && closeDraft()}>
-          <div className="sheet" onClick={(e) => e.stopPropagation()}>
+          <div className="sheet" ref={sheetRef} onClick={(e) => e.stopPropagation()}>
+            <span className="sheet-grip" aria-hidden />
             <img src={draft.url} alt="Prévia da foto" className="preview" />
             <p className="muted small center">{challenge.title}</p>
             <div className="row">
@@ -217,6 +226,15 @@ function ThisWeek({ userId, onGoVote }: { userId: string; onGoVote: () => void }
             </div>
           </div>
         </div>
+      )}
+      {celebrate && (
+        <Celebration
+          from={celebrate.from}
+          to={celebrate.to}
+          unit="de 7 no desafio"
+          title={celebrate.to >= 7 ? 'Semana completa! +40' : celebrate.to === 5 ? '+30 pontos garantidos!' : 'Desafio do dia cumprido!'}
+          onDone={endCelebration}
+        />
       )}
     </>
   )
@@ -318,6 +336,7 @@ function Voting({ userId }: { userId: string }) {
         </button>
       )}
 
+      {!loaded && <SkeletonRows count={3} />}
       {loaded && ideas.length === 0 && <p className="muted small center empty">Nenhuma ideia ainda. Se ninguém propor, a semana fica sem desafio.</p>}
 
       <ol className="ideas">

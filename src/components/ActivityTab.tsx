@@ -10,6 +10,9 @@ import { Camera, Check } from 'lucide-react'
 import ActivityIcon from './ActivityIcon'
 import { FlameMark } from './Logo'
 import TopBar from './TopBar'
+import { useDragToClose } from '../lib/useDragToClose'
+import Celebration from './Celebration'
+import { SkeletonCard, SkeletonRows } from './Skeleton'
 
 interface Props {
   activity: Activity
@@ -28,7 +31,11 @@ export default function ActivityTab({ activity, userId, hideHeader }: Props) {
   const [caption, setCaption] = useState('')
   const [sending, setSending] = useState(false)
   const [sendError, setSendError] = useState<string | null>(null)
+  const [loaded, setLoaded] = useState(false)
+  const [celebrate, setCelebrate] = useState<{ from: number; to: number } | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+  const sheetRef = useDragToClose<HTMLDivElement>(() => !sending && closeDraft(), !!draft)
+  const endCelebration = useCallback(() => setCelebrate(null), [])
 
   const load = useCallback(async () => {
     const [today, s] = await Promise.all([
@@ -40,6 +47,7 @@ export default function ActivityTab({ activity, userId, hideHeader }: Props) {
     setLoadError(null)
     setDoneToday(new Set(((today.data ?? []) as { user_id: string }[]).map((r) => r.user_id)))
     setStreaks(((s.data ?? []) as StreakRow[]).filter((r) => r.activity === activity))
+    setLoaded(true)
   }, [activity])
 
   useEffect(() => {
@@ -99,7 +107,10 @@ export default function ActivityTab({ activity, userId, hideHeader }: Props) {
         await supabase.storage.from('provas').remove([path])
         throw ins.error
       }
+      const firstToday = !iDidToday
+      const before = current
       closeDraft()
+      if (firstToday) setCelebrate({ from: before, to: before + 1 })
       await load()
     } catch (e) {
       setSendError(errorMessage(e))
@@ -116,6 +127,9 @@ export default function ActivityTab({ activity, userId, hideHeader }: Props) {
 
       <Stories userId={userId} />
 
+      {!loaded ? (
+        <SkeletonCard height={230} />
+      ) : (
       <section className={`card hero ${iDidToday ? 'done' : ''}`}>
         <div className="hero-streak">
           <FlameMark size={40} className="flame" />
@@ -154,9 +168,11 @@ export default function ActivityTab({ activity, userId, hideHeader }: Props) {
           onChange={(e) => pickPhoto(e.target.files?.[0])}
         />
       </section>
+      )}
 
       <section className="section">
         <h2 className="section-label">Hoje no grupo</h2>
+        {members.length === 0 && <SkeletonRows count={4} />}
         <ul className="board">
           {board.map((m) => {
             const done = doneToday.has(m.id)
@@ -184,7 +200,8 @@ export default function ActivityTab({ activity, userId, hideHeader }: Props) {
 
       {draft && (
         <div className="sheet-backdrop" onClick={() => !sending && closeDraft()}>
-          <div className="sheet" onClick={(e) => e.stopPropagation()}>
+          <div className="sheet" ref={sheetRef} onClick={(e) => e.stopPropagation()}>
+            <span className="sheet-grip" aria-hidden />
             <img src={draft.url} alt="Prévia da foto" className="preview" />
             <input
               value={caption}
@@ -210,6 +227,16 @@ export default function ActivityTab({ activity, userId, hideHeader }: Props) {
             </div>
           </div>
         </div>
+      )}
+
+      {celebrate && (
+        <Celebration
+          from={celebrate.from}
+          to={celebrate.to}
+          unit={celebrate.to === 1 ? 'dia seguido' : 'dias seguidos'}
+          title={activity === 'leitura' ? 'Leitura do dia feita!' : 'Treino do dia feito!'}
+          onDone={endCelebration}
+        />
       )}
     </div>
   )

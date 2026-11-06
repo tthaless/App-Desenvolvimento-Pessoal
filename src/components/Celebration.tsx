@@ -1,0 +1,54 @@
+import { useEffect, useState } from 'react'
+import { FlameMark } from './Logo'
+
+interface Props {
+  from: number
+  to: number
+  /** "dias seguidos", "de 7 no desafio"... */
+  unit: string
+  title: string
+  onDone: () => void
+}
+
+const SPARKS = 10
+
+/** Comemoração ao postar a prova: foguinho, número subindo e vibração. */
+export default function Celebration({ from, to, unit, title, onDone }: Props) {
+  const [value, setValue] = useState(from)
+
+  useEffect(() => {
+    navigator.vibrate?.([25, 40, 60])
+    const start = performance.now()
+    const delay = 350
+    const duration = 650
+    let raf = 0
+    const tick = (now: number) => {
+      const t = Math.min(1, Math.max(0, (now - start - delay) / duration))
+      const eased = 1 - Math.pow(1 - t, 3)
+      setValue(Math.round(from + (to - from) * eased))
+      if (t < 1) raf = requestAnimationFrame(tick)
+    }
+    raf = requestAnimationFrame(tick)
+    const done = setTimeout(onDone, 2600)
+    return () => {
+      cancelAnimationFrame(raf)
+      clearTimeout(done)
+    }
+  }, [from, to, onDone])
+
+  return (
+    <div className="celebration" onClick={onDone} role="status" aria-live="polite">
+      <div className="celebration-body">
+        <span className="celebration-flame">
+          {Array.from({ length: SPARKS }, (_, i) => (
+            <span key={i} className="spark" style={{ ['--a' as string]: `${(360 / SPARKS) * i}deg`, ['--d' as string]: `${i * 25}ms` }} />
+          ))}
+          <FlameMark size={110} />
+        </span>
+        <span className="celebration-number">{value}</span>
+        <span className="celebration-unit">{unit}</span>
+        <span className="celebration-title">{title}</span>
+      </div>
+    </div>
+  )
+}
