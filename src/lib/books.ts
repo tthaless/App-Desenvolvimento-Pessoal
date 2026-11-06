@@ -96,9 +96,10 @@ export async function fetchGroupFinished(limit = 50): Promise<Book[]> {
 }
 
 export async function startBook(draft: BookDraft) {
-  const { error } = await supabase
-    .from('books')
-    .insert({ title: draft.title.trim(), author: draft.author.trim() || null, cover_url: draft.cover_url })
+  const row = { title: draft.title.trim(), author: draft.author.trim() || null, cover_url: draft.cover_url }
+  let { error } = await supabase.from('books').insert(row)
+  // Capa de um endereço que o banco ainda não aceita: salva sem a capa.
+  if (error?.code === '23514' && /cover_url/.test(error.message)) ({ error } = await supabase.from('books').insert({ ...row, cover_url: null }))
   if (error) {
     if (error.code === '23505') throw new Error('Você já está lendo um livro. Termine ou largue ele antes.')
     throw error
@@ -134,6 +135,9 @@ export async function addWant(draft: BookDraft, fromUser?: string) {
   // Banco ainda sem a coluna dos avisos: salva sem ela.
   if (error && fromUser && /from_user/.test(error.message)) {
     ;({ error } = await supabase.from('want_to_read').insert(row))
+  }
+  if (error?.code === '23514' && /cover_url/.test(error.message)) {
+    ;({ error } = await supabase.from('want_to_read').insert({ ...row, cover_url: null }))
   }
   if (error) {
     if (error.code === '23505') throw new Error('Esse livro já está na sua lista.')
