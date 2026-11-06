@@ -24,7 +24,7 @@ export default function Bookshelf({ books, viewerId, onChanged, showReader, empt
   if (books.length === 0) return <p className="muted small center empty">{emptyText}</p>
 
   return (
-    <ul className="shelf-list">
+    <ul className="shelf-list bookcase">
       {books.map((b) => {
         const expanded = open === b.id
         const days = daysBetween(b.started_at, b.finished_at!)

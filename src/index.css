@@ -656,3 +656,57 @@ textarea:focus { border-color: var(--accent); }
 .viewer-confirm .row .btn { flex: 1; }
 .btn.danger { background: #e5484d; color: #fff; border: 0; }
 .viewer-confirm .row { grid-template-columns: 1fr 1fr; }
+
+/* Topo e barra de abas em cinza mais claro, pra separar do conteúdo */
+:root { --chrome: #2a2a30; }
+.topbar { background: color-mix(in srgb, var(--chrome) 94%, transparent); border-bottom: 1px solid #34343b; box-shadow: 0 6px 18px rgba(0, 0, 0, .25); margin-bottom: 12px; }
+.tabbar { background: color-mix(in srgb, var(--chrome) 96%, transparent); border-top-color: #34343b; }
+.topbar .bell { background: #34343b; border-color: #3e3e46; }
+
+/* Estante de madeira: cada prateleira é um livro lido */
+.bookcase {
+  --wood-1: #6b4428; --wood-2: #8a5a34; --wood-3: #5a3820; --wood-dark: #3d2614;
+  margin-top: 8px;
+  padding: 12px 10px 0;
+  border-radius: 12px 12px 6px 6px;
+  background:
+    repeating-linear-gradient(90deg, rgba(0, 0, 0, .06) 0 2px, transparent 2px 9px),
+    linear-gradient(90deg, var(--wood-3), var(--wood-2) 18%, var(--wood-1) 50%, var(--wood-2) 82%, var(--wood-3));
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .45), inset 0 2px 0 rgba(255, 220, 170, .18), 0 14px 28px rgba(0, 0, 0, .45);
+  position: relative;
+}
+/* coroa em cima */
+.bookcase::before {
+  content: ''; position: absolute; left: -4px; right: -4px; top: -8px; height: 12px; border-radius: 6px 6px 2px 2px;
+  background: linear-gradient(180deg, #a06b40, var(--wood-1) 60%, var(--wood-dark));
+  box-shadow: 0 3px 6px rgba(0, 0, 0, .4);
+}
+.bookcase > li {
+  position: relative;
+  border-top: 0 !important;
+  padding: 14px 12px 12px !important;
+  margin-bottom: 14px;
+  /* fundo do nicho, escuro, com sombra da prateleira de cima e das laterais */
+  background:
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, .015) 0 1px, transparent 1px 22px),
+    linear-gradient(180deg, #120d0a, #1e1611 60%, #241a14);
+  box-shadow: inset 0 12px 16px -10px rgba(0, 0, 0, .9), inset 10px 0 12px -10px rgba(0, 0, 0, .8), inset -10px 0 12px -10px rgba(0, 0, 0, .8);
+  border-radius: 2px;
+}
+/* a tábua onde o livro fica apoiado */
+.bookcase > li::after {
+  content: ''; position: absolute; left: -10px; right: -10px; bottom: -14px; height: 14px;
+  background: linear-gradient(180deg, #b07a4a 0, #9a6539 2px, var(--wood-1) 6px, var(--wood-dark) 14px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, .55);
+  z-index: 1;
+}
+.bookcase > li:last-child { margin-bottom: 0; }
+.bookcase > li:last-child::after { height: 16px; bottom: -16px; border-radius: 0 0 6px 6px; }
+.bookcase { margin-bottom: 18px; }
+.bookcase .shelf-item { align-items: flex-end; }
+.bookcase .cover { box-shadow: 0 0 0 1px rgba(0, 0, 0, .5), 3px 0 0 rgba(0, 0, 0, .35), 0 6px 10px rgba(0, 0, 0, .6); border-radius: 2px 4px 4px 2px; }
+.bookcase .shelf-title { color: #f6ead8; }
+.bookcase .muted { color: #b9a691; }
+.bookcase .shelf-review { color: #c9b8a4; }
+.bookcase .shelf-review.open { color: #f6ead8; }
+.bookcase .rating-badge { align-self: flex-start; }
