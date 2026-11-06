@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { daysBetween, deleteBook, formatRating, saveShelfOrder } from '../lib/books'
+import { daysBetween, deleteBook, formatRating, ratingTier, saveShelfOrder } from '../lib/books'
 import { errorMessage } from '../lib/utils'
 import type { Book } from '../lib/books'
 import { openProfile, useMembers } from '../lib/members'
@@ -208,7 +208,7 @@ export default function Bookshelf({ books, viewerId, onChanged, showReader, edit
                   )}
                 </span>
               </span>
-              <span className="rating-badge">{formatRating(b.rating ?? 0)}</span>
+              <span className={`rating-badge tier-${ratingTier(b.rating ?? 0)}`}>{formatRating(b.rating ?? 0)}</span>
             </button>
             {showReader && reader && (
               <button className="by shelf-reader" onClick={() => openProfile(b.user_id)}>

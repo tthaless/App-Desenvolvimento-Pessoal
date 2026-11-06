@@ -917,3 +917,15 @@ button:focus:not(:focus-visible) { outline: none; }
 .preview-note { display: flex; align-items: center; justify-content: center; gap: 6px; margin: 0; font-size: 13px; color: var(--muted); }
 /* No próprio perfil "como o grupo vê", sem convite pra querer ler o próprio livro. */
 .profile-preview .want-too, .profile-preview .want-done { display: none; }
+
+/* Metal da nota: bronze (< 5), prata (5 a 7,9) e ouro (8+) */
+.bookcase .rating-badge.tier-silver {
+  color: #2c3036; background: linear-gradient(160deg, #f4f6f8, #c3c9d0 45%, #9aa2ab 55%, #dfe3e8);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, .6);
+}
+.bookcase .rating-badge.tier-bronze {
+  color: #3a1d0a; background: linear-gradient(160deg, #f0b98a, #c47d45 45%, #9c5a2a 55%, #d9955e);
+  text-shadow: 0 1px 0 rgba(255, 220, 190, .45);
+}
+.auto-rating.tier-silver { color: #cfd5dc; }
+.auto-rating.tier-bronze { color: #d9955e; }

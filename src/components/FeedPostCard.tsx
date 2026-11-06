@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Clock, Heart, MessageCircle, Star, Trash2 } from 'lucide-react'
 import { openProfile, useMembers } from '../lib/members'
-import { formatRating, setBookLike } from '../lib/books'
+import { formatRating, ratingTier, setBookLike } from '../lib/books'
 import type { Book } from '../lib/books'
 import { deletePost, expiresIn } from '../lib/feed'
 import type { FeedBook, FeedPost } from '../lib/feed'
@@ -132,7 +132,7 @@ function BookFinishedPost({ post, book, userId, onOpenThread }: { post: FeedPost
             <span className="shelf-title">{book.title}</span>
             {book.author && <span className="muted small">{book.author}</span>}
             {book.rating !== null && (
-              <span className="auto-rating">
+              <span className={`auto-rating tier-${ratingTier(book.rating)}`}>
                 <Star size={15} fill="currentColor" aria-hidden /> {formatRating(book.rating)}/10
               </span>
             )}

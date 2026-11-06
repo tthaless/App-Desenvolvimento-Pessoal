@@ -169,6 +169,13 @@ export async function setBookLike(bookId: string, userId: string, liked: boolean
 // ---------- Formatação ----------
 
 /** 8.5 → "8,5" */
+/** Metal da nota: bronze abaixo de 5, prata de 5 a 7,9 e ouro de 8 pra cima. */
+export function ratingTier(r: number): 'bronze' | 'silver' | 'gold' {
+  if (r >= 8) return 'gold'
+  if (r >= 5) return 'silver'
+  return 'bronze'
+}
+
 export function formatRating(r: number): string {
   return r.toLocaleString('pt-BR', { maximumFractionDigits: 1 })
 }
