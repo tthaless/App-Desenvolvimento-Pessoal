@@ -1,10 +1,10 @@
 :root {
-  --bg: #09090b;
-  --surface: #131316;
-  --surface-2: #1c1c21;
-  --line: #26262c;
+  --bg: #1b1b1f;
+  --surface: #25252a;
+  --surface-2: #303036;
+  --line: #37373e;
   --text: #f5f5f4;
-  --muted: #8a8a93;
+  --muted: #9a9aa3;
   --brand: #ff6a2b;
   --exercise: #ff6a2b;
   --reading: #6f9cff;
@@ -513,3 +513,66 @@ textarea:focus { border-color: var(--accent); }
 .auth-flame { margin: 0 auto; filter: none; }
 .auth-hero h1 { font-size: 44px; letter-spacing: -0.05em; }
 .profile-head { padding: 4px 0 6px; }
+
+/* ================= Etapa 2: movimento ================= */
+* { -webkit-tap-highlight-color: transparent; }
+
+/* Telas entrando */
+@keyframes view-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.content > *, .reading > :not(.topbar):not(.subtabs), .challenges > :not(.topbar):not(.segmented), .library, .profile-sheet > :not(.sheet-grip) {
+  animation: view-in .24s cubic-bezier(.2, .8, .2, 1) backwards;
+}
+
+/* Janelas de baixo subindo */
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes sheet-in { from { transform: translateY(100%); } to { transform: none; } }
+.sheet-backdrop, .story-chat-backdrop { animation: fade-in .2s ease-out both; }
+.sheet, .story-chat { animation: sheet-in .32s cubic-bezier(.2, .9, .25, 1) backwards; will-change: transform; touch-action: pan-y; }
+.sheet .sheet-grip { flex: none; }
+.sheet { overscroll-behavior: contain; }
+@keyframes viewer-in { from { opacity: 0; transform: scale(.96); } to { opacity: 1; transform: none; } }
+.viewer { animation: viewer-in .22s ease-out backwards; }
+.pdf-viewer { animation: sheet-in .3s cubic-bezier(.2, .9, .25, 1) backwards; }
+
+/* Resposta ao toque */
+.person, .story, .shelf-item, .tab, .action, .pdf-chip, .pdf-add, .pdf-privacy, .icon-btn, .comment-bar, .segmented button, .subtabs button, .by {
+  transition: transform .12s ease, opacity .12s ease;
+}
+.person:active, .story:active, .shelf-item:active, .comment-bar:active, .by:active { transform: scale(.97); }
+.tab:active, .action:active, .icon-btn:active, .pdf-chip:active, .pdf-add:active, .pdf-privacy:active { transform: scale(.9); }
+.segmented button:active, .subtabs button:active { opacity: .6; }
+.btn { transition: transform .12s ease, opacity .2s, background-color .2s; }
+.btn:active { transform: scale(.96); }
+.tab.active .tab-icon, .tab.active .tab-avatar { animation: tab-pop .28s cubic-bezier(.3, 1.6, .5, 1); }
+@keyframes tab-pop { 0% { transform: scale(.82); } 100% { transform: scale(1); } }
+.segmented button, .subtabs button { transition: color .2s, background-color .2s, border-color .2s, opacity .12s; }
+
+/* Blocos de carregamento */
+@keyframes shimmer { 0% { background-position: 100% 0; } 100% { background-position: -100% 0; } }
+.skeleton { display: block; flex: none; background: linear-gradient(90deg, var(--surface-2) 25%, color-mix(in srgb, var(--surface-2) 55%, var(--muted)) 50%, var(--surface-2) 75%); background-size: 200% 100%; animation: shimmer 1.4s linear infinite; }
+.skeleton-rows { display: flex; flex-direction: column; }
+.skeleton-row { display: flex; align-items: center; gap: 12px; padding: 11px 0; border-top: 1px solid var(--line); }
+.skeleton-row:first-child { border-top: 0; }
+.skeleton-lines { flex: 1; display: flex; flex-direction: column; gap: 7px; }
+.skeleton-card { display: flex; flex-direction: column; gap: 16px; }
+.skeleton-story { display: flex; flex-direction: column; align-items: center; gap: 8px; flex: none; }
+.viewer-skeleton { opacity: .5; }
+
+/* Comemoração */
+.celebration { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; background: color-mix(in srgb, var(--bg) 82%, transparent); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); animation: fade-in .2s ease-out both; }
+.celebration-body { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 2px; }
+.celebration-flame { position: relative; display: grid; place-items: center; width: 160px; height: 160px; }
+.celebration-flame .flame-mark { animation: flame-pop .7s cubic-bezier(.3, 1.7, .5, 1) both, flame-glow 1.4s ease-in-out .6s infinite; transform-origin: 50% 85%; }
+@keyframes flame-pop { 0% { transform: scale(.2) rotate(-12deg); opacity: 0; } 60% { opacity: 1; } 100% { transform: scale(1) rotate(0); } }
+@keyframes flame-glow { 0%, 100% { filter: drop-shadow(0 0 0 rgba(255, 106, 43, 0)); transform: scale(1); } 50% { filter: drop-shadow(0 0 22px rgba(255, 106, 43, .55)); transform: scale(1.05); } }
+.spark { position: absolute; width: 8px; height: 8px; border-radius: 50%; background: var(--gold); opacity: 0; animation: spark .8s ease-out var(--d) .25s both; }
+.spark:nth-child(even) { background: var(--brand); width: 6px; height: 6px; }
+@keyframes spark { 0% { opacity: 1; transform: rotate(var(--a)) translateY(0) scale(1); } 100% { opacity: 0; transform: rotate(var(--a)) translateY(-90px) scale(.4); } }
+.celebration-number { font-family: var(--display); font-size: 84px; font-weight: 800; line-height: 1; letter-spacing: -0.05em; font-variant-numeric: tabular-nums; margin-top: 6px; animation: view-in .3s ease-out .3s both; }
+.celebration-unit { color: var(--muted); font-weight: 600; animation: view-in .3s ease-out .4s both; }
+.celebration-title { margin-top: 14px; font-size: 18px; font-weight: 700; animation: view-in .3s ease-out .55s both; }
+
+/* Quem prefere menos movimento */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}
