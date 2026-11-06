@@ -63,14 +63,24 @@ export async function fetchCurrentBook(userId: string): Promise<Book | null> {
 }
 
 export async function fetchShelf(userId: string): Promise<Book[]> {
-  const { data, error } = await supabase
-    .from('books')
-    .select(FIELDS)
-    .eq('user_id', userId)
-    .not('finished_at', 'is', null)
+  const base = () => supabase.from('books').select(FIELDS).eq('user_id', userId).not('finished_at', 'is', null)
+  // Ordem escolhida pela pessoa; livros sem posição (recém-terminados) vêm primeiro.
+  let { data, error } = await base()
+    .order('shelf_order', { ascending: true, nullsFirst: true })
     .order('finished_at', { ascending: false })
+  // Banco ainda sem a coluna da ordem: fica do mais recente pro mais antigo.
+  if (error && /shelf_order/.test(error.message)) ({ data, error } = await base().order('finished_at', { ascending: false }))
   if (error) throw error
   return (data ?? []).map(toBook)
+}
+
+/** Salva a ordem da estante (ids na ordem em que devem aparecer). */
+export async function saveShelfOrder(ids: string[]) {
+  const { error } = await supabase.rpc('set_shelf_order', { ids })
+  if (error) {
+    if (/set_shelf_order/.test(error.message)) throw new Error('Falta rodar o SQL da ordem da estante no Supabase.')
+    throw error
+  }
 }
 
 /** Últimos livros terminados por qualquer pessoa do grupo. */

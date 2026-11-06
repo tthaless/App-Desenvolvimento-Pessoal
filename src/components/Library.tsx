@@ -110,6 +110,7 @@ export default function Library({ ownerId, viewerId }: { ownerId: string; viewer
           books={shelf}
           viewerId={viewerId}
           onChanged={loadShelf}
+          editable={isMe}
           emptyText={isMe ? 'Termine um livro pra ele aparecer aqui.' : `${owner?.username ?? 'Essa pessoa'} ainda não terminou nenhum livro.`}
         />}
       </section>
