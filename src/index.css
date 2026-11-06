@@ -726,8 +726,9 @@ textarea:focus { border-color: var(--accent); }
 .bookcase .shelf-reader strong { color: var(--parchment); }
 /* plaquinha de latão com a nota */
 .bookcase .rating-badge {
-  align-self: flex-start; font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 700; font-size: 19px;
-  color: #3a2208; background: linear-gradient(160deg, #f3d48a, #c99a44 45%, #a97a2c 55%, #e0b866);
+  align-self: flex-start; font-family: var(--display); font-weight: 800; font-size: 22px; line-height: 1;
+  font-variant-numeric: lining-nums tabular-nums; letter-spacing: -0.02em; padding: 8px 11px; min-width: 52px; text-align: center;
+  color: #2a1604; background: linear-gradient(160deg, #f3d48a, #c99a44 45%, #a97a2c 55%, #e0b866);
   border: 0; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .55), inset 0 -1px 0 rgba(0, 0, 0, .25), 0 2px 4px rgba(0, 0, 0, .6);
   text-shadow: 0 1px 0 rgba(255, 240, 200, .5);
 }
