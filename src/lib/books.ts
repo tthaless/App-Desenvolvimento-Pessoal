@@ -117,10 +117,14 @@ export async function fetchWantLists(): Promise<WantItem[]> {
   return (data ?? []) as WantItem[]
 }
 
-export async function addWant(draft: BookDraft) {
-  const { error } = await supabase
-    .from('want_to_read')
-    .insert({ title: draft.title, author: draft.author || null, cover_url: draft.cover_url })
+/** `fromUser`: de quem é a lista onde a pessoa tocou em "quero ler também" (vira aviso pra ela). */
+export async function addWant(draft: BookDraft, fromUser?: string) {
+  const row: { title: string; author: string | null; cover_url: string | null; from_user?: string } = { title: draft.title, author: draft.author || null, cover_url: draft.cover_url }
+  let { error } = await supabase.from('want_to_read').insert(fromUser ? { ...row, from_user: fromUser } : row)
+  // Banco ainda sem a coluna dos avisos: salva sem ela.
+  if (error && fromUser && /from_user/.test(error.message)) {
+    ;({ error } = await supabase.from('want_to_read').insert(row))
+  }
   if (error) {
     if (error.code === '23505') throw new Error('Esse livro já está na sua lista.')
     throw error

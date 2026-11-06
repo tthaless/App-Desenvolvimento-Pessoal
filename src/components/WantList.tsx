@@ -116,7 +116,7 @@ export default function WantList({ loading, ownerId, viewerId, all, onChanged, o
                 <button
                   className="btn ghost small-btn want-too"
                   disabled={!!busy}
-                  onClick={() => run(w.id, () => addWant({ title: w.title, author: w.author ?? '', cover_url: w.cover_url }))}
+                  onClick={() => run(w.id, () => addWant({ title: w.title, author: w.author ?? '', cover_url: w.cover_url }, w.user_id))}
                 >
                   <Bookmark size={15} aria-hidden /> Quero ler também
                 </button>
