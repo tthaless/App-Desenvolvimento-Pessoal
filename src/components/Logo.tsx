@@ -8,12 +8,26 @@ export function FlameMark({ size = 24, className = '' }: { size?: number; classN
   )
 }
 
-/** Frasco em forma de seta para cima, a marca do app. */
+/** Esferas de XP em volta da ponta da seta: [x, y, raio, cor]. */
+const ORBS_FULL: [number, number, number, string][] = [
+  [26, 34, 6, '#ff9b3d'],
+  [40, 16, 3.5, 'var(--gold)'],
+  [84, 14, 4.5, '#ff9b3d'],
+  [98, 34, 6.5, 'var(--gold)'],
+  [102, 52, 3, '#ff9b3d'],
+]
+const ORBS_SMALL: [number, number, number, string][] = [
+  [25, 32, 8, '#ff9b3d'],
+  [97, 30, 9, 'var(--gold)'],
+]
+
+/** Frasco em forma de seta para cima com esferas de XP, a marca do app. */
 export function ArrowMark({ size = 24, className = '' }: { size?: number; className?: string }) {
-  // Em tamanhos pequenos, sem bolhas e brilho, e com o contorno mais grosso.
+  // Em tamanhos pequenos, menos esferas (maiores) e contorno mais grosso.
   const small = size < 40
+  const orbs = small ? ORBS_SMALL : ORBS_FULL
   return (
-    <svg className={`arrow-mark ${className}`} width={size} height={size} viewBox="8 8 104 104" aria-hidden>
+    <svg className={`arrow-mark ${className}`} width={size} height={size} viewBox="8 2 104 110" aria-hidden>
       <path
         d="M38 52 Q49 46 60 52 T82 52 L87 59 Q89 62 85 62 H66 V102 Q66 105 63 105 H57 Q54 105 54 102 V62 H35 Q31 62 33 59 Z"
         fill="var(--brand)"
@@ -29,10 +43,15 @@ export function ArrowMark({ size = 24, className = '' }: { size?: number; classN
         d="M60 12 L91 60 Q94 66 87 66 H70 V104 Q70 110 64 110 H56 Q50 110 50 104 V66 H33 Q26 66 29 60 Z"
         fill="none"
         stroke="var(--text)"
-        strokeWidth={small ? 8 : 5}
+        strokeWidth={small ? 9 : 5}
         strokeLinejoin="round"
       />
-      {!small && <path d="M98 12 L100 18 L106 20 L100 22 L98 28 L96 22 L90 20 L96 18 Z" fill="var(--gold)" />}
+      {orbs.map(([x, y, r, c]) => (
+        <g key={`${x}-${y}`}>
+          <circle cx={x} cy={y} r={r} fill={c} />
+          {!small && <circle cx={x - r * 0.35} cy={y - r * 0.35} r={r * 0.35} fill="#fff4d6" />}
+        </g>
+      ))}
     </svg>
   )
 }
