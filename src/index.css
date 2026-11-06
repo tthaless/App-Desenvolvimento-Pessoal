@@ -301,3 +301,15 @@ textarea:focus { border-color: var(--accent); }
 .voters .muted { margin-left: 8px; }
 .avatar.stacked { width: 24px; height: 24px; font-size: 11px; margin-left: -6px; border: 2px solid var(--surface); }
 .avatar.stacked:first-child { margin-left: 0; }
+
+/* Subabas do perfil */
+.streak-pills { display: flex; gap: 8px; margin-top: 4px; }
+.streak-pills .streak-pill { background: color-mix(in srgb, var(--accent) 16%, var(--surface-2)); }
+.streak-pills .act-exercicio { --accent: var(--exercise); }
+.streak-pills .act-leitura { --accent: var(--reading); }
+.profile-actions { display: flex; gap: 8px; margin-top: 4px; }
+.profile-actions .btn { margin-top: 0; }
+.subtabs { display: grid; grid-template-columns: repeat(3, 1fr); border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 5; background: var(--bg); margin: 0 -16px; padding: 0 16px; }
+.profile-sheet .subtabs { background: var(--surface); }
+.subtabs button { background: none; border: 0; padding: 12px 4px; font-weight: 600; font-size: 14px; color: var(--muted); border-bottom: 2.5px solid transparent; margin-bottom: -1px; }
+.subtabs button.on { color: var(--text); border-bottom-color: var(--accent); }

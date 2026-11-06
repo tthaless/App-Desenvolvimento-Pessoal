@@ -5,18 +5,13 @@ import { clearMembers, refreshMembers, useMembers } from '../lib/members'
 import { errorMessage, squareAvatar } from '../lib/utils'
 import type { StreakRow } from '../types'
 import Avatar from './Avatar'
-import Bookshelf from './Bookshelf'
-import CurrentBook from './CurrentBook'
-import FeedList from './FeedList'
-import ProfileDetails from './ProfileDetails'
+import ProfileTabs, { StreakPills } from './ProfileTabs'
 
 export default function Profile({ userId }: { userId: string }) {
   const me = useMembers().find((m) => m.id === userId)
   const [streaks, setStreaks] = useState<StreakRow[]>([])
-  const [total, setTotal] = useState(0)
   const [editing, setEditing] = useState(false)
   const [form, setForm] = useState({ username: '', bio: '', exercises: '' })
-  const [shelfKey, setShelfKey] = useState(0)
   const [saving, setSaving] = useState(false)
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -24,11 +19,6 @@ export default function Profile({ userId }: { userId: string }) {
 
   useEffect(() => {
     supabase.rpc('streaks').then(({ data }) => setStreaks(((data ?? []) as StreakRow[]).filter((r) => r.user_id === userId)))
-    supabase
-      .from('posts')
-      .select('id', { count: 'exact', head: true })
-      .eq('user_id', userId)
-      .then(({ count }) => setTotal(count ?? 0))
   }, [userId])
 
   function startEditing() {
@@ -109,13 +99,16 @@ export default function Profile({ userId }: { userId: string }) {
         <input ref={fileRef} type="file" accept="image/*" hidden onChange={(e) => changeAvatar(e.target.files?.[0])} />
         <p className="profile-name">{me.username}</p>
         {me.bio ? <p className="profile-bio">{me.bio}</p> : !editing && <p className="muted small">Sem descrição ainda</p>}
-        <p className="muted small">
-          {total} {total === 1 ? 'prova postada' : 'provas postadas'}
-        </p>
+        <StreakPills streaks={streaks} />
         {!editing && (
-          <button className="btn ghost" onClick={startEditing}>
-            Editar perfil
-          </button>
+          <div className="profile-actions">
+            <button className="btn ghost small-btn" onClick={startEditing}>
+              Editar perfil
+            </button>
+            <button className="btn ghost small-btn" onClick={signOut}>
+              Sair
+            </button>
+          </div>
         )}
       </section>
 
@@ -157,18 +150,8 @@ export default function Profile({ userId }: { userId: string }) {
           </div>
         </form>
       ) : (
-        <>
-          <ProfileDetails member={me} streaks={streaks} hideBook />
-          <CurrentBook userId={userId} onShelfChanged={() => setShelfKey((k) => k + 1)} />
-          <Bookshelf userId={userId} refreshKey={shelfKey} />
-          <h2 className="section-title">Seus posts das últimas 24h</h2>
-          <FeedList userId={userId} authorId={userId} emptyText="Você não postou nada no feed hoje." />
-        </>
+        <ProfileTabs member={me} viewerId={userId} streaks={streaks} />
       )}
-
-      <button className="btn ghost full" onClick={signOut}>
-        Sair da conta
-      </button>
     </div>
   )
 }

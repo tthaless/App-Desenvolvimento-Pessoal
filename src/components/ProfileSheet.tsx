@@ -3,9 +3,7 @@ import { supabase } from '../lib/supabase'
 import { useMembers } from '../lib/members'
 import type { StreakRow } from '../types'
 import Avatar from './Avatar'
-import Bookshelf from './Bookshelf'
-import FeedList from './FeedList'
-import ProfileDetails from './ProfileDetails'
+import ProfileTabs, { StreakPills } from './ProfileTabs'
 
 interface Props {
   userId: string
@@ -38,11 +36,9 @@ export default function ProfileSheet({ userId, viewerId, onClose }: Props) {
           <Avatar name={member.username} url={member.avatar_url} size="xl" />
           <p className="profile-name">{member.username}</p>
           {member.bio && <p className="profile-bio">{member.bio}</p>}
+          <StreakPills streaks={streaks} />
         </div>
-        <ProfileDetails member={member} streaks={streaks} />
-        <Bookshelf userId={userId} />
-        <h2 className="section-title">Posts das últimas 24h</h2>
-        <FeedList userId={viewerId} authorId={userId} emptyText={`${member.username} não postou nada no feed hoje.`} />
+        <ProfileTabs member={member} viewerId={viewerId} streaks={streaks} />
       </div>
     </div>
   )
