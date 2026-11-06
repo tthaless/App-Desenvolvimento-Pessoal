@@ -16,6 +16,8 @@ import type { LucideIcon } from 'lucide-react'
 import Avatar from './components/Avatar'
 import { ArrowMark } from './components/Logo'
 import { useMembers } from './lib/members'
+import NotificationsSheet from './components/NotificationsSheet'
+import { startNotifications, stopNotifications, useNavTarget } from './lib/notifications'
 
 type Tab = 'exercicio' | 'leitura' | 'desafio' | 'feed' | 'ranking' | 'perfil'
 
@@ -50,6 +52,22 @@ export default function App() {
   useEffect(() => {
     if (sessionUserId) cleanupMyFeedPhotos(sessionUserId).catch(() => {})
   }, [sessionUserId])
+
+  // Avisos de comentários, curtidas e "quero ler também".
+  useEffect(() => {
+    if (sessionUserId) startNotifications(sessionUserId)
+    else stopNotifications()
+  }, [sessionUserId])
+
+  // Tocar num aviso leva para a aba certa; a própria aba abre o story, post ou lista.
+  const navTarget = useNavTarget()
+  useEffect(() => {
+    if (!navTarget) return
+    if (navTarget.type === 'story') setTab('exercicio')
+    if (navTarget.type === 'feed') setTab('feed')
+    if (navTarget.type === 'library') setTab('leitura')
+    closeProfile()
+  }, [navTarget, closeProfile])
 
   // Tocar no próprio nome leva para a aba Perfil.
   useEffect(() => {
@@ -96,6 +114,7 @@ export default function App() {
           </button>
         ))}
       </nav>
+      <NotificationsSheet />
       {profileId && profileId !== userId && <ProfileSheet userId={profileId} viewerId={userId} onClose={closeProfile} />}
     </div>
   )
