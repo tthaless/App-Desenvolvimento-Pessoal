@@ -34,14 +34,18 @@ export default async function handler(req: Req, res: Res) {
   if (req.method !== 'POST') return res.status(405).end()
 
   const { PUSH_SECRET, VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY } = process.env
-  if (!PUSH_SECRET || !VAPID_PUBLIC_KEY || !VAPID_PRIVATE_KEY) return res.status(500).json({ error: 'faltam variáveis de ambiente' })
-  if (req.headers['x-push-secret'] !== PUSH_SECRET) return res.status(401).end()
+  const missing = Object.entries({ PUSH_SECRET, VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY })
+    .filter(([, v]) => !v?.trim())
+    .map(([k]) => k)
+  // Diz só o nome do que falta, nunca o valor.
+  if (missing.length) return res.status(500).json({ error: 'faltam variáveis de ambiente', faltando: missing })
+  if (req.headers['x-push-secret'] !== PUSH_SECRET!.trim()) return res.status(401).json({ error: 'senha diferente' })
 
   const data: Body = typeof req.body === 'string' ? JSON.parse(req.body) : (req.body ?? {})
   const subs = (data.subscriptions ?? []).slice(0, 20)
   if (!subs.length || !data.title) return res.status(400).json({ error: 'sem destino ou título' })
 
-  webpush.setVapidDetails('https://farm-xp.vercel.app', VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY)
+  webpush.setVapidDetails('https://farm-xp.vercel.app', VAPID_PUBLIC_KEY!.trim(), VAPID_PRIVATE_KEY!.trim())
   const payload = JSON.stringify({
     title: String(data.title).slice(0, 80),
     body: String(data.body ?? '').slice(0, 180),
