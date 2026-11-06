@@ -20,7 +20,7 @@ App fechado para um grupo de amigos manter a constância em desenvolvimento pess
 ## Configurando o Supabase
 
 1. Crie um projeto em [supabase.com](https://supabase.com) (região **South America (São Paulo)**).
-2. Abra **SQL Editor → New query**, cole o conteúdo de [`supabase/schema.sql`](supabase/schema.sql) e clique em **Run**. Depois faça o mesmo, nesta ordem, com [`03-feed.sql`](supabase/03-feed.sql) e [`04-estante-e-desafios.sql`](supabase/04-estante-e-desafios.sql). (Bancos criados antes da versão com perfis precisam rodar também o [`02-perfil-e-varias-provas.sql`](supabase/02-perfil-e-varias-provas.sql), antes do 03.)
+2. Abra **SQL Editor → New query**, cole o conteúdo de [`supabase/schema.sql`](supabase/schema.sql) e clique em **Run**. Depois faça o mesmo com [`03-feed.sql`](supabase/03-feed.sql). (Bancos criados antes da versão com perfis precisam rodar também o [`02-perfil-e-varias-provas.sql`](supabase/02-perfil-e-varias-provas.sql), antes do 03.)
 3. Troque o código de convite (é ele que você passa para os amigos):
    ```sql
    update app_config set value = 'SEU-CODIGO' where key = 'invite_code';
