@@ -20,7 +20,7 @@ App fechado para um grupo de amigos manter a constância em desenvolvimento pess
 ## Configurando o Supabase
 
 1. Crie um projeto em [supabase.com](https://supabase.com) (região **South America (São Paulo)**).
-2. Abra **SQL Editor → New query**, cole o conteúdo de [`supabase/schema.sql`](supabase/schema.sql) e clique em **Run**. Depois faça o mesmo com [`03-feed.sql`](supabase/03-feed.sql). (Bancos criados antes da versão com perfis precisam rodar também o [`02-perfil-e-varias-provas.sql`](supabase/02-perfil-e-varias-provas.sql), antes do 03.)
+2. Abra **SQL Editor → New query**, cole o conteúdo de [`supabase/schema.sql`](supabase/schema.sql) e clique em **Run**. (Bancos criados antes da versão com perfis precisam rodar também o [`02-perfil-e-varias-provas.sql`](supabase/02-perfil-e-varias-provas.sql).)
 3. Troque o código de convite (é ele que você passa para os amigos):
    ```sql
    update app_config set value = 'SEU-CODIGO' where key = 'invite_code';
@@ -43,9 +43,9 @@ npm run dev
 - **Pontos**: 10 por atividade feita no dia, +5 no dia em que faz exercício e leitura, +30 por cumprir o desafio da semana em 5 dos 7 dias (+40 com os 7). A semana começa na segunda.
 - **Stories** juntam exercício e leitura das últimas 24 horas numa barra só.
 - **Perfil**: foto, descrição, livro que está lendo e exercícios que faz. Toque no nome de alguém para ver o perfil.
-- **Estante**: só entram livros começados no app. As provas de leitura ficam ligadas ao livro em andamento; ao terminar, a pessoa dá uma nota de 1 a 10 (com decimal) e um comentário opcional, e isso vira um post no feed. Dá pra largar um livro sem que ele vá pra estante.
+- **Estante**: só entram livros começados no app. As provas de leitura ficam ligadas ao livro em andamento; ao terminar, a pessoa dá uma nota de 1 a 10 (com decimal) e um comentário opcional, e o livro vai pra estante. Dá pra largar um livro sem que ele vá pra estante.
 - **Desafio da semana**: durante a semana, cada um propõe desafios e vota (não vale votar na própria ideia). Na segunda, o mais votado vira o desafio; no empate, ganha quem propôs primeiro. Sem ideias, a semana fica sem desafio. Cumprir o desafio do dia exige foto e aparece nos stories.
-- **Feed**: posts de até 280 caracteres com uma foto opcional, comentários (também com uma foto opcional) e curtidas. Tudo some em 24 horas: fica invisível na hora e é apagado de vez pela limpeza automática. Feed não vale ponto.
+- **Comentários nas provas**: dentro de cada story dá pra comentar a prova do amigo; todo mundo vê e comenta, e os comentários somem junto com o story, em 24h.
 
 ## Roadmap
 
@@ -58,10 +58,10 @@ npm run dev
 7. [x] Ranking semanal/mensal
 8. [x] Perfis com foto, descrição, livro e exercícios
 9. [x] Stories de exercício e leitura juntos
-10. [x] Feed com posts, comentários e curtidas que somem em 24h
+10. [x] Comentários nas provas dos stories
 11. [x] Estante de livros com nota e comentário
 12. [x] Desafio da semana com votação
 13. [ ] Apagar fotos das provas com mais de 24h automaticamente
 14. [ ] PWA (instalar na tela do celular) + deploy
 15. [ ] Vencedor da semana/mês passados no ranking
-16. [ ] Notificações e respostas em fio no feed
+16. [ ] Notificações
