@@ -17,8 +17,9 @@ const ORBS_FULL: [number, number, number, string][] = [
   [102, 52, 3, '#ff9b3d'],
 ]
 const ORBS_SMALL: [number, number, number, string][] = [
-  [25, 32, 8, '#ff9b3d'],
-  [97, 30, 9, 'var(--gold)'],
+  [25, 34, 7.5, '#ff9b3d'],
+  [79, 9, 6.5, 'var(--gold)'],
+  [99, 34, 8, '#ff9b3d'],
 ]
 
 /** Frasco em forma de seta para cima com esferas de XP, a marca do app. */
