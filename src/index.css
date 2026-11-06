@@ -868,3 +868,26 @@ button:focus:not(:focus-visible) { outline: none; }
 .hero-bonus { margin-top: 4px; padding: 10px 12px; border-radius: 12px; background: rgba(247, 200, 74, .1); border: 1px solid rgba(247, 200, 74, .25); display: flex; flex-direction: column; gap: 2px; }
 .hero-bonus p { margin: 0; font-size: 14px; line-height: 1.4; }
 .hero-bonus strong { color: var(--gold); font-weight: 800; }
+.shelf-delete { display: flex; flex-direction: column; gap: 8px; }
+.shelf-delete p { margin: 0; line-height: 1.45; }
+.shelf-delete .row { grid-template-columns: 1fr 1fr; }
+.shelf-delete-btn { align-self: flex-start; display: inline-flex; align-items: center; gap: 6px; background: none; border: 0; padding: 4px 0; font-size: 13px; color: var(--muted); }
+.bookcase .shelf-delete-btn { color: #c7ad8a; }
+.bookcase .shelf-delete p { color: var(--parchment); }
+
+/* Boas-vindas */
+.welcome { position: fixed; inset: 0; z-index: 40; background: radial-gradient(120% 70% at 50% 0%, rgba(255, 106, 43, .16), transparent 60%), var(--bg); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 28px; padding: calc(24px + env(safe-area-inset-top)) 24px calc(24px + env(safe-area-inset-bottom)); text-align: center; animation: fade-in .25s ease-out both; }
+.welcome-skip { position: absolute; top: calc(14px + env(safe-area-inset-top)); right: 16px; background: none; border: 0; color: var(--muted); font-weight: 600; padding: 8px; }
+.welcome-body { max-width: 360px; display: flex; flex-direction: column; align-items: center; gap: 14px; animation: sheet-in .35s cubic-bezier(.2, .9, .25, 1) backwards; }
+.welcome-art { height: 110px; display: grid; place-items: center; }
+.welcome-body h2 { font-family: var(--display); font-size: 28px; font-weight: 800; letter-spacing: -0.03em; }
+.welcome-body p { margin: 0; color: #c9c9cf; font-size: 16px; line-height: 1.55; }
+.welcome-body strong { color: var(--text); }
+.welcome-trophy { color: var(--gold); filter: drop-shadow(0 6px 20px rgba(247, 200, 74, .35)); }
+.welcome-icons { display: flex; gap: 18px; color: var(--brand); }
+.welcome-dots { display: flex; gap: 8px; }
+.welcome-dots span { width: 8px; height: 8px; border-radius: 99px; background: var(--surface-2); transition: width .2s, background .2s; }
+.welcome-dots span.on { width: 22px; background: var(--brand); }
+.welcome-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; max-width: 360px; }
+.welcome-actions .btn { justify-content: center; }
+.welcome-actions .btn:disabled { visibility: hidden; }
