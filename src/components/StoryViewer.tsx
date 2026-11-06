@@ -1,19 +1,23 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
+import { openProfile } from '../lib/members'
 import { timeAgo } from '../lib/utils'
-import type { Post } from '../types'
+import { ACTIVITY } from '../types'
+import type { Member, Post } from '../types'
+import Avatar from './Avatar'
 
 interface Props {
   posts: Post[]
   start: number
   currentUserId: string
+  members: Member[]
   onSeen: (id: string) => void
   onClose: () => void
 }
 
 const DURATION = 5000
 
-export default function StoryViewer({ posts, start, currentUserId, onSeen, onClose }: Props) {
+export default function StoryViewer({ posts, start, currentUserId, members, onSeen, onClose }: Props) {
   const [index, setIndex] = useState(start)
   const [urls, setUrls] = useState<Record<string, string>>({})
   const [loadedId, setLoadedId] = useState<string | null>(null)
@@ -67,11 +71,11 @@ export default function StoryViewer({ posts, start, currentUserId, onSeen, onClo
   if (!post) return null
 
   // Barras de progresso só das fotos da mesma pessoa.
-  const sameUser = posts
-    .map((p, i) => ({ p, i }))
-    .filter(({ p }) => p.user_id === post.user_id)
-  const name = post.user_id === currentUserId ? 'Você' : post.profiles?.username ?? '?'
+  const sameUser = posts.map((p, i) => ({ p, i })).filter(({ p }) => p.user_id === post.user_id)
+  const member = members.find((m) => m.id === post.user_id)
+  const name = post.user_id === currentUserId ? 'Você' : (member?.username ?? '?')
   const url = urls[post.photo_path]
+  const act = ACTIVITY[post.activity]
 
   return (
     <div className="viewer" role="dialog" aria-label={`Story de ${name}`}>
@@ -86,8 +90,19 @@ export default function StoryViewer({ posts, start, currentUserId, onSeen, onClo
         ))}
       </div>
       <div className="viewer-head">
-        <span className="avatar sm">{name.slice(0, 1).toUpperCase()}</span>
-        <strong>{name}</strong>
+        <button
+          className="viewer-user"
+          onClick={() => {
+            onClose()
+            openProfile(post.user_id)
+          }}
+        >
+          <Avatar name={member?.username ?? '?'} url={member?.avatar_url} size="sm" />
+          <strong>{name}</strong>
+        </button>
+        <span className={`chip act-${post.activity}`}>
+          {act.emoji} {act.label}
+        </span>
         <span className="muted">{timeAgo(post.created_at)}</span>
         <button className="viewer-close" onClick={onClose} aria-label="Fechar">
           ✕
