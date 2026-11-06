@@ -11,6 +11,7 @@ import { Camera, Check } from 'lucide-react'
 import ActivityIcon from './ActivityIcon'
 import { FlameMark } from './Logo'
 import TopBar from './TopBar'
+import PushOffer from './PushOffer'
 import { useDragToClose } from '../lib/useDragToClose'
 import Celebration from './Celebration'
 import { SkeletonCard, SkeletonRows } from './Skeleton'
@@ -37,6 +38,8 @@ export default function ActivityTab({ activity, userId, hideHeader }: Props) {
   const inputRef = useRef<HTMLInputElement>(null)
   const sheetRef = useDragToClose<HTMLDivElement>(() => !sending && closeDraft(), !!draft)
   const endCelebration = useCallback(() => setCelebrate(null), [])
+  // Depois de postar, convida (uma vez) pra ligar as notificações no celular.
+  const [posted, setPosted] = useState(false)
 
   const load = useCallback(async () => {
     const [today, s] = await Promise.all([
@@ -111,6 +114,7 @@ export default function ActivityTab({ activity, userId, hideHeader }: Props) {
       const firstToday = !iDidToday
       const before = current
       closeDraft()
+      setPosted(true)
       if (firstToday) setCelebrate({ from: before, to: before + 1 })
       await load()
     } catch (e) {
@@ -127,6 +131,8 @@ export default function ActivityTab({ activity, userId, hideHeader }: Props) {
       {loadError && <p className="msg error">{loadError}</p>}
 
       <Stories userId={userId} />
+
+      <PushOffer show={posted && !celebrate} />
 
       {!loaded ? (
         <SkeletonCard height={230} />

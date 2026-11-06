@@ -837,3 +837,31 @@ button:focus:not(:focus-visible) { outline: none; }
 .month-legend > span { display: inline-flex; align-items: center; gap: 6px; }
 .month-legend .month-day { width: 12px; height: 12px; border-radius: 3px; display: inline-block; box-shadow: none; }
 .profile-sheet > * { flex-shrink: 0; }
+
+/* Notificações no celular */
+.push-settings { display: flex; flex-direction: column; gap: 12px; }
+.push-head { display: flex; align-items: center; gap: 12px; }
+.push-icon { color: var(--brand); background: rgba(255, 106, 43, .16); }
+.push-text { flex: 1; min-width: 0; }
+.push-text p { margin: 0; }
+.push-title { font-weight: 700; }
+.push-help { display: flex; gap: 6px; align-items: flex-start; margin: 0; line-height: 1.45; }
+.push-help svg { flex: none; margin-top: 2px; }
+.push-options { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; border-top: 1px solid var(--line); }
+.push-options li { border-bottom: 1px solid var(--line); }
+.push-options li:last-child { border-bottom: 0; }
+.push-options label { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 0; cursor: pointer; }
+.push-options label > span { display: flex; flex-direction: column; gap: 2px; }
+.push-opt-label { font-size: 15px; }
+.push-options input { width: 20px; height: 20px; accent-color: var(--brand); flex: none; }
+.switch { flex: none; width: 50px; height: 30px; border-radius: 99px; border: 0; padding: 3px; background: var(--surface-2); position: relative; transition: background .2s; -webkit-appearance: none; appearance: none; }
+.switch span { display: block; width: 24px; height: 24px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0, 0, 0, .4); transition: transform .2s; }
+.switch.on { background: var(--brand); }
+.switch.on span { transform: translateX(20px); }
+.push-offer { position: relative; display: flex; flex-direction: column; gap: 8px; border: 1px solid rgba(255, 106, 43, .45); background: radial-gradient(120% 80% at 0% 0%, rgba(255, 106, 43, .14), transparent 60%), var(--surface); animation: sheet-in .3s cubic-bezier(.2, .9, .25, 1) backwards; }
+.push-offer p { margin: 0; }
+.push-offer-icon { color: var(--brand); }
+.push-offer-title { font-family: var(--display); font-size: 18px; font-weight: 800; }
+.push-offer-close { position: absolute; top: 10px; right: 10px; background: none; border: 0; color: var(--muted); padding: 6px; display: grid; place-items: center; }
+.push-offer .row { margin-top: 4px; grid-template-columns: 1fr 1fr; }
+.info.act-wins .info-icon { color: var(--gold); background: rgba(247, 200, 74, .14); }

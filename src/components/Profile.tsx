@@ -11,6 +11,8 @@ import ProfileDetails from './ProfileDetails'
 import ProfileTabs from './ProfileTabs'
 import { Camera, ImagePlus, Trash2 } from 'lucide-react'
 import ProfileHero from './ProfileHero'
+import PushSettings from './PushSettings'
+import { disablePush } from '../lib/push'
 import TopBar from './TopBar'
 import { SkeletonBlock, SkeletonCard } from './Skeleton'
 
@@ -123,6 +125,8 @@ export default function Profile({ userId }: { userId: string }) {
   }
 
   async function signOut() {
+    // Este aparelho para de receber os avisos dessa conta.
+    await disablePush().catch(() => {})
     clearMembers()
     await supabase.auth.signOut()
   }
@@ -224,6 +228,8 @@ export default function Profile({ userId }: { userId: string }) {
           <FeedList userId={userId} authorId={userId} emptyText="Você não postou nada no feed hoje." />
         </ProfileTabs>
       )}
+
+      {!editing && <PushSettings />}
 
       <button className="btn ghost full" onClick={signOut}>
         Sair da conta
