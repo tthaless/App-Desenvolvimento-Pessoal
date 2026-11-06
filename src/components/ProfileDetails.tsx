@@ -3,6 +3,7 @@ import type { Activity, Member, StreakRow } from '../types'
 import { BookOpen, Dumbbell } from 'lucide-react'
 import ActivityIcon from './ActivityIcon'
 import { FlameMark } from './Logo'
+import MonthCalendar from './MonthCalendar'
 
 /** Livro, exercícios e streaks: parte comum do meu perfil e do perfil dos amigos. */
 export default function ProfileDetails({ member, streaks }: { member: Member; streaks: StreakRow[] }) {
@@ -25,6 +26,8 @@ export default function ProfileDetails({ member, streaks }: { member: Member; st
           )
         })}
       </div>
+
+      <MonthCalendar userId={member.id} />
 
       <section className="card info-list">
         <div className="info act-leitura">
