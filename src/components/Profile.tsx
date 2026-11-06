@@ -5,7 +5,7 @@ import { clearMembers, refreshMembers, useMembers } from '../lib/members'
 import { errorMessage, squareAvatar } from '../lib/utils'
 import type { StreakRow } from '../types'
 import Avatar from './Avatar'
-import ProfileTabs, { StreakPills } from './ProfileTabs'
+import ProfileTabs, { ProfileInfo } from './ProfileTabs'
 
 export default function Profile({ userId }: { userId: string }) {
   const me = useMembers().find((m) => m.id === userId)
@@ -99,7 +99,7 @@ export default function Profile({ userId }: { userId: string }) {
         <input ref={fileRef} type="file" accept="image/*" hidden onChange={(e) => changeAvatar(e.target.files?.[0])} />
         <p className="profile-name">{me.username}</p>
         {me.bio ? <p className="profile-bio">{me.bio}</p> : !editing && <p className="muted small">Sem descrição ainda</p>}
-        <StreakPills streaks={streaks} />
+        <ProfileInfo member={me} streaks={streaks} />
         {!editing && (
           <div className="profile-actions">
             <button className="btn ghost small-btn" onClick={startEditing}>
@@ -150,7 +150,7 @@ export default function Profile({ userId }: { userId: string }) {
           </div>
         </form>
       ) : (
-        <ProfileTabs member={me} viewerId={userId} streaks={streaks} />
+        <ProfileTabs member={me} viewerId={userId} />
       )}
     </div>
   )

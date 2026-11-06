@@ -3,7 +3,7 @@ import { supabase } from '../lib/supabase'
 import { useMembers } from '../lib/members'
 import type { StreakRow } from '../types'
 import Avatar from './Avatar'
-import ProfileTabs, { StreakPills } from './ProfileTabs'
+import ProfileTabs, { ProfileInfo } from './ProfileTabs'
 
 interface Props {
   userId: string
@@ -36,9 +36,9 @@ export default function ProfileSheet({ userId, viewerId, onClose }: Props) {
           <Avatar name={member.username} url={member.avatar_url} size="xl" />
           <p className="profile-name">{member.username}</p>
           {member.bio && <p className="profile-bio">{member.bio}</p>}
-          <StreakPills streaks={streaks} />
+          <ProfileInfo member={member} streaks={streaks} />
         </div>
-        <ProfileTabs member={member} viewerId={viewerId} streaks={streaks} />
+        <ProfileTabs member={member} viewerId={viewerId} />
       </div>
     </div>
   )
