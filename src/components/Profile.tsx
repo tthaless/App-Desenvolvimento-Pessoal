@@ -5,11 +5,14 @@ import { clearMembers, refreshMembers, useMembers } from '../lib/members'
 import { errorMessage, squareAvatar } from '../lib/utils'
 import type { StreakRow } from '../types'
 import Avatar from './Avatar'
-import ProfileTabs, { ProfileInfo } from './ProfileTabs'
+import FeedList from './FeedList'
+import ProfileDetails from './ProfileDetails'
+import ProfileTabs from './ProfileTabs'
 
 export default function Profile({ userId }: { userId: string }) {
   const me = useMembers().find((m) => m.id === userId)
   const [streaks, setStreaks] = useState<StreakRow[]>([])
+  const [total, setTotal] = useState(0)
   const [editing, setEditing] = useState(false)
   const [form, setForm] = useState({ username: '', bio: '', exercises: '' })
   const [saving, setSaving] = useState(false)
@@ -19,6 +22,11 @@ export default function Profile({ userId }: { userId: string }) {
 
   useEffect(() => {
     supabase.rpc('streaks').then(({ data }) => setStreaks(((data ?? []) as StreakRow[]).filter((r) => r.user_id === userId)))
+    supabase
+      .from('posts')
+      .select('id', { count: 'exact', head: true })
+      .eq('user_id', userId)
+      .then(({ count }) => setTotal(count ?? 0))
   }, [userId])
 
   function startEditing() {
@@ -99,16 +107,13 @@ export default function Profile({ userId }: { userId: string }) {
         <input ref={fileRef} type="file" accept="image/*" hidden onChange={(e) => changeAvatar(e.target.files?.[0])} />
         <p className="profile-name">{me.username}</p>
         {me.bio ? <p className="profile-bio">{me.bio}</p> : !editing && <p className="muted small">Sem descrição ainda</p>}
-        <ProfileInfo member={me} streaks={streaks} />
+        <p className="muted small">
+          {total} {total === 1 ? 'prova postada' : 'provas postadas'}
+        </p>
         {!editing && (
-          <div className="profile-actions">
-            <button className="btn ghost small-btn" onClick={startEditing}>
-              Editar perfil
-            </button>
-            <button className="btn ghost small-btn" onClick={signOut}>
-              Sair
-            </button>
-          </div>
+          <button className="btn ghost" onClick={startEditing}>
+            Editar perfil
+          </button>
         )}
       </section>
 
@@ -150,8 +155,16 @@ export default function Profile({ userId }: { userId: string }) {
           </div>
         </form>
       ) : (
-        <ProfileTabs member={me} viewerId={userId} />
+        <ProfileTabs member={me} viewerId={userId}>
+          <ProfileDetails member={me} streaks={streaks} />
+          <h2 className="section-title">Seus posts das últimas 24h</h2>
+          <FeedList userId={userId} authorId={userId} emptyText="Você não postou nada no feed hoje." />
+        </ProfileTabs>
       )}
+
+      <button className="btn ghost full" onClick={signOut}>
+        Sair da conta
+      </button>
     </div>
   )
 }
