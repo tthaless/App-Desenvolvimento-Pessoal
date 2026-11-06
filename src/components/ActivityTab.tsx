@@ -147,14 +147,14 @@ export default function ActivityTab({ activity, userId, hideHeader }: Props) {
           <span className="unit">{current === 1 ? 'dia' : 'dias'}</span>
         </div>
         <p className="hero-sub">
-          {weekend
-            ? iDidToday
-              ? 'Feito! No fim de semana é bônus: soma pontos e dias.'
-              : 'Fim de semana: postar soma pontos e dias, faltar não quebra o streak.'
-            : iDidToday
-              ? weekday === 5
-                ? 'Feito hoje. O fim de semana é livre: faltar não quebra o streak.'
+          {iDidToday
+            ? weekday === 5
+              ? 'Feito hoje. Fim de semana é livre: faltar não quebra o streak.'
+              : weekend
+                ? 'Feito hoje!'
                 : 'Feito hoje. Volte amanhã pra manter o streak.'
+            : weekend
+              ? 'Postar hoje soma mais um dia no seu streak.'
               : current > 0
                 ? 'Ainda falta hoje! Poste antes da meia-noite.'
                 : 'Comece seu streak hoje.'}
@@ -259,25 +259,32 @@ export default function ActivityTab({ activity, userId, hideHeader }: Props) {
   )
 }
 
-/** "Seu streak vale +3 por dia" e quanto falta pro próximo degrau. */
+/** Quanto o streak está valendo em pontos extras, e o próximo degrau. */
 function StreakBonusLine({ streakDay, done }: { streakDay: number; done: boolean }) {
   const bonus = streakBonus(streakDay)
   const next = nextBonusStep(streakDay)
   return (
-    <p className="hero-bonus small">
-      {bonus > 0 ? (
-        <>
-          <strong>+{bonus}</strong> de bônus de streak {done ? 'hoje' : 'se postar hoje'}
-        </>
-      ) : (
-        'Com 3 dias seguidos o streak começa a dar bônus'
-      )}
+    <div className="hero-bonus">
+      <p>
+        {bonus === 0 ? (
+          <>
+            Com 3 dias seguidos, cada prova passa a valer <strong>+2 pontos</strong> extras.
+          </>
+        ) : done ? (
+          <>
+            Streak de {streakDay} dias: cada prova vale <strong>+{bonus} pontos</strong> extras.
+          </>
+        ) : (
+          <>
+            Postando hoje, seu streak vai pra {streakDay} dias e a prova vale <strong>+{bonus} pontos</strong> extras.
+          </>
+        )}
+      </p>
       {bonus > 0 && next && (
-        <span className="muted">
-          {' '}
-          · +{next.bonus} em {next.in} {next.in === 1 ? 'dia' : 'dias'}
-        </span>
+        <p className="muted small">
+          Com {streakDay + next.in} dias, passa a valer +{next.bonus}.
+        </p>
       )}
-    </p>
+    </div>
   )
 }
