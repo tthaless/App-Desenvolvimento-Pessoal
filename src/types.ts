@@ -38,6 +38,9 @@ export interface Member {
   username: string
   avatar_path: string | null
   avatar_url: string | null
+  /** Plano de fundo do topo do perfil. */
+  cover_path: string | null
+  cover_url: string | null
   bio: string | null
   current_book: string | null
   exercises: string | null

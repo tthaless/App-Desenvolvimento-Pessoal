@@ -2,13 +2,14 @@ import { useEffect, useRef, useState } from 'react'
 import type { FormEvent } from 'react'
 import { supabase } from '../lib/supabase'
 import { clearMembers, refreshMembers, useMembers } from '../lib/members'
-import { errorMessage, squareAvatar } from '../lib/utils'
+import { compressImage, errorMessage, squareAvatar } from '../lib/utils'
 import type { StreakRow } from '../types'
 import Avatar from './Avatar'
 import FeedList from './FeedList'
 import ProfileDetails from './ProfileDetails'
 import ProfileTabs from './ProfileTabs'
-import { Camera } from 'lucide-react'
+import { Camera, ImagePlus, Trash2 } from 'lucide-react'
+import ProfileHero from './ProfileHero'
 import TopBar from './TopBar'
 import { SkeletonBlock, SkeletonCard } from './Skeleton'
 
@@ -22,6 +23,8 @@ export default function Profile({ userId }: { userId: string }) {
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const fileRef = useRef<HTMLInputElement>(null)
+  const coverRef = useRef<HTMLInputElement>(null)
+  const [coverBusy, setCoverBusy] = useState(false)
 
   useEffect(() => {
     supabase.rpc('streaks').then(({ data }) => setStreaks(((data ?? []) as StreakRow[]).filter((r) => r.user_id === userId)))
@@ -87,6 +90,43 @@ export default function Profile({ userId }: { userId: string }) {
     }
   }
 
+  async function changeCover(file: File | undefined) {
+    if (!file || !me) return
+    setCoverBusy(true)
+    setError(null)
+    const path = `${userId}/capa/${Date.now()}.jpg`
+    try {
+      const blob = await compressImage(file, 1280, 0.78)
+      const up = await supabase.storage.from('provas').upload(path, blob, { contentType: 'image/jpeg' })
+      if (up.error) throw up.error
+      const { error } = await supabase.from('profiles').update({ cover_path: path }).eq('id', userId)
+      if (error) {
+        await supabase.storage.from('provas').remove([path])
+        throw error
+      }
+      if (me.cover_path) await supabase.storage.from('provas').remove([me.cover_path])
+      await refreshMembers()
+    } catch (e) {
+      setError(errorMessage(e))
+    } finally {
+      setCoverBusy(false)
+      if (coverRef.current) coverRef.current.value = ''
+    }
+  }
+
+  async function removeCover() {
+    if (!me?.cover_path) return
+    setCoverBusy(true)
+    setError(null)
+    const { error } = await supabase.from('profiles').update({ cover_path: null }).eq('id', userId)
+    if (error) setError(errorMessage(error))
+    else {
+      await supabase.storage.from('provas').remove([me.cover_path])
+      await refreshMembers()
+    }
+    setCoverBusy(false)
+  }
+
   async function signOut() {
     clearMembers()
     await supabase.auth.signOut()
@@ -109,7 +149,15 @@ export default function Profile({ userId }: { userId: string }) {
     <div className="profile">
       <TopBar title="Perfil" />
 
-      <section className="profile-top profile-head">
+      <ProfileHero
+        coverUrl={me.cover_url}
+        corner={
+          <button className="hero-btn" onClick={() => coverRef.current?.click()} disabled={coverBusy} aria-label="Trocar plano de fundo">
+            {coverBusy ? '…' : <ImagePlus size={17} aria-hidden />}
+          </button>
+        }
+      >
+        <input ref={coverRef} type="file" accept="image/*" hidden onChange={(e) => changeCover(e.target.files?.[0])} />
         <button className="avatar-edit" onClick={() => fileRef.current?.click()} disabled={uploading} aria-label="Trocar foto de perfil">
           <Avatar name={me.username} url={me.avatar_url} size="xl" />
           <span className="avatar-badge">{uploading ? '…' : <Camera size={15} aria-hidden />}</span>
@@ -125,7 +173,7 @@ export default function Profile({ userId }: { userId: string }) {
             Editar perfil
           </button>
         )}
-      </section>
+      </ProfileHero>
 
       {error && <p className="msg error">{error}</p>}
 
@@ -155,6 +203,19 @@ export default function Profile({ userId }: { userId: string }) {
               placeholder="ex: musculação, corrida, jiu-jitsu"
             />
           </label>
+          <div className="cover-field">
+            <span>Plano de fundo</span>
+            <div className="row">
+              <button type="button" className="btn ghost" onClick={() => coverRef.current?.click()} disabled={coverBusy}>
+                <ImagePlus size={16} aria-hidden /> {me.cover_path ? 'Trocar' : 'Escolher imagem'}
+              </button>
+              {me.cover_path && (
+                <button type="button" className="btn ghost" onClick={removeCover} disabled={coverBusy}>
+                  <Trash2 size={16} aria-hidden /> Remover
+                </button>
+              )}
+            </div>
+          </div>
           <div className="row">
             <button type="button" className="btn ghost" onClick={() => setEditing(false)} disabled={saving}>
               Cancelar

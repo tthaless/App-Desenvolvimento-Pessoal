@@ -3,6 +3,7 @@ import { supabase } from '../lib/supabase'
 import { useMembers } from '../lib/members'
 import type { StreakRow } from '../types'
 import Avatar from './Avatar'
+import ProfileHero from './ProfileHero'
 import FeedList from './FeedList'
 import ProfileDetails from './ProfileDetails'
 import ProfileTabs from './ProfileTabs'
@@ -36,11 +37,11 @@ export default function ProfileSheet({ userId, viewerId, onClose }: Props) {
     <div className="sheet-backdrop" onClick={onClose}>
       <div className="sheet profile-sheet" ref={sheetRef} onClick={(e) => e.stopPropagation()} role="dialog" aria-label={`Perfil de ${member.username}`}>
         <span className="sheet-grip" aria-hidden />
-        <div className="profile-top">
+        <ProfileHero coverUrl={member.cover_url}>
           <Avatar name={member.username} url={member.avatar_url} size="xl" />
           <p className="profile-name">{member.username}</p>
           {member.bio && <p className="profile-bio">{member.bio}</p>}
-        </div>
+        </ProfileHero>
         <ProfileTabs member={member} viewerId={viewerId}>
           <ProfileDetails member={member} streaks={streaks} />
           <h2 className="section-title">Posts das últimas 24h</h2>
