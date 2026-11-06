@@ -166,7 +166,7 @@ export default function Profile({ userId }: { userId: string }) {
         <p className="profile-name">{me.username}</p>
         {me.bio ? <p className="profile-bio">{me.bio}</p> : !editing && <p className="muted small">Sem descrição ainda</p>}
         <p className="muted small">
-          {total} {total === 1 ? 'prova postada' : 'provas postadas'}
+          {total} {total === 1 ? 'prova' : 'provas'} no total
         </p>
         {!editing && (
           <button className="btn ghost" onClick={startEditing}>

@@ -57,7 +57,6 @@ export default function Library({ ownerId, viewerId }: { ownerId: string; viewer
 
   const wantCount = wants.filter((w) => w.user_id === ownerId).length
   const likes = shelf.reduce((sum, b) => sum + b.likes, 0)
-  const avg = shelf.length ? shelf.reduce((s, b) => s + (b.rating ?? 0), 0) / shelf.length : 0
 
   return (
     <div className="library">
@@ -105,7 +104,6 @@ export default function Library({ ownerId, viewerId }: { ownerId: string; viewer
       <section className="section shelf act-leitura">
         <div className="shelf-head">
           <h2 className="section-label">Concluídos</h2>
-          {shelf.length > 0 && <span className="muted small">média {avg.toLocaleString('pt-BR', { maximumFractionDigits: 1 })}</span>}
         </div>
         {!shelfLoaded && <SkeletonRows count={2} cover />}
         {shelfLoaded && <Bookshelf
