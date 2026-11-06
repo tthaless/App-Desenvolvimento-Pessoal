@@ -5,6 +5,8 @@ import Auth from './components/Auth'
 import ActivityTab from './components/ActivityTab'
 import Ranking from './components/Ranking'
 import Profile from './components/Profile'
+import ProfileSheet from './components/ProfileSheet'
+import { useOpenProfile } from './lib/members'
 
 type Tab = 'exercicio' | 'leitura' | 'ranking' | 'perfil'
 
@@ -19,6 +21,7 @@ export default function App() {
   const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
   const [tab, setTab] = useState<Tab>('exercicio')
+  const [profileId, closeProfile] = useOpenProfile()
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -28,6 +31,14 @@ export default function App() {
     const { data } = supabase.auth.onAuthStateChange((_event, s) => setSession(s))
     return () => data.subscription.unsubscribe()
   }, [])
+
+  // Tocar no próprio nome leva para a aba Perfil.
+  useEffect(() => {
+    if (profileId && profileId === session?.user.id) {
+      closeProfile()
+      setTab('perfil')
+    }
+  }, [profileId, session, closeProfile])
 
   if (loading) return <div className="splash">🔥</div>
   if (!session) return <Auth />
@@ -55,6 +66,7 @@ export default function App() {
           </button>
         ))}
       </nav>
+      {profileId && profileId !== userId && <ProfileSheet userId={profileId} onClose={closeProfile} />}
     </div>
   )
 }

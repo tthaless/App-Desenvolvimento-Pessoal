@@ -13,7 +13,16 @@ export interface Post {
   caption: string | null
   created_at: string
   day: string
-  profiles: { username: string } | null
+}
+
+export interface Member {
+  id: string
+  username: string
+  avatar_path: string | null
+  avatar_url: string | null
+  bio: string | null
+  current_book: string | null
+  exercises: string | null
 }
 
 export interface StreakRow {

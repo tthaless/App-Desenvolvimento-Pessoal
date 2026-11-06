@@ -28,10 +28,26 @@ export async function compressImage(file: File, maxSize = 1280, quality = 0.75):
   )
 }
 
+/** Recorta o centro da foto em quadrado, para a foto de perfil. */
+export async function squareAvatar(file: File, size = 512): Promise<Blob> {
+  const bitmap = await createImageBitmap(file, { imageOrientation: 'from-image' })
+  const side = Math.min(bitmap.width, bitmap.height)
+  const canvas = document.createElement('canvas')
+  canvas.width = canvas.height = Math.min(size, side)
+  canvas
+    .getContext('2d')!
+    .drawImage(bitmap, (bitmap.width - side) / 2, (bitmap.height - side) / 2, side, side, 0, 0, canvas.width, canvas.height)
+  bitmap.close()
+  return new Promise((resolve, reject) =>
+    canvas.toBlob((b) => (b ? resolve(b) : reject(new Error('Não foi possível processar a foto.'))), 'image/jpeg', 0.8),
+  )
+}
+
 export function errorMessage(e: unknown): string {
   const err = e as { message?: string; code?: string }
   const msg = err?.message ?? ''
-  if (err?.code === '23505') return 'Você já postou essa atividade hoje.'
+  if (err?.code === '23505') return 'Esse nome já está em uso por outra pessoa do grupo.'
+  if (err?.code === '23514') return 'Algum campo passou do limite de caracteres.'
   if (msg.includes('Database error saving new user'))
     return 'Código de convite inválido ou nome de usuário já em uso.'
   if (msg.includes('Invalid login credentials')) return 'Email ou senha incorretos.'
