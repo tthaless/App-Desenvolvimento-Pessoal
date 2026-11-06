@@ -136,6 +136,15 @@ language sql stable as $$
   order by pontos desc, dias desc, pr.username;
 $$;
 
+-- ---------- Permissões da API ----------
+-- Explícitas para funcionar mesmo com "Automatically expose new tables" desligado.
+-- As regras acima (RLS) continuam decidindo quem vê e altera cada linha.
+grant usage on schema public to authenticated;
+grant select, update on public.profiles to authenticated;
+grant select, insert, delete on public.posts to authenticated;
+grant execute on function public.streaks() to authenticated;
+grant execute on function public.ranking(text) to authenticated;
+
 -- ---------- Fotos ----------
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 values ('provas', 'provas', false, 2097152, array['image/jpeg']);
