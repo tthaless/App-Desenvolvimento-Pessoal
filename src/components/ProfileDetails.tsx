@@ -4,6 +4,7 @@ import { BookOpen, Dumbbell } from 'lucide-react'
 import ActivityIcon from './ActivityIcon'
 import { FlameMark } from './Logo'
 import MonthCalendar from './MonthCalendar'
+import BookCover from './BookCover'
 
 /** Livro, exercícios e streaks: parte comum do meu perfil e do perfil dos amigos. */
 export default function ProfileDetails({ member, streaks }: { member: Member; streaks: StreakRow[] }) {
@@ -27,16 +28,19 @@ export default function ProfileDetails({ member, streaks }: { member: Member; st
         })}
       </div>
 
-      <MonthCalendar userId={member.id} />
-
       <section className="card info-list">
         <div className="info act-leitura">
-          <span className="info-icon" aria-hidden>
-            <BookOpen size={18} />
-          </span>
+          {member.current_book ? (
+            <BookCover url={member.current_book_cover ?? null} title={member.current_book} size="sm" />
+          ) : (
+            <span className="info-icon" aria-hidden>
+              <BookOpen size={18} />
+            </span>
+          )}
           <div>
             <p className="muted small">Lendo agora</p>
             <p className="info-value">{member.current_book || <span className="muted">Nenhum livro ainda</span>}</p>
+            {member.current_book_author && <p className="muted small">{member.current_book_author}</p>}
           </div>
         </div>
         <div className="info act-exercicio">
@@ -49,6 +53,8 @@ export default function ProfileDetails({ member, streaks }: { member: Member; st
           </div>
         </div>
       </section>
+
+      <MonthCalendar userId={member.id} />
     </>
   )
 }

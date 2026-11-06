@@ -43,6 +43,9 @@ export interface Member {
   cover_url: string | null
   bio: string | null
   current_book: string | null
+  current_book_author?: string | null
+  /** Capa do livro em andamento (Open Library). */
+  current_book_cover?: string | null
   exercises: string | null
 }
 

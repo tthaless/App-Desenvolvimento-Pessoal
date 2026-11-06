@@ -816,16 +816,21 @@ button:focus:not(:focus-visible) { outline: none; }
 .install-note svg { flex: none; }
 
 /* Constância do mês (estilo GitHub, só o mês atual) */
-.month-cal { display: flex; flex-direction: column; gap: 12px; }
+.month-cal { display: grid; grid-template-columns: auto 1fr; grid-template-areas: 'head head' 'grid foot'; column-gap: 20px; row-gap: 10px; }
+.month-cal-head { grid-area: head; }
+.month-grid { grid-area: grid; }
+.month-cal-foot { grid-area: foot; align-self: end; }
+.month-cal-foot .month-legend { flex-direction: column; align-items: flex-start; gap: 8px; }
+@media (max-width: 340px) { .month-cal { grid-template-columns: 1fr; grid-template-areas: 'head' 'grid' 'foot'; } }
 .month-cal-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
 .month-cal-head h3 { margin: 0; font-family: var(--display); font-size: 17px; font-weight: 800; text-transform: capitalize; }
-.month-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 30px)); justify-content: space-between; gap: 6px; }
-.month-wd { text-align: center; font-size: 11px; font-weight: 600; color: var(--muted); }
-.month-day { aspect-ratio: 1; width: 100%; border: 0; padding: 0; border-radius: 7px; background: var(--surface-2); display: block; }
+.month-grid { display: grid; grid-template-columns: repeat(7, 22px); justify-content: start; gap: 5px; }
+.month-wd { text-align: center; font-size: 10px; font-weight: 600; color: var(--muted); }
+.month-day { aspect-ratio: 1; width: 100%; border: 0; padding: 0; border-radius: 5px; background: var(--surface-2); display: block; }
 .month-day.lv1 { background: color-mix(in srgb, var(--brand) 42%, var(--surface-2)); }
 .month-day.lv2 { background: var(--brand); box-shadow: 0 0 10px color-mix(in srgb, var(--brand) 35%, transparent); }
 .month-day.future { background: transparent; box-shadow: inset 0 0 0 1px var(--line); }
-.month-day.today { box-shadow: 0 0 0 2px var(--surface), 0 0 0 3.5px var(--text); }
+.month-day.today { box-shadow: 0 0 0 1.5px var(--surface), 0 0 0 3px var(--text); }
 .month-day.picked { transform: scale(1.12); }
 .month-cal-foot { min-height: 18px; }
 .month-legend { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }

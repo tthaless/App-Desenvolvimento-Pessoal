@@ -13,18 +13,21 @@ const listeners = new Set<(members: Member[]) => void>()
 async function fetchMembers(): Promise<Member[]> {
   const [first, reading] = await Promise.all([
     supabase.from('profiles').select('id,username,avatar_path,cover_path,bio,exercises').order('username'),
-    supabase.from('books').select('user_id,title').is('finished_at', null).is('abandoned_at', null),
+    supabase.from('books').select('user_id,title,author,cover_url').is('finished_at', null).is('abandoned_at', null),
   ])
   // Banco ainda sem a coluna do plano de fundo: busca sem ela.
   const profiles = first.error && /cover_path/.test(first.error.message)
     ? await supabase.from('profiles').select('id,username,avatar_path,bio,exercises').order('username')
     : first
   if (profiles.error) throw profiles.error
-  const books = new Map(((reading.data ?? []) as { user_id: string; title: string }[]).map((b) => [b.user_id, b.title]))
-  const rows = ((profiles.data ?? []) as Omit<Member, 'avatar_url' | 'cover_url' | 'current_book'>[]).map((r) => ({
+  type Reading = { user_id: string; title: string; author: string | null; cover_url: string | null }
+  const books = new Map(((reading.data ?? []) as Reading[]).map((b) => [b.user_id, b]))
+  const rows = ((profiles.data ?? []) as Omit<Member, 'avatar_url' | 'cover_url' | 'current_book' | 'current_book_author' | 'current_book_cover'>[]).map((r) => ({
     ...r,
     cover_path: r.cover_path ?? null,
-    current_book: books.get(r.id) ?? null,
+    current_book: books.get(r.id)?.title ?? null,
+    current_book_author: books.get(r.id)?.author ?? null,
+    current_book_cover: books.get(r.id)?.cover_url ?? null,
   }))
   const paths = rows.flatMap((r) => [r.avatar_path, r.cover_path]).filter((p): p is string => !!p)
   // Link de 7 dias, reaproveitado: a foto de perfil não é baixada de novo a cada abertura.
