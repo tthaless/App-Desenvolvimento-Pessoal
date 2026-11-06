@@ -7,12 +7,21 @@ import Bookshelf from './Bookshelf'
 import Library from './Library'
 import TopBar from './TopBar'
 import { SkeletonRows } from './Skeleton'
+import { clearNavTarget, useNavTarget } from '../lib/notifications'
 
 type Sub = 'hoje' | 'minha' | 'grupo'
 
 /** Aba Leitura: prova do dia, minha biblioteca e o que o grupo leu. */
 export default function ReadingTab({ userId }: { userId: string }) {
   const [sub, setSub] = useState<Sub>('hoje')
+  const target = useNavTarget()
+
+  // Aviso de curtida ou de "quero ler também" abre a minha biblioteca.
+  useEffect(() => {
+    if (target?.type !== 'library') return
+    setSub('minha')
+    clearNavTarget()
+  }, [target])
 
   return (
     <div className="reading">

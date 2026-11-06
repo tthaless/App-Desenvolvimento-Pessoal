@@ -15,6 +15,8 @@ import { SkeletonBlock } from './Skeleton'
 interface Props {
   posts: StoryItem[]
   start: number
+  /** Abre já com os comentários (vindo de um aviso). */
+  startInChat?: boolean
   currentUserId: string
   members: Member[]
   onSeen: (id: string) => void
@@ -23,11 +25,11 @@ interface Props {
 
 const DURATION = 5000
 
-export default function StoryViewer({ posts, start, currentUserId, members, onSeen, onClose }: Props) {
+export default function StoryViewer({ posts, start, startInChat = false, currentUserId, members, onSeen, onClose }: Props) {
   const [index, setIndex] = useState(start)
   const [urls, setUrls] = useState<Record<string, string>>({})
   const [loadedId, setLoadedId] = useState<string | null>(null)
-  const [chatOpen, setChatOpen] = useState(false)
+  const [chatOpen, setChatOpen] = useState(startInChat)
   const viewerRef = useDragToClose<HTMLDivElement>(onClose, !chatOpen)
   // Muda ao fechar o chat, para o story recomeçar a contagem.
   const [round, setRound] = useState(0)

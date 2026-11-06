@@ -7,6 +7,7 @@ import { errorMessage } from '../lib/utils'
 import FeedPostCard from './FeedPostCard'
 import PostThread from './PostThread'
 import { SkeletonRows } from './Skeleton'
+import { clearNavTarget, useNavTarget } from '../lib/notifications'
 
 interface Props {
   userId: string
@@ -59,6 +60,14 @@ export default function FeedList({ userId, authorId, emptyText, refreshKey }: Pr
       supabase.removeChannel(channel)
     }
   }, [authorId, load])
+
+  // Aviso de comentário abre a conversa do post (só no feed geral, não no perfil).
+  const target = useNavTarget()
+  useEffect(() => {
+    if (authorId || !loaded || target?.type !== 'feed') return
+    clearNavTarget()
+    if (posts.some((p) => p.id === target.postId)) setOpenId(target.postId)
+  }, [authorId, loaded, target, posts])
 
   const open = posts.find((p) => p.id === openId)
 

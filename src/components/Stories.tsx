@@ -6,6 +6,7 @@ import type { StoryItem } from '../types'
 import Avatar from './Avatar'
 import StoryViewer from './StoryViewer'
 import { SkeletonStories } from './Skeleton'
+import { clearNavTarget, useNavTarget } from '../lib/notifications'
 
 /** Barra única de stories: provas de exercício, leitura e desafio das últimas 24h. */
 export default function Stories({ userId }: { userId: string }) {
@@ -14,6 +15,8 @@ export default function Stories({ userId }: { userId: string }) {
   const [loaded, setLoaded] = useState(false)
   const [seen, setSeen] = useState<Set<string>>(loadSeen)
   const [viewerStart, setViewerStart] = useState<number | null>(null)
+  const [startInChat, setStartInChat] = useState(false)
+  const target = useNavTarget()
 
   const load = useCallback(async () => {
     const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
@@ -80,6 +83,17 @@ export default function Stories({ userId }: { userId: string }) {
     return { flat: groups.flat(), circles }
   }, [posts, userId])
 
+  // Aviso de comentário abre o story direto na conversa.
+  useEffect(() => {
+    if (!loaded || target?.type !== 'story') return
+    clearNavTarget()
+    const i = flat.findIndex((p) => p.key === target.key)
+    if (i >= 0) {
+      setStartInChat(true)
+      setViewerStart(i)
+    }
+  }, [loaded, target, flat])
+
   const markSeen = useCallback((id: string) => {
     setSeen((prev) => {
       if (prev.has(id)) return prev
@@ -103,7 +117,10 @@ export default function Stories({ userId }: { userId: string }) {
             <button
               key={c.userId}
               className={`story ${c.ids.some((id) => !seen.has(id)) ? 'unseen' : ''}`}
-              onClick={() => setViewerStart(c.start)}
+              onClick={() => {
+                setStartInChat(false)
+                setViewerStart(c.start)
+              }}
             >
               <Avatar name={name} url={m?.avatar_url} size="lg" />
               <span className="story-name">{c.userId === userId ? 'Você' : name}</span>
@@ -116,6 +133,7 @@ export default function Stories({ userId }: { userId: string }) {
         <StoryViewer
           posts={flat}
           start={viewerStart}
+          startInChat={startInChat}
           currentUserId={userId}
           members={members}
           onSeen={markSeen}
