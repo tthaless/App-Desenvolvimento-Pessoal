@@ -163,3 +163,11 @@ export function formatRating(r: number): string {
 export function daysBetween(a: string, b: string): number {
   return Math.max(1, Math.ceil((new Date(b).getTime() - new Date(a).getTime()) / 86_400_000))
 }
+
+/** Tira um livro terminado (ou largado) da estante, com o PDF de anotações. */
+export async function deleteBook(book: Pick<Book, 'id' | 'attachment_path'>) {
+  const { error, count } = await supabase.from('books').delete({ count: 'exact' }).eq('id', book.id)
+  if (error) throw error
+  if (!count) throw new Error('Não foi possível excluir. Peça pra rodar o SQL de excluir livro no Supabase.')
+  if (book.attachment_path) await supabase.storage.from('anexos').remove([book.attachment_path])
+}

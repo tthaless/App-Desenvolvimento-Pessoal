@@ -1,11 +1,12 @@
 import { useState } from 'react'
-import { daysBetween, formatRating } from '../lib/books'
+import { daysBetween, deleteBook, formatRating } from '../lib/books'
+import { errorMessage } from '../lib/utils'
 import type { Book } from '../lib/books'
 import { openProfile, useMembers } from '../lib/members'
 import Avatar from './Avatar'
 import BookCover from './BookCover'
 import PdfAttachment from './PdfAttachment'
-import { FileText, Heart } from 'lucide-react'
+import { FileText, Heart, Trash2 } from 'lucide-react'
 
 interface Props {
   books: Book[]
@@ -20,6 +21,24 @@ interface Props {
 export default function Bookshelf({ books, viewerId, onChanged, showReader, emptyText = 'Nenhum livro terminado ainda.' }: Props) {
   const members = useMembers()
   const [open, setOpen] = useState<string | null>(null)
+  const [confirming, setConfirming] = useState<string | null>(null)
+  const [deleting, setDeleting] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  async function remove(b: Book) {
+    setDeleting(true)
+    setError(null)
+    try {
+      await deleteBook(b)
+      setConfirming(null)
+      setOpen(null)
+      onChanged()
+    } catch (e) {
+      setError(errorMessage(e))
+    } finally {
+      setDeleting(false)
+    }
+  }
 
   if (books.length === 0) return <p className="muted small center empty">{emptyText}</p>
 
@@ -72,6 +91,31 @@ export default function Bookshelf({ books, viewerId, onChanged, showReader, empt
             )}
             {b.review && <p className={`shelf-review ${expanded ? 'open' : ''}`}>“{b.review}”</p>}
             {(expanded || b.user_id !== viewerId) && <PdfAttachment book={b} viewerId={viewerId} onChanged={onChanged} />}
+            {expanded && b.user_id === viewerId && (
+              <div className="shelf-delete">
+                {confirming === b.id ? (
+                  <>
+                    <p className="small">
+                      Excluir <strong>{b.title}</strong> da estante? Somem também a nota, o post no feed, as curtidas e o PDF. Suas provas de
+                      leitura continuam valendo.
+                    </p>
+                    {error && <p className="msg error">{error}</p>}
+                    <div className="row">
+                      <button className="btn ghost" onClick={() => setConfirming(null)} disabled={deleting}>
+                        Cancelar
+                      </button>
+                      <button className="btn danger" onClick={() => remove(b)} disabled={deleting}>
+                        <Trash2 size={16} aria-hidden /> {deleting ? 'Excluindo…' : 'Excluir'}
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <button className="shelf-delete-btn" onClick={() => setConfirming(b.id)}>
+                    <Trash2 size={14} aria-hidden /> Excluir da estante
+                  </button>
+                )}
+              </div>
+            )}
           </li>
         )
       })}
