@@ -17,6 +17,7 @@ import Avatar from './components/Avatar'
 import { ArrowMark } from './components/Logo'
 import { useMembers } from './lib/members'
 import NotificationsSheet from './components/NotificationsSheet'
+import Welcome, { shouldShowWelcome } from './components/Welcome'
 import { clearNavTarget, startNotifications, stopNotifications, useNavTarget } from './lib/notifications'
 
 type Tab = 'exercicio' | 'leitura' | 'desafio' | 'feed' | 'ranking' | 'perfil'
@@ -37,6 +38,7 @@ export default function App() {
   const [profileId, closeProfile] = useOpenProfile()
   const members = useMembers()
   const me = members.find((m) => m.id === session?.user.id)
+  const [welcome, setWelcome] = useState(false)
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -51,6 +53,11 @@ export default function App() {
   const sessionUserId = session?.user.id
   useEffect(() => {
     if (sessionUserId) cleanupMyOldPhotos(sessionUserId).catch(() => {})
+  }, [sessionUserId])
+
+  // Boas-vindas na primeira vez de cada pessoa neste aparelho.
+  useEffect(() => {
+    if (sessionUserId) setWelcome(shouldShowWelcome(sessionUserId))
   }, [sessionUserId])
 
   // Avisos de comentários, curtidas e "quero ler também".
@@ -111,6 +118,7 @@ export default function App() {
         ))}
       </nav>
       <NotificationsSheet />
+      {welcome && <Welcome userId={userId} onClose={() => setWelcome(false)} onGoToProfile={() => setTab('perfil')} />}
       {profileId && <ProfileSheet userId={profileId} viewerId={userId} onClose={closeProfile} />}
     </div>
   )
