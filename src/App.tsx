@@ -73,14 +73,6 @@ export default function App() {
     closeProfile()
   }, [navTarget, closeProfile])
 
-  // Tocar no próprio nome leva para a aba Perfil.
-  useEffect(() => {
-    if (profileId && profileId === session?.user.id) {
-      closeProfile()
-      setTab('perfil')
-    }
-  }, [profileId, session, closeProfile])
-
   if (loading)
     return (
       <div className="splash">
@@ -119,7 +111,7 @@ export default function App() {
         ))}
       </nav>
       <NotificationsSheet />
-      {profileId && profileId !== userId && <ProfileSheet userId={profileId} viewerId={userId} onClose={closeProfile} />}
+      {profileId && <ProfileSheet userId={profileId} viewerId={userId} onClose={closeProfile} />}
     </div>
   )
 }
