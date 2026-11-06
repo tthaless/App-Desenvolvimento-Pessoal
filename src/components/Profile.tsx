@@ -5,7 +5,6 @@ import { clearMembers, refreshMembers, useMembers } from '../lib/members'
 import { errorMessage, squareAvatar } from '../lib/utils'
 import type { StreakRow } from '../types'
 import Avatar from './Avatar'
-import FeedList from './FeedList'
 import ProfileDetails from './ProfileDetails'
 import ProfileTabs from './ProfileTabs'
 
@@ -157,8 +156,6 @@ export default function Profile({ userId }: { userId: string }) {
       ) : (
         <ProfileTabs member={me} viewerId={userId}>
           <ProfileDetails member={me} streaks={streaks} />
-          <h2 className="section-title">Seus posts das últimas 24h</h2>
-          <FeedList userId={userId} authorId={userId} emptyText="Você não postou nada no feed hoje." />
         </ProfileTabs>
       )}
 

@@ -177,7 +177,7 @@ function FinishSheet({ book, onClose, onDone }: { book: Book; onClose: () => voi
           <textarea value={review} onChange={(e) => setReview(e.target.value)} maxLength={500} rows={4} placeholder="Recomendaria? O que ficou de lição?" />
           <span className="counter">{review.length}/500</span>
         </label>
-        <p className="muted small">Vai aparecer na sua estante e como post no feed.</p>
+        <p className="muted small">Vai aparecer na sua estante, com a nota e o comentário.</p>
         {error && <p className="msg error">{error}</p>}
         <div className="row">
           <button className="btn ghost" onClick={onClose} disabled={busy}>

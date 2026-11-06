@@ -8,7 +8,6 @@
   --exercise: #ff6b35;
   --reading: #8b7bff;
   --gold: #ffd166;
-  --feed: #4cc9f0;
   --challenge: #f15bb5;
   --ok: #3ddc97;
   --danger: #ff5d73;
@@ -28,7 +27,6 @@ h1, h2 { font-family: var(--display); margin: 0; letter-spacing: -0.02em; }
 
 .app[data-tab='leitura'], .act-leitura { --accent: var(--reading); }
 .app[data-tab='ranking'] { --accent: var(--gold); }
-.app[data-tab='feed'] { --accent: var(--feed); }
 .app[data-tab='desafio'] { --accent: var(--challenge); }
 
 .splash { min-height: 100dvh; display: grid; place-items: center; font-size: 48px; }
@@ -58,6 +56,7 @@ h1, h2 { font-family: var(--display); margin: 0; letter-spacing: -0.02em; }
 .btn.primary { background: var(--accent); color: #111; }
 .btn.ghost { background: var(--surface-2); }
 .btn.full { width: 100%; }
+.small-btn { padding: 9px 16px; font-size: 14px; border-radius: 99px; }
 .big-btn { width: 100%; font-size: 17px; padding: 16px; margin-top: 14px; }
 
 .segmented { display: grid; grid-template-columns: 1fr 1fr; background: var(--surface-2); border-radius: 14px; padding: 4px; }
@@ -152,7 +151,7 @@ textarea:focus { border-color: var(--accent); }
 .stat-big { font-family: var(--display); font-size: 32px; font-weight: 800; margin: 6px 0; }
 
 /* Barra de abas */
-.tabbar { position: fixed; bottom: 0; left: 0; right: 0; display: grid; grid-template-columns: repeat(6, 1fr); background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-top: 1px solid var(--line); padding: 8px 8px calc(8px + env(safe-area-inset-bottom)); z-index: 10; }
+.tabbar { position: fixed; bottom: 0; left: 0; right: 0; display: grid; grid-template-columns: repeat(5, 1fr); background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-top: 1px solid var(--line); padding: 8px 8px calc(8px + env(safe-area-inset-bottom)); z-index: 10; }
 .tab { background: none; border: 0; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 6px 0; color: var(--muted); }
 .tab-icon { font-size: 22px; filter: grayscale(1); opacity: .7; transition: .2s; }
 .tab-label { font-size: 10.5px; font-weight: 600; letter-spacing: -0.01em; }
@@ -184,58 +183,6 @@ textarea:focus { border-color: var(--accent); }
 .tap { position: absolute; top: 80px; bottom: 0; width: 40%; background: none; border: 0; z-index: 1; }
 .tap.left { left: 0; }
 .tap.right { right: 0; width: 60%; }
-
-/* Feed */
-.feed { display: flex; flex-direction: column; gap: 14px; }
-.new-post { display: flex; gap: 12px; align-items: flex-start; }
-.composer { flex: 1; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
-.composer textarea { background: transparent; border: 0; padding: 10px 0 4px; resize: none; overflow: hidden; border-radius: 0; font-size: 17px; line-height: 1.4; }
-.composer textarea:focus { border: 0; }
-.composer-photo { position: relative; align-self: flex-start; }
-.composer-photo img { max-height: 220px; max-width: 100%; border-radius: 14px; display: block; }
-.composer-photo button { position: absolute; top: 6px; right: 6px; width: 28px; height: 28px; border-radius: 50%; border: 0; background: rgba(0, 0, 0, .7); color: #fff; }
-.composer-bar { display: flex; align-items: center; gap: 10px; border-top: 1px solid var(--line); padding-top: 10px; }
-.composer-bar .btn { margin-left: auto; }
-.icon-btn { background: var(--surface-2); border: 0; width: 38px; height: 38px; border-radius: 50%; font-size: 17px; }
-.icon-btn:disabled { opacity: .4; }
-.small-btn { padding: 9px 16px; font-size: 14px; border-radius: 99px; }
-.counter.over { color: var(--danger); }
-
-.feed-list { display: flex; flex-direction: column; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
-.feed-list:empty { display: none; }
-.post { display: flex; gap: 12px; padding: 14px 16px; border-top: 1px solid var(--line); }
-.post:first-child { border-top: 0; }
-.post-avatar { background: none; border: 0; padding: 0; height: fit-content; border-radius: 50%; }
-.post-main { flex: 1; min-width: 0; }
-.post-head { display: flex; align-items: center; gap: 6px; font-size: 14px; }
-.post-name { background: none; border: 0; padding: 0; font-weight: 700; font-size: 15px; }
-.post-delete { margin-left: auto; background: none; border: 0; opacity: .55; font-size: 15px; padding: 2px 4px; }
-.post-body { margin: 4px 0 0; font-size: 15px; line-height: 1.45; white-space: pre-wrap; overflow-wrap: anywhere; }
-.post-photo { margin-top: 10px; border-radius: 14px; overflow: hidden; border: 1px solid var(--line); background: #000; }
-.post-photo img { display: block; width: 100%; max-height: 420px; object-fit: cover; }
-.post-photo .muted { display: block; padding: 40px; text-align: center; }
-.post-actions { display: flex; align-items: center; gap: 18px; margin-top: 10px; }
-.action { background: none; border: 0; padding: 4px 0; color: var(--muted); font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 6px; min-width: 36px; }
-.action.liked { color: #ff6b8a; }
-.action.small { font-size: 12px; min-width: 0; padding: 0; }
-.expires { margin-left: auto; font-size: 12px; color: var(--muted); }
-
-.thread { max-height: 92dvh; padding-top: 10px; gap: 0; }
-.thread-head { display: flex; align-items: center; justify-content: center; position: relative; min-height: 28px; }
-.thread-head .viewer-close { position: absolute; right: 0; top: -4px; }
-.thread .post { padding: 12px 0; }
-.thread-comments { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; padding: 12px 0; border-top: 1px solid var(--line); min-height: 80px; }
-.comment { display: flex; gap: 10px; }
-.comment-main { flex: 1; min-width: 0; }
-.comment-bubble { background: var(--surface-2); border-radius: 4px 16px 16px 16px; padding: 8px 12px 10px; }
-.comment-bubble .post-name { font-size: 14px; }
-.comment-bubble .post-body { margin-top: 2px; font-size: 14px; }
-.comment-bubble .post-photo { margin-top: 8px; }
-.comment-actions { display: flex; align-items: center; gap: 14px; padding: 4px 6px 0; font-size: 12px; }
-.thread-composer { border-top: 1px solid var(--line); padding-top: 4px; }
-.thread-composer .composer-bar { border-top: 0; padding-top: 0; }
-.profile-sheet .feed-list { flex: none; }
-.comment-bubble .post-photo img { max-height: 260px; }
 
 /* Estante */
 .current-book, .shelf { display: flex; flex-direction: column; gap: 6px; }
