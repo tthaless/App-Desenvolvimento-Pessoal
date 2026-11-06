@@ -12,37 +12,80 @@ export function timeAgo(iso: string): string {
   return `${Math.floor(h / 24)} d`
 }
 
-/** Reduz a foto para no máximo 1280px e ~150-250 KB antes de enviar. */
-export async function compressImage(file: File, maxSize = 1280, quality = 0.75): Promise<Blob> {
-  const bitmap = await createImageBitmap(file, { imageOrientation: 'from-image' })
-  const scale = Math.min(1, maxSize / Math.max(bitmap.width, bitmap.height))
-  const canvas = document.createElement('canvas')
-  canvas.width = Math.round(bitmap.width * scale)
-  canvas.height = Math.round(bitmap.height * scale)
-  canvas.getContext('2d')!.drawImage(bitmap, 0, 0, canvas.width, canvas.height)
-  bitmap.close()
+type Decoded = { source: CanvasImageSource; width: number; height: number; done: () => void }
+
+const UNSUPPORTED =
+  'Não consegui abrir essa foto. Se ela for HEIC (padrão de iPhone e de alguns Samsung), tire um print dela e envie o print, ou mude a câmera para "Mais compatível".'
+
+/**
+ * Abre a foto de jeitos diferentes, porque cada celular aceita um:
+ * 1) createImageBitmap girando pela orientação da câmera; 2) sem a opção (Safari antigo);
+ * 3) por uma <img>, que funciona até onde o createImageBitmap não existe.
+ */
+async function decodeImage(file: File): Promise<Decoded> {
+  if (typeof createImageBitmap === 'function') {
+    for (const opts of [{ imageOrientation: 'from-image' } as ImageBitmapOptions, undefined]) {
+      try {
+        const bmp = await (opts ? createImageBitmap(file, opts) : createImageBitmap(file))
+        if (bmp.width && bmp.height) return { source: bmp, width: bmp.width, height: bmp.height, done: () => bmp.close() }
+      } catch {
+        /* tenta o próximo jeito */
+      }
+    }
+  }
+  const url = URL.createObjectURL(file)
+  try {
+    const img = new Image()
+    img.decoding = 'async'
+    img.src = url
+    await img.decode()
+    if (!img.naturalWidth) throw new Error()
+    return { source: img, width: img.naturalWidth, height: img.naturalHeight, done: () => URL.revokeObjectURL(url) }
+  } catch {
+    URL.revokeObjectURL(url)
+    throw new Error(UNSUPPORTED)
+  }
+}
+
+function toJpeg(canvas: HTMLCanvasElement, quality: number): Promise<Blob> {
   return new Promise((resolve, reject) =>
     canvas.toBlob(
-      (blob) => (blob ? resolve(blob) : reject(new Error('Não foi possível processar a foto.'))),
+      (blob) => (blob ? resolve(blob) : reject(new Error('Não foi possível processar a foto. Tente uma foto menor ou um print dela.'))),
       'image/jpeg',
       quality,
     ),
   )
 }
 
+/** Reduz a foto para no máximo 1280px e ~150-250 KB antes de enviar. */
+export async function compressImage(file: File, maxSize = 1280, quality = 0.75): Promise<Blob> {
+  const img = await decodeImage(file)
+  try {
+    const scale = Math.min(1, maxSize / Math.max(img.width, img.height))
+    const canvas = document.createElement('canvas')
+    canvas.width = Math.round(img.width * scale)
+    canvas.height = Math.round(img.height * scale)
+    canvas.getContext('2d')!.drawImage(img.source, 0, 0, canvas.width, canvas.height)
+    return await toJpeg(canvas, quality)
+  } finally {
+    img.done()
+  }
+}
+
 /** Recorta o centro da foto em quadrado, para a foto de perfil. */
 export async function squareAvatar(file: File, size = 512): Promise<Blob> {
-  const bitmap = await createImageBitmap(file, { imageOrientation: 'from-image' })
-  const side = Math.min(bitmap.width, bitmap.height)
-  const canvas = document.createElement('canvas')
-  canvas.width = canvas.height = Math.min(size, side)
-  canvas
-    .getContext('2d')!
-    .drawImage(bitmap, (bitmap.width - side) / 2, (bitmap.height - side) / 2, side, side, 0, 0, canvas.width, canvas.height)
-  bitmap.close()
-  return new Promise((resolve, reject) =>
-    canvas.toBlob((b) => (b ? resolve(b) : reject(new Error('Não foi possível processar a foto.'))), 'image/jpeg', 0.8),
-  )
+  const img = await decodeImage(file)
+  try {
+    const side = Math.min(img.width, img.height)
+    const canvas = document.createElement('canvas')
+    canvas.width = canvas.height = Math.min(size, side)
+    canvas
+      .getContext('2d')!
+      .drawImage(img.source, (img.width - side) / 2, (img.height - side) / 2, side, side, 0, 0, canvas.width, canvas.height)
+    return await toJpeg(canvas, 0.8)
+  } finally {
+    img.done()
+  }
 }
 
 export function errorMessage(e: unknown): string {
@@ -55,6 +98,9 @@ export function errorMessage(e: unknown): string {
   if (msg.includes('Invalid login credentials')) return 'Email ou senha incorretos.'
   if (msg.includes('User already registered')) return 'Esse email já tem conta. Use "Entrar".'
   if (msg.includes('Password should be')) return 'A senha precisa ter pelo menos 6 caracteres.'
+  if (/payload too large|exceeded the maximum allowed size/i.test(msg)) return 'A foto ficou grande demais. Tente outra ou um print dela.'
+  if (/mime type|invalid_mime/i.test(msg)) return 'Esse tipo de arquivo não é aceito. Use uma foto JPG ou PNG.'
+  if (/Failed to fetch|NetworkError|Load failed/i.test(msg)) return 'Sem conexão com o servidor. Confira a internet e tente de novo.'
   if (msg.includes('Email not confirmed')) return 'Confirme seu email antes de entrar (veja sua caixa de entrada).'
   return msg || 'Algo deu errado. Tente de novo.'
 }
