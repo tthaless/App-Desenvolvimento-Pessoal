@@ -6,11 +6,12 @@ import type { RankingRow } from '../types'
 import Avatar from './Avatar'
 import { Crown } from 'lucide-react'
 import TopBar from './TopBar'
+import { SkeletonRows } from './Skeleton'
 
 
 export default function Ranking({ userId }: { userId: string }) {
   const [periodo, setPeriodo] = useState<'semana' | 'mes'>('semana')
-  const [rows, setRows] = useState<RankingRow[]>([])
+  const [rows, setRows] = useState<RankingRow[] | null>(null)
   const [error, setError] = useState<string | null>(null)
   const members = useMembers()
   const avatarOf = (id: string) => members.find((m) => m.id === id)?.avatar_url
@@ -30,7 +31,7 @@ export default function Ranking({ userId }: { userId: string }) {
     }
   }, [periodo])
 
-  const leader = rows[0]?.pontos > 0 ? rows[0] : null
+  const leader = rows && rows[0]?.pontos > 0 ? rows[0] : null
 
   return (
     <div className="ranking">
@@ -63,7 +64,8 @@ export default function Ranking({ userId }: { userId: string }) {
 
       <section className="section">
         <ol className="rank-list">
-          {rows.map((r, i) => (
+          {rows === null && <SkeletonRows count={5} />}
+          {(rows ?? []).map((r, i) => (
             <li key={r.user_id} className={r.user_id === userId ? 'me' : ''}>
               <span className={`pos ${r.pontos > 0 && i < 3 ? `medal m${i + 1}` : ''}`}>{i + 1}</span>
               <button className="person" onClick={() => openProfile(r.user_id)}>

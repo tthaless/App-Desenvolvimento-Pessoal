@@ -10,6 +10,7 @@ import ProfileDetails from './ProfileDetails'
 import ProfileTabs from './ProfileTabs'
 import { Camera } from 'lucide-react'
 import TopBar from './TopBar'
+import { SkeletonBlock, SkeletonCard } from './Skeleton'
 
 export default function Profile({ userId }: { userId: string }) {
   const me = useMembers().find((m) => m.id === userId)
@@ -91,7 +92,18 @@ export default function Profile({ userId }: { userId: string }) {
     await supabase.auth.signOut()
   }
 
-  if (!me) return <div className="profile" />
+  if (!me)
+    return (
+      <div className="profile">
+        <TopBar title="Perfil" />
+        <div className="profile-top profile-head">
+          <SkeletonBlock width={96} height={96} radius={48} />
+          <SkeletonBlock width={140} height={22} />
+          <SkeletonBlock width={200} height={14} />
+        </div>
+        <SkeletonCard height={160} />
+      </div>
+    )
 
   return (
     <div className="profile">

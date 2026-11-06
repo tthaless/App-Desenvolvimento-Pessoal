@@ -9,12 +9,15 @@ import Bookshelf from './Bookshelf'
 import CurrentBook from './CurrentBook'
 import PdfAttachment from './PdfAttachment'
 import WantList from './WantList'
+import { SkeletonRows } from './Skeleton'
 
 /** Biblioteca de uma pessoa: contadores, lendo agora, quero ler e concluídos. */
 export default function Library({ ownerId, viewerId }: { ownerId: string; viewerId: string }) {
   const isMe = ownerId === viewerId
   const owner = useMembers().find((m) => m.id === ownerId)
   const [shelf, setShelf] = useState<Book[]>([])
+  const [shelfLoaded, setShelfLoaded] = useState(false)
+  const [wantsLoaded, setWantsLoaded] = useState(false)
   const [current, setCurrent] = useState<Book | null>(null)
   const [wants, setWants] = useState<WantItem[]>([])
   const [currentKey, setCurrentKey] = useState(0)
@@ -23,6 +26,7 @@ export default function Library({ ownerId, viewerId }: { ownerId: string; viewer
   const loadShelf = useCallback(async () => {
     try {
       setShelf(await fetchShelf(ownerId))
+      setShelfLoaded(true)
       if (!isMe) setCurrent(await fetchCurrentBook(ownerId))
     } catch (e) {
       setError(errorMessage(e))
@@ -32,6 +36,7 @@ export default function Library({ ownerId, viewerId }: { ownerId: string; viewer
   const loadWants = useCallback(async () => {
     try {
       setWants(await fetchWantLists())
+      setWantsLoaded(true)
     } catch (e) {
       setError(errorMessage(e))
     }
@@ -95,19 +100,20 @@ export default function Library({ ownerId, viewerId }: { ownerId: string; viewer
         )
       )}
 
-      <WantList ownerId={ownerId} viewerId={viewerId} all={wants} onChanged={loadWants} onStarted={() => setCurrentKey((k) => k + 1)} />
+      <WantList loading={!wantsLoaded} ownerId={ownerId} viewerId={viewerId} all={wants} onChanged={loadWants} onStarted={() => setCurrentKey((k) => k + 1)} />
 
       <section className="section shelf act-leitura">
         <div className="shelf-head">
           <h2 className="section-label">Concluídos</h2>
           {shelf.length > 0 && <span className="muted small">média {avg.toLocaleString('pt-BR', { maximumFractionDigits: 1 })}</span>}
         </div>
-        <Bookshelf
+        {!shelfLoaded && <SkeletonRows count={2} cover />}
+        {shelfLoaded && <Bookshelf
           books={shelf}
           viewerId={viewerId}
           onChanged={loadShelf}
           emptyText={isMe ? 'Termine um livro pra ele aparecer aqui.' : `${owner?.username ?? 'Essa pessoa'} ainda não terminou nenhum livro.`}
-        />
+        />}
       </section>
     </div>
   )

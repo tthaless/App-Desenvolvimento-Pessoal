@@ -7,6 +7,8 @@ import { errorMessage, timeAgo } from '../lib/utils'
 import type { Member } from '../types'
 import Avatar from './Avatar'
 import { Trash2, X } from 'lucide-react'
+import { useDragToClose } from '../lib/useDragToClose'
+import { SkeletonRows } from './Skeleton'
 
 interface Props {
   storyKey: string
@@ -21,6 +23,7 @@ interface Props {
 export default function StoryChat({ storyKey, ownerId, currentUserId, members, onClose, onChanged }: Props) {
   const [comments, setComments] = useState<StoryComment[]>([])
   const [loaded, setLoaded] = useState(false)
+  const sheetRef = useDragToClose<HTMLDivElement>(onClose)
   const [body, setBody] = useState('')
   const [sending, setSending] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -86,7 +89,7 @@ export default function StoryChat({ storyKey, ownerId, currentUserId, members, o
 
   return (
     <div className="story-chat-backdrop" onClick={onClose}>
-      <div className="story-chat" onClick={(e) => e.stopPropagation()} role="dialog" aria-label="Comentários da prova">
+      <div className="story-chat" ref={sheetRef} onClick={(e) => e.stopPropagation()} role="dialog" aria-label="Comentários da prova">
         <div className="story-chat-head">
           <span className="sheet-grip" aria-hidden />
           <strong>Comentários</strong>
@@ -96,6 +99,7 @@ export default function StoryChat({ storyKey, ownerId, currentUserId, members, o
         </div>
 
         <div className="story-chat-list" ref={listRef}>
+          {!loaded && <SkeletonRows count={2} />}
           {loaded && comments.length === 0 && <p className="muted small center empty">Ninguém comentou ainda. Começa a zoeira.</p>}
           {comments.map((c) => {
             const m = members.find((x) => x.id === c.user_id)

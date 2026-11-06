@@ -6,6 +6,7 @@ import ActivityTab from './ActivityTab'
 import Bookshelf from './Bookshelf'
 import Library from './Library'
 import TopBar from './TopBar'
+import { SkeletonRows } from './Skeleton'
 
 type Sub = 'hoje' | 'minha' | 'grupo'
 
@@ -62,6 +63,7 @@ function GroupLibrary({ userId }: { userId: string }) {
         {books.length > 0 && <span className="muted small">{books.length} recentes</span>}
       </div>
       {error && <p className="msg error">{error}</p>}
+      {!loaded && <SkeletonRows count={4} cover />}
       {loaded && <Bookshelf books={books} viewerId={userId} onChanged={load} showReader emptyText="Ninguém terminou um livro ainda." />}
     </section>
   )

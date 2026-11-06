@@ -6,8 +6,10 @@ import { errorMessage } from '../lib/utils'
 import BookCover from './BookCover'
 import BookSearch from './BookSearch'
 import { Bookmark, Check, Plus, X } from 'lucide-react'
+import { SkeletonRows } from './Skeleton'
 
 interface Props {
+  loading?: boolean
   ownerId: string
   viewerId: string
   /** Listas de todo o grupo. */
@@ -17,7 +19,7 @@ interface Props {
 }
 
 /** Lista "Quero ler": na minha, adicionar, começar e tirar; na dos amigos, "quero ler também". */
-export default function WantList({ ownerId, viewerId, all, onChanged, onStarted }: Props) {
+export default function WantList({ loading, ownerId, viewerId, all, onChanged, onStarted }: Props) {
   const isMe = ownerId === viewerId
   const [adding, setAdding] = useState(false)
   const [busy, setBusy] = useState<string | null>(null)
@@ -63,7 +65,8 @@ export default function WantList({ ownerId, viewerId, all, onChanged, onStarted 
           }
         />
       )}
-      {items.length === 0 && !adding && (
+      {loading && <SkeletonRows count={2} cover />}
+      {!loading && items.length === 0 && !adding && (
         <p className="muted small">{isMe ? 'Sua lista está vazia.' : 'Lista vazia.'}</p>
       )}
       <ul className="want-list">

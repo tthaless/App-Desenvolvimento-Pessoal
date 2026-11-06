@@ -6,6 +6,7 @@ import Avatar from './Avatar'
 import FeedList from './FeedList'
 import ProfileDetails from './ProfileDetails'
 import ProfileTabs from './ProfileTabs'
+import { useDragToClose } from '../lib/useDragToClose'
 
 interface Props {
   userId: string
@@ -17,6 +18,7 @@ interface Props {
 export default function ProfileSheet({ userId, viewerId, onClose }: Props) {
   const member = useMembers().find((m) => m.id === userId)
   const [streaks, setStreaks] = useState<StreakRow[]>([])
+  const sheetRef = useDragToClose<HTMLDivElement>(onClose, !!member)
 
   useEffect(() => {
     supabase.rpc('streaks').then(({ data }) => setStreaks(((data ?? []) as StreakRow[]).filter((r) => r.user_id === userId)))
@@ -32,7 +34,7 @@ export default function ProfileSheet({ userId, viewerId, onClose }: Props) {
 
   return (
     <div className="sheet-backdrop" onClick={onClose}>
-      <div className="sheet profile-sheet" onClick={(e) => e.stopPropagation()} role="dialog" aria-label={`Perfil de ${member.username}`}>
+      <div className="sheet profile-sheet" ref={sheetRef} onClick={(e) => e.stopPropagation()} role="dialog" aria-label={`Perfil de ${member.username}`}>
         <span className="sheet-grip" aria-hidden />
         <div className="profile-top">
           <Avatar name={member.username} url={member.avatar_url} size="xl" />

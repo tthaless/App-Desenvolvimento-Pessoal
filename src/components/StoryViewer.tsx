@@ -9,6 +9,8 @@ import Avatar from './Avatar'
 import StoryChat from './StoryChat'
 import { MessageCircle, X } from 'lucide-react'
 import ActivityIcon from './ActivityIcon'
+import { useDragToClose } from '../lib/useDragToClose'
+import { SkeletonBlock } from './Skeleton'
 
 interface Props {
   posts: StoryItem[]
@@ -26,6 +28,7 @@ export default function StoryViewer({ posts, start, currentUserId, members, onSe
   const [urls, setUrls] = useState<Record<string, string>>({})
   const [loadedId, setLoadedId] = useState<string | null>(null)
   const [chatOpen, setChatOpen] = useState(false)
+  const viewerRef = useDragToClose<HTMLDivElement>(onClose, !chatOpen)
   // Muda ao fechar o chat, para o story recomeçar a contagem.
   const [round, setRound] = useState(0)
   const [counts, setCounts] = useState<Record<string, number>>({})
@@ -99,7 +102,7 @@ export default function StoryViewer({ posts, start, currentUserId, members, onSe
   const url = urls[post.photo_path]
 
   return (
-    <div className="viewer" role="dialog" aria-label={`Story de ${name}`}>
+    <div className="viewer" ref={viewerRef} role="dialog" aria-label={`Story de ${name}`}>
       <div className="viewer-bars">
         {sameUser.map(({ p, i }) => (
           <span key={p.id} className="bar">
@@ -135,7 +138,7 @@ export default function StoryViewer({ posts, start, currentUserId, members, onSe
         {url ? (
           <img key={post.id} src={url} alt={post.caption ?? `Prova de ${name}`} onLoad={() => setLoadedId(post.id)} />
         ) : (
-          <span className="muted">Carregando…</span>
+          <SkeletonBlock width="100%" height="70%" radius={0} className="viewer-skeleton" />
         )}
       </div>
 

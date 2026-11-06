@@ -10,6 +10,7 @@ import Avatar from './Avatar'
 import BookCover from './BookCover'
 import { FlameMark } from './Logo'
 import PdfAttachment from './PdfAttachment'
+import { SkeletonBlock } from './Skeleton'
 
 interface Props {
   post: FeedPost
@@ -59,7 +60,7 @@ function UserPost({ post, userId, photoUrl, onOpenThread, onDeleted }: Props) {
         </header>
         {post.body && <p className="post-body">{post.body}</p>}
         {post.photo_path && (
-          <div className="post-photo">{photoUrl ? <img src={photoUrl} alt="" loading="lazy" /> : <span className="muted small">Carregando foto…</span>}</div>
+          <div className="post-photo">{photoUrl ? <img src={photoUrl} alt="" loading="lazy" /> : <SkeletonBlock height={240} radius={0} />}</div>
         )}
         <footer className="post-actions">
           {onOpenThread && (

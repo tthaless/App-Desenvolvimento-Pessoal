@@ -7,6 +7,8 @@ import BookCover from './BookCover'
 import BookSearch from './BookSearch'
 import PdfAttachment from './PdfAttachment'
 import { Check } from 'lucide-react'
+import { useDragToClose } from '../lib/useDragToClose'
+import { SkeletonCard } from './Skeleton'
 
 interface Props {
   userId: string
@@ -70,7 +72,7 @@ export default function CurrentBook({ userId, refreshKey, onShelfChanged, onLoad
     }
   }
 
-  if (!loaded) return null
+  if (!loaded) return <SkeletonCard height={200} />
 
   return (
     <section className="card current-book act-leitura">
@@ -131,6 +133,7 @@ function FinishSheet({ book, onClose, onDone }: { book: Book; onClose: () => voi
   const [review, setReview] = useState('')
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const sheetRef = useDragToClose<HTMLDivElement>(() => !busy && onClose())
 
   async function submit() {
     setBusy(true)
@@ -146,7 +149,7 @@ function FinishSheet({ book, onClose, onDone }: { book: Book; onClose: () => voi
 
   return (
     <div className="sheet-backdrop" onClick={() => !busy && onClose()}>
-      <div className="sheet finish-sheet act-leitura" onClick={(e) => e.stopPropagation()} role="dialog" aria-label="Terminar livro">
+      <div className="sheet finish-sheet act-leitura" ref={sheetRef} onClick={(e) => e.stopPropagation()} role="dialog" aria-label="Terminar livro">
         <span className="sheet-grip" aria-hidden />
         <p className="muted small center">Terminou de ler</p>
         <p className="book-title center">{book.title}</p>

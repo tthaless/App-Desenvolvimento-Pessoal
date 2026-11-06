@@ -9,6 +9,8 @@ import Avatar from './Avatar'
 import Composer from './Composer'
 import FeedPostCard from './FeedPostCard'
 import { X } from 'lucide-react'
+import { useDragToClose } from '../lib/useDragToClose'
+import { SkeletonRows } from './Skeleton'
 
 interface Props {
   post: FeedPost
@@ -21,12 +23,15 @@ interface Props {
 export default function PostThread({ post, userId, onClose, onChanged }: Props) {
   const [comments, setComments] = useState<FeedComment[]>([])
   const [error, setError] = useState<string | null>(null)
+  const [loaded, setLoaded] = useState(false)
+  const sheetRef = useDragToClose<HTMLDivElement>(onClose)
   const urls = useSignedUrls([post.photo_path, ...comments.map((c) => c.photo_path)])
 
   const load = useCallback(async () => {
     try {
       setComments(await fetchComments(post.id))
       setError(null)
+      setLoaded(true)
     } catch (e) {
       setError(errorMessage(e))
     }
@@ -51,7 +56,7 @@ export default function PostThread({ post, userId, onClose, onChanged }: Props) 
 
   return (
     <div className="sheet-backdrop" onClick={onClose}>
-      <div className="sheet thread" onClick={(e) => e.stopPropagation()} role="dialog" aria-label="Comentários">
+      <div className="sheet thread" ref={sheetRef} onClick={(e) => e.stopPropagation()} role="dialog" aria-label="Comentários">
         <div className="thread-head">
           <span className="sheet-grip" aria-hidden />
           <button className="viewer-close" onClick={onClose} aria-label="Fechar">
@@ -69,7 +74,8 @@ export default function PostThread({ post, userId, onClose, onChanged }: Props) 
         />
         <div className="thread-comments">
           {error && <p className="msg error">{error}</p>}
-          {comments.length === 0 && !error && <p className="muted small center">Nenhum comentário ainda.</p>}
+          {!loaded && <SkeletonRows count={2} />}
+          {loaded && comments.length === 0 && !error && <p className="muted small center">Nenhum comentário ainda.</p>}
           {comments.map((c) => (
             <CommentItem key={c.id} comment={c} userId={userId} photoUrl={c.photo_path ? urls[c.photo_path] : undefined} onChanged={load} />
           ))}

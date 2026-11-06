@@ -6,6 +6,7 @@ import type { FeedPost } from '../lib/feed'
 import { errorMessage } from '../lib/utils'
 import FeedPostCard from './FeedPostCard'
 import PostThread from './PostThread'
+import { SkeletonRows } from './Skeleton'
 
 interface Props {
   userId: string
@@ -64,6 +65,7 @@ export default function FeedList({ userId, authorId, emptyText, refreshKey }: Pr
   return (
     <>
       {error && <p className="msg error">{error}</p>}
+      {!loaded && <SkeletonRows count={3} />}
       {loaded && posts.length === 0 && !error && <p className="muted small center empty">{emptyText}</p>}
       <div className="feed-list">
         {posts.map((p) => (

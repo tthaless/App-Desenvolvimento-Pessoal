@@ -5,6 +5,7 @@ import { loadSeen, saveSeen } from '../lib/utils'
 import type { StoryItem } from '../types'
 import Avatar from './Avatar'
 import StoryViewer from './StoryViewer'
+import { SkeletonStories } from './Skeleton'
 
 /** Barra única de stories: provas de exercício, leitura e desafio das últimas 24h. */
 export default function Stories({ userId }: { userId: string }) {
@@ -93,6 +94,7 @@ export default function Stories({ userId }: { userId: string }) {
   return (
     <>
       <section className="stories" aria-label="Stories das últimas 24 horas">
+        {!loaded && <SkeletonStories />}
         {circles.length === 0 && loaded && <p className="muted small">Ninguém postou nas últimas 24h. Seja o primeiro.</p>}
         {circles.map((c) => {
           const m = memberOf(c.userId)

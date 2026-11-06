@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { attachmentUrl, loadPdfjs } from '../lib/pdf'
 import { X } from 'lucide-react'
+import { SkeletonBlock } from './Skeleton'
 
 /** Abre o PDF dentro do app, página por página, sem precisar baixar. */
 export default function PdfViewer({ path, title, onClose }: { path: string; title: string; onClose: () => void }) {
@@ -67,7 +68,12 @@ export default function PdfViewer({ path, title, onClose }: { path: string; titl
         </button>
       </header>
       <div className="pdf-body">
-        {status === 'loading' && <p className="muted center empty">Abrindo PDF…</p>}
+        {status === 'loading' && (
+          <div className="pdf-pages">
+            <SkeletonBlock height={480} radius={6} />
+            <SkeletonBlock height={480} radius={6} />
+          </div>
+        )}
         {status === 'error' && <p className="msg error">Não foi possível abrir o PDF. Ele pode ter sido apagado ou ficado privado.</p>}
         <div ref={pagesRef} className="pdf-pages" />
       </div>
