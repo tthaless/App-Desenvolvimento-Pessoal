@@ -15,6 +15,7 @@ import { useMembers } from '../lib/members'
 import { timeAgo } from '../lib/utils'
 import { useDragToClose } from '../lib/useDragToClose'
 import Avatar from './Avatar'
+import { ArrowMark } from './Logo'
 import { SkeletonRows } from './Skeleton'
 
 const PROVA: Record<string, string> = {
@@ -40,12 +41,18 @@ function describe(n: AppNotification) {
       return <>curtiu que você terminou {livro}</>
     case 'want_too':
       return <>também quer ler {livro}, da sua lista</>
+    case 'challenge_vote':
+      return <>votou na sua ideia de desafio {n.detail ? <em>{n.detail}</em> : ''}</>
+    case 'last_one':
+      return null
   }
 }
 
 function iconOf(n: AppNotification): { Icon: LucideIcon; tone: string } {
   if (n.kind === 'book_like') return { Icon: Heart, tone: 'like' }
   if (n.kind === 'want_too') return { Icon: Bookmark, tone: 'reading' }
+  if (n.kind === 'challenge_vote') return { Icon: Target, tone: 'challenge' }
+  if (n.kind === 'last_one') return n.detail === 'leitura' ? { Icon: BookOpen, tone: 'reading' } : { Icon: Dumbbell, tone: 'exercise' }
   if (n.kind.startsWith('story')) {
     if (n.detail === 'exercicio') return { Icon: Dumbbell, tone: 'exercise' }
     if (n.detail === 'leitura') return { Icon: BookOpen, tone: 'reading' }
@@ -104,7 +111,7 @@ export default function NotificationsSheet() {
             <div className="notif-empty">
               <BellOff size={28} aria-hidden />
               <p>Nada por aqui ainda.</p>
-              <p className="muted small">Quando comentarem nas suas provas e posts, curtirem um livro seu ou quiserem ler algo da sua lista, aparece aqui.</p>
+              <p className="muted small">Comentários nas suas provas e posts, curtidas nos seus livros, votos nas suas ideias de desafio e o aviso de quando só falta você postar aparecem aqui.</p>
             </div>
           )}
           {items.map((n) => {
@@ -121,19 +128,32 @@ export default function NotificationsSheet() {
                 onClick={() => target && goTo(target)}
               >
                 <span className="notif-avatar">
-                  <Avatar name={name} url={actor?.avatar_url} size="md" />
+                  {n.kind === 'last_one' ? (
+                    <span className="avatar md notif-app">
+                      <ArrowMark size={30} />
+                    </span>
+                  ) : (
+                    <Avatar name={name} url={actor?.avatar_url} size="md" />
+                  )}
                   <span className={`notif-kind tone-${tone}`}>
                     <Icon size={11} strokeWidth={2.6} aria-hidden />
                   </span>
                 </span>
                 <span className="notif-text">
-                  <span>
-                    <strong>{name}</strong> {describe(n)}
-                  </span>
+                  {n.kind === 'last_one' ? (
+                    <span>
+                      <strong>Só falta você!</strong> O resto do grupo já {n.detail === 'leitura' ? 'leu' : 'treinou'} hoje. Vai ficar de
+                      fora?
+                    </span>
+                  ) : (
+                    <span>
+                      <strong>{name}</strong> {describe(n)}
+                    </span>
+                  )}
                   {n.preview && <span className="notif-preview">“{n.preview}”</span>}
                   <span className="notif-time">
                     {timeAgo(n.created_at)}
-                    {expired && ' · já sumiu'}
+                    {expired && (n.kind === 'last_one' ? ' · o dia acabou' : ' · já sumiu')}
                   </span>
                 </span>
                 {fresh.has(n.id) && <span className="notif-dot" aria-label="Nova" />}

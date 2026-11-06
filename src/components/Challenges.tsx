@@ -26,9 +26,18 @@ import TopBar from './TopBar'
 import { useDragToClose } from '../lib/useDragToClose'
 import Celebration from './Celebration'
 import { SkeletonCard, SkeletonRows } from './Skeleton'
+import { clearNavTarget, useNavTarget } from '../lib/notifications'
 
 export default function Challenges({ userId }: { userId: string }) {
   const [view, setView] = useState<'semana' | 'votacao'>('semana')
+  const target = useNavTarget()
+
+  // Aviso de voto na minha ideia abre a votação.
+  useEffect(() => {
+    if (target?.type !== 'tab' || target.tab !== 'desafio') return
+    setView('votacao')
+    clearNavTarget()
+  }, [target])
 
   return (
     <div className="challenges">

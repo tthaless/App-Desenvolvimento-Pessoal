@@ -2,7 +2,15 @@ import { useSyncExternalStore } from 'react'
 import type { RealtimeChannel } from '@supabase/supabase-js'
 import { supabase } from './supabase'
 
-export type NotificationKind = 'story_comment' | 'story_reply' | 'feed_comment' | 'feed_reply' | 'book_like' | 'want_too'
+export type NotificationKind =
+  | 'story_comment'
+  | 'story_reply'
+  | 'feed_comment'
+  | 'feed_reply'
+  | 'book_like'
+  | 'want_too'
+  | 'challenge_vote'
+  | 'last_one'
 
 export interface AppNotification {
   id: string
@@ -11,6 +19,7 @@ export interface AppNotification {
   story_key: string | null
   feed_post_id: string | null
   book_id: string | null
+  idea_id?: string | null
   detail: string | null
   preview: string | null
   expires_at: string | null
@@ -19,7 +28,11 @@ export interface AppNotification {
 }
 
 /** Para onde o app vai quando a pessoa toca num aviso. */
-export type NavTarget = { type: 'story'; key: string } | { type: 'feed'; postId: string } | { type: 'library' }
+export type NavTarget =
+  | { type: 'story'; key: string }
+  | { type: 'feed'; postId: string }
+  | { type: 'library' }
+  | { type: 'tab'; tab: 'exercicio' | 'leitura' | 'desafio' }
 
 interface State {
   items: AppNotification[]
@@ -51,7 +64,7 @@ async function load() {
   if (!currentUser) return
   const { data, error } = await supabase
     .from('notifications')
-    .select('id,actor_id,kind,story_key,feed_post_id,book_id,detail,preview,expires_at,created_at,read_at')
+    .select('*')
     .order('created_at', { ascending: false })
     .limit(60)
   // Antes do banco ter a tabela, simplesmente não mostra nada.
@@ -137,5 +150,7 @@ export function targetOf(n: AppNotification): NavTarget | null {
   if ((n.kind === 'story_comment' || n.kind === 'story_reply') && n.story_key) return { type: 'story', key: n.story_key }
   if ((n.kind === 'feed_comment' || n.kind === 'feed_reply') && n.feed_post_id) return { type: 'feed', postId: n.feed_post_id }
   if (n.kind === 'book_like' || n.kind === 'want_too') return { type: 'library' }
+  if (n.kind === 'challenge_vote') return { type: 'tab', tab: 'desafio' }
+  if (n.kind === 'last_one') return { type: 'tab', tab: n.detail === 'leitura' ? 'leitura' : 'exercicio' }
   return null
 }

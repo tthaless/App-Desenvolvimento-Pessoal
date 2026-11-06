@@ -18,8 +18,9 @@ export default function ReadingTab({ userId }: { userId: string }) {
 
   // Aviso de curtida ou de "quero ler também" abre a minha biblioteca.
   useEffect(() => {
-    if (target?.type !== 'library') return
-    setSub('minha')
+    if (target?.type === 'library') setSub('minha')
+    else if (target?.type === 'tab' && target.tab === 'leitura') setSub('hoje')
+    else return
     clearNavTarget()
   }, [target])
 

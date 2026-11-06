@@ -17,7 +17,7 @@ import Avatar from './components/Avatar'
 import { ArrowMark } from './components/Logo'
 import { useMembers } from './lib/members'
 import NotificationsSheet from './components/NotificationsSheet'
-import { startNotifications, stopNotifications, useNavTarget } from './lib/notifications'
+import { clearNavTarget, startNotifications, stopNotifications, useNavTarget } from './lib/notifications'
 
 type Tab = 'exercicio' | 'leitura' | 'desafio' | 'feed' | 'ranking' | 'perfil'
 
@@ -66,6 +66,10 @@ export default function App() {
     if (navTarget.type === 'story') setTab('exercicio')
     if (navTarget.type === 'feed') setTab('feed')
     if (navTarget.type === 'library') setTab('leitura')
+    if (navTarget.type === 'tab') {
+      setTab(navTarget.tab)
+      if (navTarget.tab === 'exercicio') clearNavTarget()
+    }
     closeProfile()
   }, [navTarget, closeProfile])
 
