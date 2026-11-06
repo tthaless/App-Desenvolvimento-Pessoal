@@ -43,9 +43,10 @@ npm run dev
 - **Pontos**: 10 por atividade feita no dia, +5 no dia em que faz exercício e leitura, +30 por cumprir o desafio da semana em 5 dos 7 dias (+40 com os 7). A semana começa na segunda.
 - **Stories** juntam exercício e leitura das últimas 24 horas numa barra só.
 - **Perfil**: foto, descrição, livro que está lendo e exercícios que faz. Toque no nome de alguém para ver o perfil.
-- **Estante**: só entram livros começados no app. As provas de leitura ficam ligadas ao livro em andamento; ao terminar, a pessoa dá uma nota de 1 a 10 (com decimal) e um comentário opcional, e o livro vai pra estante. Dá pra largar um livro sem que ele vá pra estante.
+- **Biblioteca** (aba Leitura → Biblioteca, e na Estante do perfil): lendo agora, lista "Quero ler" e concluídos, com contadores no topo. A capa vem automática da Open Library. Só entram livros começados no app; a data de conclusão é marcada sozinha ao terminar, com nota de 1 a 10 (com decimal) e comentário opcional. Cada livro pode ter um PDF de anotações (até 5 MB e 30 páginas), visível pro grupo ou só pra pessoa. Na lista de um amigo dá pra marcar "Quero ler também".
+- **Aviso automático no feed**: ao terminar um livro, o Streak publica um post (com o foguinho) que o grupo pode curtir e comentar. As curtidas ficam contadas na estante, mesmo depois que o post some.
 - **Desafio da semana**: durante a semana, cada um propõe desafios e vota (não vale votar na própria ideia). Na segunda, o mais votado vira o desafio; no empate, ganha quem propôs primeiro. Sem ideias, a semana fica sem desafio. Cumprir o desafio do dia exige foto e aparece nos stories.
-- **Feed**: posts de até 280 caracteres com uma foto opcional e comentários (também com uma foto opcional). Sem curtidas. Tudo some em 24 horas. Feed não vale ponto.
+- **Feed**: posts de até 280 caracteres com uma foto opcional e comentários (também com uma foto opcional). Sem curtidas, exceto no aviso automático de livro terminado. Tudo some em 24 horas. Feed não vale ponto.
 - **Comentários nas provas**: dentro de cada story dá pra comentar a prova do amigo; todo mundo vê e comenta, e os comentários somem junto com o story, em 24h.
 
 ## Roadmap
@@ -61,9 +62,10 @@ npm run dev
 9. [x] Stories de exercício e leitura juntos
 10. [x] Comentários nas provas dos stories
 11. [x] Feed com posts e comentários que somem em 24h
-12. [x] Estante de livros com nota e comentário
-13. [x] Desafio da semana com votação
-14. [ ] Apagar fotos das provas com mais de 24h automaticamente
-15. [ ] PWA (instalar na tela do celular) + deploy
-16. [ ] Vencedor da semana/mês passados no ranking
-17. [ ] Notificações
+12. [x] Biblioteca com capas, Quero ler, PDF de anotações e aviso automático no feed
+13. [x] Estante de livros com nota e comentário
+14. [x] Desafio da semana com votação
+15. [ ] Apagar fotos das provas com mais de 24h automaticamente
+16. [ ] PWA (instalar na tela do celular) + deploy
+17. [ ] Vencedor da semana/mês passados no ranking
+18. [ ] Notificações
