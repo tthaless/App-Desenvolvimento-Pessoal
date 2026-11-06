@@ -10,7 +10,7 @@ import Ranking from './components/Ranking'
 import Profile from './components/Profile'
 import ProfileSheet from './components/ProfileSheet'
 import { useOpenProfile } from './lib/members'
-import { cleanupMyFeedPhotos } from './lib/feed'
+import { cleanupMyOldPhotos } from './lib/feed'
 import { BookOpen, Dumbbell, MessageCircle, Target, Trophy, User } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import Avatar from './components/Avatar'
@@ -47,10 +47,10 @@ export default function App() {
     return () => data.subscription.unsubscribe()
   }, [])
 
-  // Apaga do armazenamento as fotos do feed que já passaram de 24h.
+  // Apaga do armazenamento as fotos (provas, desafio e feed) que já passaram de 24h.
   const sessionUserId = session?.user.id
   useEffect(() => {
-    if (sessionUserId) cleanupMyFeedPhotos(sessionUserId).catch(() => {})
+    if (sessionUserId) cleanupMyOldPhotos(sessionUserId).catch(() => {})
   }, [sessionUserId])
 
   // Avisos de comentários, curtidas e "quero ler também".
