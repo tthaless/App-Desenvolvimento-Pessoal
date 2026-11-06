@@ -18,11 +18,24 @@ const UNSUPPORTED =
   'Não consegui abrir essa foto. Se ela for HEIC (padrão de iPhone e de alguns Samsung), tire um print dela e envie o print, ou mude a câmera para "Mais compatível".'
 
 /**
- * Abre a foto de jeitos diferentes, porque cada celular aceita um:
- * 1) createImageBitmap girando pela orientação da câmera; 2) sem a opção (Safari antigo);
- * 3) por uma <img>, que funciona até onde o createImageBitmap não existe.
+ * Abre a foto de jeitos diferentes, porque cada celular aceita um.
+ * Primeiro por uma <img>: todos os navegadores atuais já desviram a foto pela
+ * orientação da câmera (no iPhone, o outro jeito deixava a foto deitada).
+ * Se não der, tenta o createImageBitmap (com e sem a opção de orientação).
  */
 async function decodeImage(file: File): Promise<Decoded> {
+  const url = URL.createObjectURL(file)
+  try {
+    const img = new Image()
+    img.decoding = 'async'
+    img.src = url
+    await img.decode()
+    if (img.naturalWidth && img.naturalHeight)
+      return { source: img, width: img.naturalWidth, height: img.naturalHeight, done: () => URL.revokeObjectURL(url) }
+  } catch {
+    /* tenta o próximo jeito */
+  }
+  URL.revokeObjectURL(url)
   if (typeof createImageBitmap === 'function') {
     for (const opts of [{ imageOrientation: 'from-image' } as ImageBitmapOptions, undefined]) {
       try {
@@ -33,18 +46,7 @@ async function decodeImage(file: File): Promise<Decoded> {
       }
     }
   }
-  const url = URL.createObjectURL(file)
-  try {
-    const img = new Image()
-    img.decoding = 'async'
-    img.src = url
-    await img.decode()
-    if (!img.naturalWidth) throw new Error()
-    return { source: img, width: img.naturalWidth, height: img.naturalHeight, done: () => URL.revokeObjectURL(url) }
-  } catch {
-    URL.revokeObjectURL(url)
-    throw new Error(UNSUPPORTED)
-  }
+  throw new Error(UNSUPPORTED)
 }
 
 function toJpeg(canvas: HTMLCanvasElement, quality: number): Promise<Blob> {
