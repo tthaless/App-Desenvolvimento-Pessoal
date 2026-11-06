@@ -128,11 +128,13 @@ export default function ActivityTab({ activity, userId }: Props) {
               : 'Comece seu streak hoje.'}
         </p>
         {myStreak && myStreak.best_streak > 0 && <p className="muted small hero-best">Recorde: {myStreak.best_streak} dias</p>}
-        {context && (
+        {context ? (
           <p className="hero-context">
             {activity === 'leitura' ? '📖 Lendo: ' : '🏋️ '}
             <strong>{context}</strong>
           </p>
+        ) : (
+          activity === 'leitura' && <p className="hero-context">📖 Cadastre o livro que está lendo no Perfil pra montar sua estante.</p>
         )}
         <button className={`btn ${iDidToday ? 'ghost' : 'primary'} big-btn`} onClick={() => inputRef.current?.click()}>
           📸 {iDidToday ? 'Postar outra foto' : meta.verb}

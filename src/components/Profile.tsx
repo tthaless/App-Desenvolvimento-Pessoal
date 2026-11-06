@@ -5,6 +5,8 @@ import { clearMembers, refreshMembers, useMembers } from '../lib/members'
 import { errorMessage, squareAvatar } from '../lib/utils'
 import type { StreakRow } from '../types'
 import Avatar from './Avatar'
+import Bookshelf from './Bookshelf'
+import CurrentBook from './CurrentBook'
 import FeedList from './FeedList'
 import ProfileDetails from './ProfileDetails'
 
@@ -13,7 +15,8 @@ export default function Profile({ userId }: { userId: string }) {
   const [streaks, setStreaks] = useState<StreakRow[]>([])
   const [total, setTotal] = useState(0)
   const [editing, setEditing] = useState(false)
-  const [form, setForm] = useState({ username: '', bio: '', current_book: '', exercises: '' })
+  const [form, setForm] = useState({ username: '', bio: '', exercises: '' })
+  const [shelfKey, setShelfKey] = useState(0)
   const [saving, setSaving] = useState(false)
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -33,7 +36,6 @@ export default function Profile({ userId }: { userId: string }) {
     setForm({
       username: me.username,
       bio: me.bio ?? '',
-      current_book: me.current_book ?? '',
       exercises: me.exercises ?? '',
     })
     setError(null)
@@ -51,7 +53,6 @@ export default function Profile({ userId }: { userId: string }) {
       .update({
         username,
         bio: form.bio.trim() || null,
-        current_book: form.current_book.trim() || null,
         exercises: form.exercises.trim() || null,
       })
       .eq('id', userId)
@@ -138,15 +139,6 @@ export default function Profile({ userId }: { userId: string }) {
             <span className="counter">{form.bio.length}/160</span>
           </label>
           <label>
-            📖 Livro que está lendo
-            <input
-              value={form.current_book}
-              onChange={(e) => setForm({ ...form, current_book: e.target.value })}
-              maxLength={120}
-              placeholder="ex: Hábitos Atômicos"
-            />
-          </label>
-          <label>
             🏋️ Exercícios que você faz
             <input
               value={form.exercises}
@@ -166,7 +158,9 @@ export default function Profile({ userId }: { userId: string }) {
         </form>
       ) : (
         <>
-          <ProfileDetails member={me} streaks={streaks} />
+          <ProfileDetails member={me} streaks={streaks} hideBook />
+          <CurrentBook userId={userId} onShelfChanged={() => setShelfKey((k) => k + 1)} />
+          <Bookshelf userId={userId} refreshKey={shelfKey} />
           <h2 className="section-title">Seus posts das últimas 24h</h2>
           <FeedList userId={userId} authorId={userId} emptyText="Você não postou nada no feed hoje." />
         </>
