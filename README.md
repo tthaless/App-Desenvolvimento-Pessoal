@@ -45,8 +45,6 @@ npm run dev
 - **Perfil**: foto, descrição, livro que está lendo e exercícios que faz. Toque no nome de alguém para ver o perfil.
 - **Feed**: posts de até 280 caracteres com uma foto opcional, comentários (também com uma foto opcional) e curtidas. Tudo some em 24 horas: fica invisível na hora e é apagado de vez pela limpeza automática. Feed não vale ponto.
 
-Para conferir se o banco está completo, rode [`supabase/verificar.sql`](supabase/verificar.sql): todas as linhas devem mostrar `ok`.
-
 ## Roadmap
 
 1. [x] Repositório e base do projeto
