@@ -48,6 +48,7 @@ export default function FeedList({ userId, authorId, emptyText, refreshKey }: Pr
       .channel(`feed-${authorId ?? 'todos'}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'feed_posts' }, reload)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'feed_comments' }, reload)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'book_likes' }, reload)
       .subscribe()
     // O tempo restante ("some em 3h") e os posts expirados também mudam sozinhos.
     const tick = setInterval(load, 5 * 60 * 1000)
