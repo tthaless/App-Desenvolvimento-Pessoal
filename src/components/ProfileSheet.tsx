@@ -3,10 +3,17 @@ import { supabase } from '../lib/supabase'
 import { useMembers } from '../lib/members'
 import type { StreakRow } from '../types'
 import Avatar from './Avatar'
+import FeedList from './FeedList'
 import ProfileDetails from './ProfileDetails'
 
+interface Props {
+  userId: string
+  viewerId: string
+  onClose: () => void
+}
+
 /** Perfil de outra pessoa, aberto ao tocar no nome ou na foto dela. */
-export default function ProfileSheet({ userId, onClose }: { userId: string; onClose: () => void }) {
+export default function ProfileSheet({ userId, viewerId, onClose }: Props) {
   const member = useMembers().find((m) => m.id === userId)
   const [streaks, setStreaks] = useState<StreakRow[]>([])
 
@@ -32,6 +39,8 @@ export default function ProfileSheet({ userId, onClose }: { userId: string; onCl
           {member.bio && <p className="profile-bio">{member.bio}</p>}
         </div>
         <ProfileDetails member={member} streaks={streaks} />
+        <h2 className="section-title">Posts das últimas 24h</h2>
+        <FeedList userId={viewerId} authorId={userId} emptyText={`${member.username} não postou nada no feed hoje.`} />
       </div>
     </div>
   )
