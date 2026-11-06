@@ -69,7 +69,7 @@ export default function WantList({ loading, ownerId, viewerId, all, onChanged, o
       {!loading && items.length === 0 && !adding && (
         <p className="muted small">{isMe ? 'Sua lista está vazia.' : 'Lista vazia.'}</p>
       )}
-      <ul className="want-list">
+      <ul className="want-list want-paper">
         {items.map((w) => {
           const others = othersWanting(w.title)
           const alreadyMine = mine.some((m) => sameTitle(m.title, w.title))

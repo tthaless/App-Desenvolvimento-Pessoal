@@ -726,11 +726,11 @@ textarea:focus { border-color: var(--accent); }
 .bookcase .shelf-reader strong { color: var(--parchment); }
 /* plaquinha de latão com a nota */
 .bookcase .rating-badge {
-  align-self: flex-start; font-family: var(--display); font-weight: 800; font-size: 22px; line-height: 1;
-  font-variant-numeric: lining-nums tabular-nums; letter-spacing: -0.02em; padding: 8px 11px; min-width: 52px; text-align: center;
-  color: #2a1604; background: linear-gradient(160deg, #f3d48a, #c99a44 45%, #a97a2c 55%, #e0b866);
+  align-self: flex-start; font-family: var(--display); font-weight: 800; font-size: 18px; line-height: 1;
+  font-variant-numeric: lining-nums tabular-nums; letter-spacing: -0.01em; padding: 7px 9px; min-width: 44px; text-align: center;
+  color: #6a3e0e; background: linear-gradient(160deg, #f3d48a, #c99a44 45%, #a97a2c 55%, #e0b866);
   border: 0; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .55), inset 0 -1px 0 rgba(0, 0, 0, .25), 0 2px 4px rgba(0, 0, 0, .6);
-  text-shadow: 0 1px 0 rgba(255, 240, 200, .5);
+  text-shadow: 0 1px 0 rgba(255, 244, 210, .6);
 }
 .bookcase .like-count { color: #ff8fa3; }
 .bookcase .pdf-chip, .bookcase .pdf-add { background: rgba(0, 0, 0, .35); border-color: rgba(241, 226, 196, .18); color: var(--parchment); }
@@ -740,3 +740,30 @@ textarea:focus { border-color: var(--accent); }
 }
 @keyframes lamp { 50% { filter: brightness(1.06); } }
 .notif-app { background: color-mix(in srgb, var(--brand) 16%, var(--surface-2)); box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--brand) 50%, transparent); display: grid; place-items: center; }
+
+/* Quero ler: folha de papel com a lista escrita, presa com fita (contrasta com a estante escura) */
+.want-paper {
+  position: relative; margin: 14px 4px 6px !important; padding: 18px 14px 10px 30px !important;
+  background:
+    linear-gradient(90deg, transparent 21px, rgba(200, 70, 60, .55) 21px, rgba(200, 70, 60, .55) 22px, transparent 22px),
+    radial-gradient(ellipse at 30% 0%, rgba(255, 250, 235, .7), transparent 60%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' seed='2'/%3E%3CfeColorMatrix values='0 0 0 0 0.45 0 0 0 0 0.33 0 0 0 0 0.18 0.5 0 0 0 -0.18'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)'/%3E%3C/svg%3E"),
+    linear-gradient(180deg, #f3e8cf, #eadbbb);
+  color: #2b1d10; border-radius: 3px;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, .5) inset, 0 10px 22px rgba(0, 0, 0, .45), 0 2px 4px rgba(0, 0, 0, .3);
+  transform: rotate(-.5deg);
+}
+.want-paper::before {
+  content: ''; position: absolute; top: -10px; left: 50%; width: 96px; height: 22px; transform: translateX(-50%) rotate(2deg);
+  background: linear-gradient(180deg, rgba(255, 248, 215, .8), rgba(240, 228, 185, .75)); border-left: 1px dashed rgba(0, 0, 0, .08); border-right: 1px dashed rgba(0, 0, 0, .08);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, .2);
+}
+.want-paper li { border-top: 0 !important; border-bottom: 1px solid rgba(70, 110, 170, .32); padding: 10px 0 !important; }
+.want-paper li:last-child { border-bottom: 0; }
+.want-paper .shelf-title { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 19px; font-weight: 700; color: #2b1d10; line-height: 1.1; }
+.want-paper .muted { color: #6f5a40; }
+.want-paper .cover { box-shadow: 0 0 0 1px rgba(0, 0, 0, .25), 2px 3px 6px rgba(60, 40, 15, .4); transform: rotate(-2deg); }
+.want-paper li:nth-child(2n) .cover { transform: rotate(1.5deg); }
+.want-paper .icon-btn { background: rgba(60, 40, 15, .08); color: #4a3520; border: 1px solid rgba(60, 40, 15, .2); }
+.want-paper .want-too { background: transparent; color: #3a2a18; border: 1.5px solid rgba(58, 42, 24, .55); }
+.want-paper .want-done { color: #2e7a4c; }
