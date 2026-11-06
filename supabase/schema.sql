@@ -15,8 +15,12 @@ alter table public.app_config enable row level security;
 -- ---------- Perfis ----------
 create table public.profiles (
   id         uuid primary key references auth.users on delete cascade,
-  username   text unique not null check (char_length(username) between 2 and 20),
-  created_at timestamptz not null default now()
+  username     text unique not null check (char_length(username) between 2 and 20),
+  created_at   timestamptz not null default now(),
+  avatar_path  text,
+  bio          text check (char_length(bio) <= 160),
+  current_book text check (char_length(current_book) <= 120),
+  exercises    text check (char_length(exercises) <= 200)
 );
 alter table public.profiles enable row level security;
 
@@ -52,10 +56,10 @@ create table public.posts (
   photo_path text not null,
   caption    text check (char_length(caption) <= 140),
   day        date not null,
-  created_at timestamptz not null default now(),
-  unique (user_id, activity, day)   -- uma prova por atividade por dia
+  created_at timestamptz not null default now()
 );
 create index posts_activity_created on public.posts (activity, created_at desc);
+create index posts_user_activity_day on public.posts (user_id, activity, day);
 alter table public.posts enable row level security;
 
 -- O dia e o horário vêm sempre do servidor (fuso de São Paulo),
@@ -109,7 +113,8 @@ language sql stable as $$
 $$;
 
 -- ---------- Ranking ----------
--- 10 pontos por prova, +5 de bônus no dia em que faz as duas atividades.
+-- 10 pontos por atividade feita no dia (várias fotos contam uma vez só),
+-- +5 de bônus no dia em que faz as duas atividades.
 -- periodo: 'semana' (começa na segunda) ou 'mes'.
 create function public.ranking(periodo text)
 returns table (user_id uuid, username text, pontos int, dias int)
@@ -122,7 +127,7 @@ language sql stable as $$
                 else date_trunc('week', d)::date end as d
     from hoje
   ), por_dia as (
-    select p.user_id, p.day, count(*)::int as n
+    select p.user_id, p.day, count(distinct p.activity)::int as n
     from public.posts p, inicio i
     where p.day >= i.d
     group by p.user_id, p.day

@@ -8,7 +8,7 @@ with checks(item, ok) as (
   union all select 'colunas de profiles',
     (select string_agg(column_name, ',' order by ordinal_position)
        from information_schema.columns where table_schema = 'public' and table_name = 'profiles')
-    = 'id,username,created_at'
+    = 'id,username,created_at,avatar_path,bio,current_book,exercises'
   union all select 'colunas de posts',
     (select string_agg(column_name, ',' order by ordinal_position)
        from information_schema.columns where table_schema = 'public' and table_name = 'posts')
@@ -33,9 +33,8 @@ with checks(item, ok) as (
     exists (select 1 from pg_trigger where tgname = 'on_auth_user_created' and tgrelid = 'auth.users'::regclass)
   union all select 'data da prova vem do servidor',
     exists (select 1 from pg_trigger where tgname = 'posts_set_server_fields' and tgrelid = 'public.posts'::regclass)
-  union all select 'uma prova por atividade por dia',
-    exists (select 1 from pg_constraint
-       where conrelid = 'public.posts'::regclass and contype = 'u')
+  union all select 'pontos contam uma vez por atividade por dia',
+    pg_get_functiondef('public.ranking(text)'::regprocedure) like '%count(distinct p.activity)%'
   union all select 'pasta de fotos (bucket provas)',
     exists (select 1 from storage.buckets where id = 'provas')
   union all select 'código de convite definido',
