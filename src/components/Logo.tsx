@@ -10,16 +10,15 @@ export function FlameMark({ size = 24, className = '' }: { size?: number; classN
 
 /** Esferas de XP em volta da ponta da seta: [x, y, raio, cor]. */
 const ORBS_FULL: [number, number, number, string][] = [
-  [26, 34, 6, '#ff9b3d'],
-  [40, 16, 3.5, 'var(--gold)'],
-  [84, 14, 4.5, '#ff9b3d'],
-  [98, 34, 6.5, 'var(--gold)'],
-  [102, 52, 3, '#ff9b3d'],
+  [22, 44, 8, '#ff9b3d'],
+  [36, 17, 3.5, 'var(--gold)'],
+  [93, 25, 6, 'var(--gold)'],
+  [104, 47, 2.5, '#ff9b3d'],
 ]
 const ORBS_SMALL: [number, number, number, string][] = [
-  [25, 34, 7.5, '#ff9b3d'],
-  [79, 9, 6.5, 'var(--gold)'],
-  [99, 34, 8, '#ff9b3d'],
+  [22, 42, 8.5, '#ff9b3d'],
+  [37, 15, 5, 'var(--gold)'],
+  [95, 24, 7, 'var(--gold)'],
 ]
 
 /** Frasco em forma de seta para cima com esferas de XP, a marca do app. */
@@ -28,7 +27,7 @@ export function ArrowMark({ size = 24, className = '' }: { size?: number; classN
   const small = size < 40
   const orbs = small ? ORBS_SMALL : ORBS_FULL
   return (
-    <svg className={`arrow-mark ${className}`} width={size} height={size} viewBox="8 2 104 110" aria-hidden>
+    <svg className={`arrow-mark ${className}`} width={size} height={size} viewBox="4 2 108 110" aria-hidden>
       <path
         d="M38 52 Q49 46 60 52 T82 52 L87 59 Q89 62 85 62 H66 V102 Q66 105 63 105 H57 Q54 105 54 102 V62 H35 Q31 62 33 59 Z"
         fill="var(--brand)"
@@ -40,6 +39,9 @@ export function ArrowMark({ size = 24, className = '' }: { size?: number; classN
           <circle cx="66" cy="57" r="2" fill="var(--gold)" />
         </>
       )}
+      {orbs.map(([x, y, r, c]) => (
+        <circle key={`h${x}-${y}`} cx={x} cy={y} r={r * 1.7} fill={c} opacity={0.18} />
+      ))}
       <path
         d="M60 12 L91 60 Q94 66 87 66 H70 V104 Q70 110 64 110 H56 Q50 110 50 104 V66 H33 Q26 66 29 60 Z"
         fill="none"
