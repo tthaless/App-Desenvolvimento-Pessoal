@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { errorMessage } from '../lib/utils'
+import { ImagePlus, X } from 'lucide-react'
 
 interface Props {
   placeholder: string
@@ -78,7 +79,7 @@ export default function Composer({ placeholder, submitLabel, onSubmit, autoFocus
         <div className="composer-photo">
           <img src={preview} alt="Foto anexada" />
           <button type="button" onClick={clearPhoto} aria-label="Remover foto">
-            ✕
+            <X size={16} aria-hidden />
           </button>
         </div>
       )}
@@ -92,7 +93,7 @@ export default function Composer({ placeholder, submitLabel, onSubmit, autoFocus
           aria-label="Anexar foto"
           title={file ? 'Só uma foto por vez' : 'Anexar foto'}
         >
-          📷
+          <ImagePlus size={19} aria-hidden />
         </button>
         <input ref={fileRef} type="file" accept="image/*" hidden onChange={(e) => pick(e.target.files?.[0])} />
         {body.length > MAX - 40 && <span className={`counter ${left < 0 ? 'over' : ''}`}>{left}</span>}

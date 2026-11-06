@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { attachmentUrl, loadPdfjs } from '../lib/pdf'
+import { X } from 'lucide-react'
 
 /** Abre o PDF dentro do app, página por página, sem precisar baixar. */
 export default function PdfViewer({ path, title, onClose }: { path: string; title: string; onClose: () => void }) {
@@ -54,7 +55,7 @@ export default function PdfViewer({ path, title, onClose }: { path: string; titl
     <div className="pdf-viewer" role="dialog" aria-label={`Anotações de ${title}`}>
       <header className="pdf-head">
         <div className="pdf-head-text">
-          <strong>📄 {title}</strong>
+          <strong>{title}</strong>
           {pages > 0 && (
             <span className="muted small">
               {pages} {pages === 1 ? 'página' : 'páginas'}
@@ -62,7 +63,7 @@ export default function PdfViewer({ path, title, onClose }: { path: string; titl
           )}
         </div>
         <button className="viewer-close" onClick={onClose} aria-label="Fechar">
-          ✕
+          <X size={20} aria-hidden />
         </button>
       </header>
       <div className="pdf-body">

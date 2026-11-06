@@ -7,6 +7,8 @@ import { STORY_LABEL } from '../types'
 import type { Member, StoryItem } from '../types'
 import Avatar from './Avatar'
 import StoryChat from './StoryChat'
+import { MessageCircle, X } from 'lucide-react'
+import ActivityIcon from './ActivityIcon'
 
 interface Props {
   posts: StoryItem[]
@@ -120,10 +122,12 @@ export default function StoryViewer({ posts, start, currentUserId, members, onSe
           <Avatar name={member?.username ?? '?'} url={member?.avatar_url} size="sm" />
           <strong>{name}</strong>
         </button>
-        <span className={`chip act-${post.activity}`}>{STORY_LABEL[post.activity]}</span>
+        <span className={`chip act-${post.activity}`}>
+          <ActivityIcon activity={post.activity} size={13} /> {STORY_LABEL[post.activity]}
+        </span>
         <span className="muted">{timeAgo(post.created_at)}</span>
         <button className="viewer-close" onClick={onClose} aria-label="Fechar">
-          ✕
+          <X size={24} aria-hidden />
         </button>
       </div>
 
@@ -141,7 +145,7 @@ export default function StoryViewer({ posts, start, currentUserId, members, onSe
       <div className="viewer-bottom">
         {post.caption && <p className="viewer-caption">{post.caption}</p>}
         <button className="comment-bar" onClick={() => setChatOpen(true)}>
-          <span aria-hidden>💬</span>
+          <MessageCircle size={18} aria-hidden />
           {counts[post.key]
             ? `${counts[post.key]} ${counts[post.key] === 1 ? 'comentário' : 'comentários'}`
             : 'Comentar…'}

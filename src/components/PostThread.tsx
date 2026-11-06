@@ -8,6 +8,7 @@ import { errorMessage, timeAgo } from '../lib/utils'
 import Avatar from './Avatar'
 import Composer from './Composer'
 import FeedPostCard from './FeedPostCard'
+import { X } from 'lucide-react'
 
 interface Props {
   post: FeedPost
@@ -54,7 +55,7 @@ export default function PostThread({ post, userId, onClose, onChanged }: Props) 
         <div className="thread-head">
           <span className="sheet-grip" aria-hidden />
           <button className="viewer-close" onClick={onClose} aria-label="Fechar">
-            ✕
+            <X size={20} aria-hidden />
           </button>
         </div>
         <FeedPostCard

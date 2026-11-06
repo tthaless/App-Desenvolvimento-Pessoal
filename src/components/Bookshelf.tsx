@@ -5,6 +5,7 @@ import { openProfile, useMembers } from '../lib/members'
 import Avatar from './Avatar'
 import BookCover from './BookCover'
 import PdfAttachment from './PdfAttachment'
+import { FileText, Heart } from 'lucide-react'
 
 interface Props {
   books: Book[]
@@ -40,8 +41,16 @@ export default function Bookshelf({ books, viewerId, onChanged, showReader, empt
                   {days === 1 ? 'dia' : 'dias'}
                 </span>
                 <span className="shelf-badges">
-                  {b.likes > 0 && <span className="like-count">❤️ {b.likes}</span>}
-                  {b.attachment_path && <span className="muted small">📄 PDF</span>}
+                  {b.likes > 0 && (
+                    <span className="like-count">
+                      <Heart size={13} fill="currentColor" aria-hidden /> {b.likes}
+                    </span>
+                  )}
+                  {b.attachment_path && (
+                    <span className="muted small icon-text">
+                      <FileText size={13} aria-hidden /> PDF
+                    </span>
+                  )}
                 </span>
               </span>
               <span className="rating-badge">{formatRating(b.rating ?? 0)}</span>

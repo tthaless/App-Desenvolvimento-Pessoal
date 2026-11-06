@@ -6,6 +6,7 @@ import type { StoryComment } from '../lib/storyComments'
 import { errorMessage, timeAgo } from '../lib/utils'
 import type { Member } from '../types'
 import Avatar from './Avatar'
+import { Trash2, X } from 'lucide-react'
 
 interface Props {
   storyKey: string
@@ -90,7 +91,7 @@ export default function StoryChat({ storyKey, ownerId, currentUserId, members, o
           <span className="sheet-grip" aria-hidden />
           <strong>Comentários</strong>
           <button className="viewer-close" onClick={onClose} aria-label="Fechar comentários">
-            ✕
+            <X size={20} aria-hidden />
           </button>
         </div>
 
@@ -111,7 +112,7 @@ export default function StoryChat({ storyKey, ownerId, currentUserId, members, o
                 </div>
                 {canDelete && (
                   <button className="chat-delete" onClick={() => remove(c)} aria-label="Apagar comentário">
-                    🗑
+                    <Trash2 size={16} />
                   </button>
                 )}
               </div>

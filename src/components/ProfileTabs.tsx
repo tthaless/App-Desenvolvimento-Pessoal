@@ -18,10 +18,10 @@ export default function ProfileTabs({ member, viewerId, children }: Props) {
     <>
       <nav className="subtabs" aria-label="Seções do perfil">
         <button className={sub === 'perfil' ? 'on' : ''} onClick={() => setSub('perfil')} aria-current={sub === 'perfil' ? 'page' : undefined}>
-          👤 Perfil
+          Perfil
         </button>
         <button className={sub === 'estante' ? 'on' : ''} onClick={() => setSub('estante')} aria-current={sub === 'estante' ? 'page' : undefined}>
-          📚 Estante
+          Estante
         </button>
       </nav>
       {sub === 'perfil' ? children : <Library ownerId={member.id} viewerId={viewerId} />}

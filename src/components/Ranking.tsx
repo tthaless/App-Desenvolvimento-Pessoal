@@ -4,8 +4,9 @@ import { openProfile, useMembers } from '../lib/members'
 import { errorMessage } from '../lib/utils'
 import type { RankingRow } from '../types'
 import Avatar from './Avatar'
+import { Crown } from 'lucide-react'
+import TopBar from './TopBar'
 
-const MEDALS = ['🥇', '🥈', '🥉']
 
 export default function Ranking({ userId }: { userId: string }) {
   const [periodo, setPeriodo] = useState<'semana' | 'mes'>('semana')
@@ -33,11 +34,7 @@ export default function Ranking({ userId }: { userId: string }) {
 
   return (
     <div className="ranking">
-      <header className="page-head">
-        <h1>
-          <span aria-hidden>🏆</span> Ranking
-        </h1>
-      </header>
+      <TopBar title="Ranking" />
 
       <div className="segmented">
         <button className={periodo === 'semana' ? 'on' : ''} onClick={() => setPeriodo('semana')}>
@@ -54,7 +51,7 @@ export default function Ranking({ userId }: { userId: string }) {
         <section className="card leader">
           <span className="leader-avatar">
             <Avatar name={leader.username} url={avatarOf(leader.user_id)} size="lg" />
-            <span className="leader-crown" aria-hidden>👑</span>
+            <Crown className="leader-crown" size={22} aria-hidden />
           </span>
           <div>
             <p className="muted small">Liderando {periodo === 'semana' ? 'a semana' : 'o mês'}</p>
@@ -64,11 +61,11 @@ export default function Ranking({ userId }: { userId: string }) {
         </section>
       )}
 
-      <section className="card">
+      <section className="section">
         <ol className="rank-list">
           {rows.map((r, i) => (
             <li key={r.user_id} className={r.user_id === userId ? 'me' : ''}>
-              <span className="pos">{r.pontos > 0 && i < 3 ? MEDALS[i] : i + 1}</span>
+              <span className={`pos ${r.pontos > 0 && i < 3 ? `medal m${i + 1}` : ''}`}>{i + 1}</span>
               <button className="person" onClick={() => openProfile(r.user_id)}>
                 <Avatar name={r.username} url={avatarOf(r.user_id)} size="sm" />
                 <span className="name">{r.username}</span>
@@ -80,9 +77,15 @@ export default function Ranking({ userId }: { userId: string }) {
         </ol>
       </section>
 
-      <p className="muted small rules">
-        10 pontos por atividade feita no dia (várias fotos contam uma vez só) · +5 no dia em que você faz as duas · desafio da semana: +30 com 5 dias, +40 com 7. A semana começa na segunda.
-      </p>
+      <details className="rules-box">
+        <summary>Como funcionam os pontos</summary>
+        <ul>
+          <li>10 pontos por atividade feita no dia (várias fotos contam uma vez só)</li>
+          <li>+5 no dia em que você faz exercício e leitura</li>
+          <li>Desafio da semana: +30 com 5 dias, +40 com os 7</li>
+          <li>A semana começa na segunda</li>
+        </ul>
+      </details>
     </div>
   )
 }

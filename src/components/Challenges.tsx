@@ -21,17 +21,15 @@ import {
 import type { Challenge, Checkin, Idea } from '../lib/challenges'
 import { errorMessage, todaySP } from '../lib/utils'
 import Avatar from './Avatar'
+import { Camera, Check, Crown, Plus, Target } from 'lucide-react'
+import TopBar from './TopBar'
 
 export default function Challenges({ userId }: { userId: string }) {
   const [view, setView] = useState<'semana' | 'votacao'>('semana')
 
   return (
     <div className="challenges">
-      <header className="page-head">
-        <h1>
-          <span aria-hidden>🎯</span> Desafio
-        </h1>
-      </header>
+      <TopBar title="Desafio" />
       <div className="segmented">
         <button className={view === 'semana' ? 'on' : ''} onClick={() => setView('semana')}>
           Desta semana
@@ -106,7 +104,9 @@ function ThisWeek({ userId, onGoVote }: { userId: string; onGoVote: () => void }
   if (!challenge) {
     return (
       <section className="card empty-challenge">
-        <p className="empty-icon" aria-hidden>🎯</p>
+        <span className="empty-icon" aria-hidden>
+          <Target size={34} strokeWidth={1.6} />
+        </span>
         <p className="book-title">Sem desafio esta semana</p>
         <p className="muted small">Ninguém propôs um desafio na semana passada. Proponha um agora pra semana que vem.</p>
         <button className="btn primary" onClick={onGoVote}>
@@ -125,7 +125,7 @@ function ThisWeek({ userId, onGoVote }: { userId: string; onGoVote: () => void }
   const proposer = members.find((m) => m.id === challenge.user_id)
 
   let status: string
-  if (mine.size >= 7) status = '7 de 7! +40 pontos garantidos 🏆'
+  if (mine.size >= 7) status = '7 de 7! +40 pontos garantidos'
   else if (mine.size >= 5) status = `${mine.size} de 7 · +30 pontos garantidos. Faça os 7 pra ganhar 40.`
   else if (mine.size + daysLeft >= 5) status = `${mine.size} de 7 · faltam ${5 - mine.size} ${5 - mine.size === 1 ? 'dia' : 'dias'} pros 30 pontos`
   else status = `${mine.size} de 7 · não dá mais pra chegar a 5 dias nesta semana`
@@ -151,7 +151,7 @@ function ThisWeek({ userId, onGoVote }: { userId: string; onGoVote: () => void }
           {days.map((d, i) => (
             <span key={d} className={`dot ${mine.has(d) ? 'on' : ''} ${d === today ? 'today' : ''} ${d > today ? 'future' : ''}`}>
               <span className="dot-day">{WEEKDAY_INITIALS[i]}</span>
-              <span className="dot-mark">{mine.has(d) ? '✓' : ''}</span>
+              <span className="dot-mark">{mine.has(d) && <Check size={16} strokeWidth={3} />}</span>
             </span>
           ))}
         </div>
@@ -159,10 +159,12 @@ function ThisWeek({ userId, onGoVote }: { userId: string; onGoVote: () => void }
 
         {error && <p className="msg error">{error}</p>}
         {doneToday ? (
-          <p className="msg ok">✓ Cumprido hoje. Volte amanhã!</p>
+          <p className="msg ok">
+            <Check size={16} strokeWidth={3} aria-hidden /> Cumprido hoje. Volte amanhã!
+          </p>
         ) : (
           <button className="btn primary big-btn" onClick={() => inputRef.current?.click()}>
-            📸 Cumpri hoje
+            <Camera size={20} aria-hidden /> Cumpri hoje
           </button>
         )}
         <input ref={inputRef} type="file" accept="image/*" capture="environment" hidden onChange={(e) => {
@@ -171,8 +173,8 @@ function ThisWeek({ userId, onGoVote }: { userId: string; onGoVote: () => void }
         }} />
       </section>
 
-      <section className="card">
-        <h2>Como está o grupo</h2>
+      <section className="section">
+        <h2 className="section-label">Como está o grupo</h2>
         <ul className="board">
           {board.map((m) => {
             const n = daysOf(m.id).size
@@ -182,7 +184,11 @@ function ThisWeek({ userId, onGoVote }: { userId: string; onGoVote: () => void }
                 <button className="person" onClick={() => openProfile(m.id)}>
                   <span className="avatar-wrap">
                     <Avatar name={m.username} url={m.avatar_url} size="sm" />
-                    {daysOf(m.id).has(today) && <span className="done-dot" aria-label="cumpriu hoje">✓</span>}
+                    {daysOf(m.id).has(today) && (
+                      <span className="done-dot" aria-label="cumpriu hoje">
+                        <Check size={11} strokeWidth={3.5} />
+                      </span>
+                    )}
                   </span>
                   <span className="name">{m.username}</span>
                 </button>
@@ -194,13 +200,13 @@ function ThisWeek({ userId, onGoVote }: { userId: string; onGoVote: () => void }
         </ul>
       </section>
 
-      <p className="muted small rules">5 dias de 7 valem +30 pontos no ranking, os 7 dias valem +40.</p>
+      <p className="muted small rules">5 de 7 dias: +30 pontos · 7 de 7: +40</p>
 
       {draft && (
         <div className="sheet-backdrop" onClick={() => !sending && closeDraft()}>
           <div className="sheet" onClick={(e) => e.stopPropagation()}>
             <img src={draft.url} alt="Prévia da foto" className="preview" />
-            <p className="muted small center">🎯 {challenge.title}</p>
+            <p className="muted small center">{challenge.title}</p>
             <div className="row">
               <button className="btn ghost" onClick={closeDraft} disabled={sending}>
                 Cancelar
@@ -308,7 +314,7 @@ function Voting({ userId }: { userId: string }) {
         </form>
       ) : (
         <button className="btn primary full" onClick={() => setProposing(true)}>
-          + Propor um desafio
+          <Plus size={18} aria-hidden /> Propor um desafio
         </button>
       )}
 
@@ -322,7 +328,7 @@ function Voting({ userId }: { userId: string }) {
           return (
             <li key={idea.id} className={`card idea ${i === 0 && idea.voters.length > 0 ? 'leading' : ''}`}>
               <div className="idea-top">
-                <span className="idea-pos">{i === 0 && idea.voters.length > 0 ? '👑' : i + 1}</span>
+                <span className="idea-pos">{i === 0 && idea.voters.length > 0 ? <Crown size={18} className="crown" aria-label="liderando" /> : i + 1}</span>
                 <div className="idea-main">
                   <p className="idea-title">{idea.title}</p>
                   {idea.description && <p className="idea-desc">{idea.description}</p>}
@@ -348,7 +354,7 @@ function Voting({ userId }: { userId: string }) {
                   </button>
                 ) : voted ? (
                   <button className="btn primary small-btn" onClick={() => act(() => removeVote(userId))}>
-                    ✓ Seu voto
+                    <Check size={14} strokeWidth={3} aria-hidden /> Seu voto
                   </button>
                 ) : (
                   <button className="btn ghost small-btn" onClick={() => act(() => vote(idea.id))}>

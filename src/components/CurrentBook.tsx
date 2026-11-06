@@ -6,6 +6,7 @@ import { errorMessage } from '../lib/utils'
 import BookCover from './BookCover'
 import BookSearch from './BookSearch'
 import PdfAttachment from './PdfAttachment'
+import { Check } from 'lucide-react'
 
 interface Props {
   userId: string
@@ -73,7 +74,7 @@ export default function CurrentBook({ userId, refreshKey, onShelfChanged, onLoad
 
   return (
     <section className="card current-book act-leitura">
-      <p className="muted small">📖 Lendo agora</p>
+      <p className="section-label">Lendo agora</p>
       {error && <p className="msg error">{error}</p>}
 
       {book ? (
@@ -96,7 +97,7 @@ export default function CurrentBook({ userId, refreshKey, onShelfChanged, onLoad
               Larguei
             </button>
             <button className="btn primary" onClick={() => setFinishing(true)}>
-              ✓ Terminei
+              <Check size={18} strokeWidth={3} aria-hidden /> Terminei
             </button>
           </div>
         </>

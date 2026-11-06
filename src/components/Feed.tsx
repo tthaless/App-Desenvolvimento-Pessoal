@@ -4,6 +4,7 @@ import { createPost } from '../lib/feed'
 import Avatar from './Avatar'
 import Composer from './Composer'
 import FeedList from './FeedList'
+import TopBar from './TopBar'
 
 export default function Feed({ userId }: { userId: string }) {
   const me = useMembers().find((m) => m.id === userId)
@@ -11,12 +12,7 @@ export default function Feed({ userId }: { userId: string }) {
 
   return (
     <div className="feed">
-      <header className="page-head">
-        <h1>
-          <span aria-hidden>💬</span> Feed
-        </h1>
-        <p className="muted small">Tudo aqui some em 24 horas.</p>
-      </header>
+      <TopBar title="Feed" />
 
       <section className="card new-post">
         <Avatar name={me?.username ?? '?'} url={me?.avatar_url} size="md" />

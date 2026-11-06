@@ -82,7 +82,7 @@ export default function Library({ ownerId, viewerId }: { ownerId: string; viewer
       ) : (
         current && (
           <section className="card current-book act-leitura">
-            <p className="muted small">📖 Lendo agora</p>
+            <p className="section-label">Lendo agora</p>
             <div className="current-top">
               <BookCover url={current.cover_url} title={current.title} size="lg" />
               <div className="current-info">
@@ -97,9 +97,9 @@ export default function Library({ ownerId, viewerId }: { ownerId: string; viewer
 
       <WantList ownerId={ownerId} viewerId={viewerId} all={wants} onChanged={loadWants} onStarted={() => setCurrentKey((k) => k + 1)} />
 
-      <section className="card shelf act-leitura">
+      <section className="section shelf act-leitura">
         <div className="shelf-head">
-          <h2>📚 Concluídos</h2>
+          <h2 className="section-label">Concluídos</h2>
           {shelf.length > 0 && <span className="muted small">média {avg.toLocaleString('pt-BR', { maximumFractionDigits: 1 })}</span>}
         </div>
         <Bookshelf

@@ -11,16 +11,21 @@ import Profile from './components/Profile'
 import ProfileSheet from './components/ProfileSheet'
 import { useOpenProfile } from './lib/members'
 import { cleanupMyFeedPhotos } from './lib/feed'
+import { BookOpen, Dumbbell, MessageCircle, Target, Trophy, User } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
+import Avatar from './components/Avatar'
+import { FlameMark } from './components/Logo'
+import { useMembers } from './lib/members'
 
 type Tab = 'exercicio' | 'leitura' | 'desafio' | 'feed' | 'ranking' | 'perfil'
 
-const TABS: { id: Tab; label: string; icon: string }[] = [
-  { id: 'exercicio', label: 'Exercício', icon: '💪' },
-  { id: 'leitura', label: 'Leitura', icon: '📖' },
-  { id: 'desafio', label: 'Desafio', icon: '🎯' },
-  { id: 'feed', label: 'Feed', icon: '💬' },
-  { id: 'ranking', label: 'Ranking', icon: '🏆' },
-  { id: 'perfil', label: 'Perfil', icon: '👤' },
+const TABS: { id: Tab; label: string; Icon: LucideIcon }[] = [
+  { id: 'exercicio', label: 'Exercício', Icon: Dumbbell },
+  { id: 'leitura', label: 'Leitura', Icon: BookOpen },
+  { id: 'desafio', label: 'Desafio', Icon: Target },
+  { id: 'feed', label: 'Feed', Icon: MessageCircle },
+  { id: 'ranking', label: 'Ranking', Icon: Trophy },
+  { id: 'perfil', label: 'Perfil', Icon: User },
 ]
 
 export default function App() {
@@ -28,6 +33,8 @@ export default function App() {
   const [loading, setLoading] = useState(true)
   const [tab, setTab] = useState<Tab>('exercicio')
   const [profileId, closeProfile] = useOpenProfile()
+  const members = useMembers()
+  const me = members.find((m) => m.id === session?.user.id)
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -52,7 +59,12 @@ export default function App() {
     }
   }, [profileId, session, closeProfile])
 
-  if (loading) return <div className="splash">🔥</div>
+  if (loading)
+    return (
+      <div className="splash">
+        <FlameMark size={56} />
+      </div>
+    )
   if (!session) return <Auth />
 
   const userId = session.user.id
@@ -75,7 +87,11 @@ export default function App() {
             onClick={() => setTab(t.id)}
             aria-current={tab === t.id ? 'page' : undefined}
           >
-            <span className="tab-icon" aria-hidden>{t.icon}</span>
+            {t.id === 'perfil' && me ? (
+              <Avatar name={me.username} url={me.avatar_url} size="sm" className="tab-avatar" />
+            ) : (
+              <t.Icon className="tab-icon" size={24} strokeWidth={tab === t.id ? 2.4 : 1.8} aria-hidden />
+            )}
             <span className="tab-label">{t.label}</span>
           </button>
         ))}

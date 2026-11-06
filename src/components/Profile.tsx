@@ -8,6 +8,8 @@ import Avatar from './Avatar'
 import FeedList from './FeedList'
 import ProfileDetails from './ProfileDetails'
 import ProfileTabs from './ProfileTabs'
+import { Camera } from 'lucide-react'
+import TopBar from './TopBar'
 
 export default function Profile({ userId }: { userId: string }) {
   const me = useMembers().find((m) => m.id === userId)
@@ -93,16 +95,12 @@ export default function Profile({ userId }: { userId: string }) {
 
   return (
     <div className="profile">
-      <header className="page-head">
-        <h1>
-          <span aria-hidden>👤</span> Perfil
-        </h1>
-      </header>
+      <TopBar title="Perfil" />
 
-      <section className="card profile-top">
+      <section className="profile-top profile-head">
         <button className="avatar-edit" onClick={() => fileRef.current?.click()} disabled={uploading} aria-label="Trocar foto de perfil">
           <Avatar name={me.username} url={me.avatar_url} size="xl" />
-          <span className="avatar-badge">{uploading ? '…' : '📷'}</span>
+          <span className="avatar-badge">{uploading ? '…' : <Camera size={15} aria-hidden />}</span>
         </button>
         <input ref={fileRef} type="file" accept="image/*" hidden onChange={(e) => changeAvatar(e.target.files?.[0])} />
         <p className="profile-name">{me.username}</p>
@@ -137,7 +135,7 @@ export default function Profile({ userId }: { userId: string }) {
             <span className="counter">{form.bio.length}/160</span>
           </label>
           <label>
-            🏋️ Exercícios que você faz
+            Exercícios que você faz
             <input
               value={form.exercises}
               onChange={(e) => setForm({ ...form, exercises: e.target.value })}

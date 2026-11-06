@@ -1,8 +1,8 @@
 export type Activity = 'exercicio' | 'leitura'
 
-export const ACTIVITY: Record<Activity, { label: string; verb: string; emoji: string }> = {
-  exercicio: { label: 'Exercício', verb: 'Treinei hoje', emoji: '💪' },
-  leitura: { label: 'Leitura', verb: 'Li hoje', emoji: '📖' },
+export const ACTIVITY: Record<Activity, { label: string; verb: string }> = {
+  exercicio: { label: 'Exercício', verb: 'Treinei hoje' },
+  leitura: { label: 'Leitura', verb: 'Li hoje' },
 }
 
 export interface Post {
@@ -28,9 +28,9 @@ export interface StoryItem {
 }
 
 export const STORY_LABEL: Record<StoryItem['activity'], string> = {
-  exercicio: '💪 Exercício',
-  leitura: '📖 Leitura',
-  desafio: '🎯 Desafio',
+  exercicio: 'Exercício',
+  leitura: 'Leitura',
+  desafio: 'Desafio',
 }
 
 export interface Member {

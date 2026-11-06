@@ -6,6 +6,10 @@ import { ACTIVITY } from '../types'
 import type { Activity, StreakRow } from '../types'
 import Avatar from './Avatar'
 import Stories from './Stories'
+import { Camera, Check } from 'lucide-react'
+import ActivityIcon from './ActivityIcon'
+import { FlameMark } from './Logo'
+import TopBar from './TopBar'
 
 interface Props {
   activity: Activity
@@ -106,13 +110,7 @@ export default function ActivityTab({ activity, userId, hideHeader }: Props) {
 
   return (
     <div className={`activity act-${activity}`}>
-      {!hideHeader && (
-        <header className="page-head">
-          <h1>
-            <span aria-hidden>{meta.emoji}</span> {meta.label}
-          </h1>
-        </header>
-      )}
+      {!hideHeader && <TopBar />}
 
       {loadError && <p className="msg error">{loadError}</p>}
 
@@ -120,13 +118,13 @@ export default function ActivityTab({ activity, userId, hideHeader }: Props) {
 
       <section className={`card hero ${iDidToday ? 'done' : ''}`}>
         <div className="hero-streak">
-          <span className="flame" aria-hidden>🔥</span>
+          <FlameMark size={40} className="flame" />
           <span className="big">{current}</span>
           <span className="unit">{current === 1 ? 'dia' : 'dias'}</span>
         </div>
         <p className="hero-sub">
           {iDidToday
-            ? '✓ Feito hoje. Volte amanhã pra manter o streak.'
+            ? 'Feito hoje. Volte amanhã pra manter o streak.'
             : current > 0
               ? 'Ainda falta hoje! Poste antes da meia-noite.'
               : 'Comece seu streak hoje.'}
@@ -134,14 +132,18 @@ export default function ActivityTab({ activity, userId, hideHeader }: Props) {
         {myStreak && myStreak.best_streak > 0 && <p className="muted small hero-best">Recorde: {myStreak.best_streak} dias</p>}
         {context ? (
           <p className="hero-context">
-            {activity === 'leitura' ? '📖 Lendo: ' : '🏋️ '}
+            <ActivityIcon activity={activity} size={16} />
+            {activity === 'leitura' && 'Lendo '}
             <strong>{context}</strong>
           </p>
         ) : (
-          activity === 'leitura' && <p className="hero-context">📖 Cadastre o livro que está lendo no Perfil pra montar sua estante.</p>
+          activity === 'leitura' && <p className="hero-context">
+              <ActivityIcon activity="leitura" size={16} />
+              Cadastre o livro que está lendo na Biblioteca.
+            </p>
         )}
         <button className={`btn ${iDidToday ? 'ghost' : 'primary'} big-btn`} onClick={() => inputRef.current?.click()}>
-          📸 {iDidToday ? 'Postar outra foto' : meta.verb}
+          <Camera size={20} aria-hidden /> {iDidToday ? 'Postar outra foto' : meta.verb}
         </button>
         <input
           ref={inputRef}
@@ -153,8 +155,8 @@ export default function ActivityTab({ activity, userId, hideHeader }: Props) {
         />
       </section>
 
-      <section className="card">
-        <h2>Hoje no grupo</h2>
+      <section className="section">
+        <h2 className="section-label">Hoje no grupo</h2>
         <ul className="board">
           {board.map((m) => {
             const done = doneToday.has(m.id)
@@ -163,11 +165,17 @@ export default function ActivityTab({ activity, userId, hideHeader }: Props) {
                 <button className="person" onClick={() => openProfile(m.id)}>
                   <span className="avatar-wrap">
                     <Avatar name={m.username} url={m.avatar_url} size="sm" />
-                    {done && <span className="done-dot" aria-label="fez hoje">✓</span>}
+                    {done && (
+                      <span className="done-dot" aria-label="fez hoje">
+                        <Check size={11} strokeWidth={3.5} />
+                      </span>
+                    )}
                   </span>
                   <span className="name">{m.username}</span>
                 </button>
-                <span className="streak-pill">🔥 {streakOf(m.id)?.current_streak ?? 0}</span>
+                <span className="streak-pill">
+                  <FlameMark size={14} /> {streakOf(m.id)?.current_streak ?? 0}
+                </span>
               </li>
             )
           })}

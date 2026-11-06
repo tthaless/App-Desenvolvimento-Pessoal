@@ -3,6 +3,7 @@ import type { Book } from '../lib/books'
 import { MAX_PDF_MB, MAX_PDF_PAGES, removeAttachment, setAttachmentPublic, uploadAttachment } from '../lib/pdf'
 import { errorMessage } from '../lib/utils'
 import PdfViewer from './PdfViewer'
+import { FileText, Lock, Paperclip, Trash2, Users } from 'lucide-react'
 
 interface Props {
   book: Book
@@ -40,7 +41,7 @@ export default function PdfAttachment({ book, viewerId, onChanged }: Props) {
       {book.attachment_path ? (
         <div className="pdf-row">
           <button className="pdf-chip" onClick={() => setOpen(true)}>
-            📄 Ver anotações
+            <FileText size={16} aria-hidden /> Ver anotações
           </button>
           {isOwner && (
             <>
@@ -50,7 +51,15 @@ export default function PdfAttachment({ book, viewerId, onChanged }: Props) {
                 onClick={() => run(() => setAttachmentPublic(book.id, !book.attachment_public))}
                 title="Mudar quem pode ver"
               >
-                {book.attachment_public ? '👥 Grupo vê' : '🔒 Só eu'}
+                {book.attachment_public ? (
+                  <>
+                    <Users size={15} aria-hidden /> Grupo vê
+                  </>
+                ) : (
+                  <>
+                    <Lock size={15} aria-hidden /> Só eu
+                  </>
+                )}
               </button>
               <button
                 className="pdf-remove"
@@ -58,7 +67,7 @@ export default function PdfAttachment({ book, viewerId, onChanged }: Props) {
                 onClick={() => confirm('Apagar o PDF?') && run(() => removeAttachment(book.id, book.attachment_path!))}
                 aria-label="Apagar PDF"
               >
-                🗑
+                <Trash2 size={17} />
               </button>
             </>
           )}
@@ -66,14 +75,14 @@ export default function PdfAttachment({ book, viewerId, onChanged }: Props) {
       ) : choosing ? (
         <div className="pdf-confirm">
           <p className="small">
-            📄 <strong>{choosing.name}</strong>
+            <FileText size={15} aria-hidden /> <strong>{choosing.name}</strong>
           </p>
           <div className="segmented">
             <button type="button" className={isPublic ? 'on' : ''} onClick={() => setIsPublic(true)}>
-              👥 Grupo vê
+              <Users size={15} aria-hidden /> Grupo vê
             </button>
             <button type="button" className={!isPublic ? 'on' : ''} onClick={() => setIsPublic(false)}>
-              🔒 Só eu
+              <Lock size={15} aria-hidden /> Só eu
             </button>
           </div>
           <p className="muted small">Só suas anotações, resumo ou resenha. Cópia do livro não.</p>
@@ -97,7 +106,7 @@ export default function PdfAttachment({ book, viewerId, onChanged }: Props) {
         </div>
       ) : (
         <button className="pdf-add" onClick={() => fileRef.current?.click()}>
-          📎 Anexar PDF <span className="muted small">(até {MAX_PDF_MB} MB e {MAX_PDF_PAGES} páginas)</span>
+          <Paperclip size={16} aria-hidden /> Anexar PDF <span className="muted small">(até {MAX_PDF_MB} MB e {MAX_PDF_PAGES} páginas)</span>
         </button>
       )}
       <input

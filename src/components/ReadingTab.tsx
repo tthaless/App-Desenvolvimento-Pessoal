@@ -5,6 +5,7 @@ import { errorMessage } from '../lib/utils'
 import ActivityTab from './ActivityTab'
 import Bookshelf from './Bookshelf'
 import Library from './Library'
+import TopBar from './TopBar'
 
 type Sub = 'hoje' | 'minha' | 'grupo'
 
@@ -14,17 +15,13 @@ export default function ReadingTab({ userId }: { userId: string }) {
 
   return (
     <div className="reading">
-      <header className="page-head">
-        <h1>
-          <span aria-hidden>📖</span> Leitura
-        </h1>
-      </header>
+      <TopBar title="Leitura" />
       <nav className="subtabs three" aria-label="Seções da leitura">
         {(
           [
-            ['hoje', '📸 Hoje'],
-            ['minha', '📚 Biblioteca'],
-            ['grupo', '👥 Do grupo'],
+            ['hoje', 'Hoje'],
+            ['minha', 'Biblioteca'],
+            ['grupo', 'Do grupo'],
           ] as [Sub, string][]
         ).map(([id, label]) => (
           <button key={id} className={sub === id ? 'on' : ''} onClick={() => setSub(id)} aria-current={sub === id ? 'page' : undefined}>
@@ -59,9 +56,9 @@ function GroupLibrary({ userId }: { userId: string }) {
   }, [load])
 
   return (
-    <section className="card shelf act-leitura">
+    <section className="section shelf act-leitura">
       <div className="shelf-head">
-        <h2>Lidos pelo grupo</h2>
+        <h2 className="section-label">Lidos pelo grupo</h2>
         {books.length > 0 && <span className="muted small">{books.length} recentes</span>}
       </div>
       {error && <p className="msg error">{error}</p>}

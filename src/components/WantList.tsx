@@ -5,6 +5,7 @@ import { refreshMembers } from '../lib/members'
 import { errorMessage } from '../lib/utils'
 import BookCover from './BookCover'
 import BookSearch from './BookSearch'
+import { Bookmark, Check, Plus, X } from 'lucide-react'
 
 interface Props {
   ownerId: string
@@ -39,12 +40,12 @@ export default function WantList({ ownerId, viewerId, all, onChanged, onStarted 
   }
 
   return (
-    <section className="card want act-leitura">
+    <section className="section want act-leitura">
       <div className="shelf-head">
-        <h2>🔖 Quero ler</h2>
+        <h2 className="section-label">Quero ler</h2>
         {isMe && !adding && (
           <button className="btn ghost small-btn" onClick={() => setAdding(true)}>
-            + Adicionar
+            <Plus size={16} aria-hidden /> Adicionar
           </button>
         )}
       </div>
@@ -101,18 +102,20 @@ export default function WantList({ ownerId, viewerId, all, onChanged, onStarted 
                     Começar
                   </button>
                   <button className="icon-btn" disabled={!!busy} onClick={() => run(w.id, () => removeWant(w.id))} aria-label={`Tirar ${w.title} da lista`}>
-                    ✕
+                    <X size={16} aria-hidden />
                   </button>
                 </div>
               ) : alreadyMine ? (
-                <span className="want-done">✓ Na sua lista</span>
+                <span className="want-done">
+                  <Check size={14} strokeWidth={3} aria-hidden /> Na sua lista
+                </span>
               ) : (
                 <button
                   className="btn ghost small-btn want-too"
                   disabled={!!busy}
                   onClick={() => run(w.id, () => addWant({ title: w.title, author: w.author ?? '', cover_url: w.cover_url }))}
                 >
-                  🔖 Quero ler também
+                  <Bookmark size={15} aria-hidden /> Quero ler também
                 </button>
               )}
             </li>

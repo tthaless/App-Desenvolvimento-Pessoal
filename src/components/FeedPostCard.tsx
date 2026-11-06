@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Clock, Heart, MessageCircle, Star, Trash2 } from 'lucide-react'
 import { openProfile, useMembers } from '../lib/members'
 import { formatRating, setBookLike } from '../lib/books'
 import type { Book } from '../lib/books'
@@ -7,6 +8,7 @@ import type { FeedBook, FeedPost } from '../lib/feed'
 import { errorMessage, timeAgo } from '../lib/utils'
 import Avatar from './Avatar'
 import BookCover from './BookCover'
+import { FlameMark } from './Logo'
 import PdfAttachment from './PdfAttachment'
 
 interface Props {
@@ -51,7 +53,7 @@ function UserPost({ post, userId, photoUrl, onOpenThread, onDeleted }: Props) {
           <span className="muted">· {timeAgo(post.created_at)}</span>
           {post.user_id === userId && (
             <button className="post-delete" onClick={remove} aria-label="Apagar post">
-              🗑
+              <Trash2 size={16} />
             </button>
           )}
         </header>
@@ -62,10 +64,12 @@ function UserPost({ post, userId, photoUrl, onOpenThread, onDeleted }: Props) {
         <footer className="post-actions">
           {onOpenThread && (
             <button className="action" onClick={onOpenThread}>
-              <span aria-hidden>💬</span> {post.comments > 0 && post.comments}
+              <MessageCircle size={19} aria-hidden /> {post.comments > 0 && post.comments}
             </button>
           )}
-          <span className="expires">⏳ {expiresIn(post.created_at)}</span>
+          <span className="expires">
+            <Clock size={13} aria-hidden /> {expiresIn(post.created_at)}
+          </span>
         </footer>
       </div>
     </article>
@@ -107,7 +111,7 @@ function BookFinishedPost({ post, book, userId, onOpenThread }: { post: FeedPost
   return (
     <article className="post post-auto">
       <span className="streak-avatar" aria-hidden>
-        🔥
+        <FlameMark size={24} />
       </span>
       <div className="post-main">
         <header className="post-head">
@@ -116,7 +120,6 @@ function BookFinishedPost({ post, book, userId, onOpenThread }: { post: FeedPost
           <span className="muted">· {timeAgo(post.created_at)}</span>
         </header>
         <p className="post-body">
-          📚{' '}
           <button className="inline-name" onClick={() => openProfile(book.user_id)}>
             {reader?.username ?? '?'}
           </button>{' '}
@@ -127,7 +130,11 @@ function BookFinishedPost({ post, book, userId, onOpenThread }: { post: FeedPost
           <div className="auto-book-info">
             <span className="shelf-title">{book.title}</span>
             {book.author && <span className="muted small">{book.author}</span>}
-            {book.rating !== null && <span className="auto-rating">⭐ {formatRating(book.rating)}/10</span>}
+            {book.rating !== null && (
+              <span className="auto-rating">
+                <Star size={15} fill="currentColor" aria-hidden /> {formatRating(book.rating)}/10
+              </span>
+            )}
           </div>
         </div>
         {book.review && <p className="auto-review">“{book.review}”</p>}
@@ -140,14 +147,16 @@ function BookFinishedPost({ post, book, userId, onOpenThread }: { post: FeedPost
             aria-pressed={liked}
             title={own ? 'As curtidas vão pra sua estante' : 'Curtir'}
           >
-            <span aria-hidden>{liked || (own && count > 0) ? '❤️' : '🤍'}</span> {count > 0 && count}
+            <Heart size={19} fill={liked || (own && count > 0) ? 'currentColor' : 'none'} aria-hidden /> {count > 0 && count}
           </button>
           {onOpenThread && (
             <button className="action" onClick={onOpenThread}>
-              <span aria-hidden>💬</span> {post.comments > 0 && post.comments}
+              <MessageCircle size={19} aria-hidden /> {post.comments > 0 && post.comments}
             </button>
           )}
-          <span className="expires">⏳ {expiresIn(post.created_at)}</span>
+          <span className="expires">
+            <Clock size={13} aria-hidden /> {expiresIn(post.created_at)}
+          </span>
         </footer>
       </div>
     </article>
