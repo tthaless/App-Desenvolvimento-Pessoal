@@ -9,6 +9,7 @@ import { refreshMembers, useMembers } from '../lib/members'
 import { compressImage, errorMessage } from '../lib/utils'
 import ActivityIcon from './ActivityIcon'
 import Celebration from './Celebration'
+import type { Activity } from '../types'
 import { haptic, toast } from '../lib/toast'
 
 type Facing = 'environment' | 'user'
@@ -25,7 +26,7 @@ export default function CameraFlow({ userId }: { userId: string }) {
 
 function Flow({ userId, preset }: { userId: string; preset: ProofKind | null }) {
   const [photo, setPhoto] = useState<{ file: File; url: string } | null>(null)
-  const [celebrate, setCelebrate] = useState<{ from: number; to: number; unit: string; title: string } | null>(null)
+  const [celebrate, setCelebrate] = useState<{ from: number; to: number; unit: string; title: string; activity: Activity } | null>(null)
 
   // Voltar do Android (ou o gesto de voltar) fecha a câmera em vez de sair do app.
   useEffect(() => {
@@ -269,7 +270,7 @@ function Review({
   preset: ProofKind | null
   onRetake: () => void
   onClose: () => void
-  onPosted: (c: { from: number; to: number; unit: string; title: string }) => void
+  onPosted: (c: { from: number; to: number; unit: string; title: string; activity: Activity }) => void
 }) {
   const today = useToday()
   const me = useMembers().find((m) => m.id === userId)
@@ -336,6 +337,7 @@ function Review({
           to: before + 1,
           unit: before + 1 === 1 ? 'dia seguido' : 'dias seguidos',
           title: activity === 'leitura' ? 'Leitura do dia feita!' : 'Treino do dia feito!',
+          activity,
         })
       else {
         toast('Foto postada nos stories')

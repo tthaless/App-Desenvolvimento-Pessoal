@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
 import { FlameMark } from './Logo'
+import ActivityIcon from './ActivityIcon'
+import type { Activity } from '../types'
 
 interface Props {
   from: number
@@ -7,13 +9,15 @@ interface Props {
   /** "dias seguidos", "de 7 no desafio"... */
   unit: string
   title: string
+  /** Mostra o símbolo da atividade (halter ou livro) no lugar do foguinho. */
+  activity?: Activity
   onDone: () => void
 }
 
 const SPARKS = 10
 
 /** Comemoração ao postar a prova: foguinho, número subindo e vibração. */
-export default function Celebration({ from, to, unit, title, onDone }: Props) {
+export default function Celebration({ from, to, unit, title, activity, onDone }: Props) {
   const [value, setValue] = useState(from)
 
   useEffect(() => {
@@ -43,7 +47,13 @@ export default function Celebration({ from, to, unit, title, onDone }: Props) {
           {Array.from({ length: SPARKS }, (_, i) => (
             <span key={i} className="spark" style={{ ['--a' as string]: `${(360 / SPARKS) * i}deg`, ['--d' as string]: `${i * 25}ms` }} />
           ))}
-          <FlameMark size={110} />
+          {activity ? (
+            <span className={`celebration-icon act-${activity}`}>
+              <ActivityIcon activity={activity} size={56} strokeWidth={2} />
+            </span>
+          ) : (
+            <FlameMark size={110} />
+          )}
         </span>
         <span className="celebration-number">{value}</span>
         <span className="celebration-unit">{unit}</span>

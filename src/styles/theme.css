@@ -241,3 +241,12 @@ button.settings-row:active { background: var(--surface-2); }
 /* A conversa e a confirmação de excluir são janelas claras por cima da foto. */
 .viewer .story-chat, .viewer .viewer-confirm { --text: #153462; --muted: #5f6c80; --line: #e4e2cc; color: var(--text); }
 .viewer .story-chat .viewer-close { color: var(--text); }
+
+/* ---------- Comemoração com o símbolo da atividade ---------- */
+.celebration-icon {
+  width: 112px; height: 112px; border-radius: 34px; display: grid; place-items: center; color: #fff;
+  background: var(--exercise); box-shadow: 0 14px 34px rgba(47, 125, 112, .35);
+  animation: flame-pop .7s cubic-bezier(.3, 1.7, .5, 1) both;
+}
+.celebration-icon.act-leitura { background: var(--reading); box-shadow: 0 14px 34px rgba(47, 90, 168, .35); }
+.celebration-number { color: var(--text); }
