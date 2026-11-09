@@ -153,32 +153,37 @@ button.settings-row:active { background: var(--surface-2); }
 .shelf-tool-btn.on { background: var(--navy); border-color: var(--navy); }
 .cam-fallback .btn.primary { background: var(--cream); color: var(--navy); }
 
-/* ---------- Topo do perfil: plano de fundo inteiro, foto sobreposta ---------- */
+/* ---------- Topo do perfil: plano de fundo grande, foto e nome por cima da parte de baixo ---------- */
 .phero { display: flex; flex-direction: column; flex: none; }
 .phero-cover {
-  position: relative; height: 150px; border-radius: 20px; background-size: cover; background-position: center;
+  position: relative; height: 250px; border-radius: 22px; background-size: cover; background-position: center;
   box-shadow: inset 0 0 0 1px rgba(21, 52, 98, .06);
 }
-.phero-cover.empty { background: linear-gradient(135deg, #bad1c2 0%, #dfe8d6 45%, #f6f6c9 100%); }
-.phero-corner { position: absolute; top: 10px; right: 10px; }
+.phero.no-cover .phero-cover { background: linear-gradient(135deg, #bad1c2 0%, #dfe8d6 45%, #f6f6c9 100%); }
+/* Só um escurecido curto embaixo, pra ler o nome; o resto da imagem fica inteiro. */
+.phero-scrim { position: absolute; left: 0; right: 0; bottom: 0; height: 110px; border-radius: 0 0 22px 22px; background: linear-gradient(180deg, rgba(10, 20, 40, 0), rgba(10, 20, 40, .55)); pointer-events: none; }
+.phero.no-cover .phero-scrim { display: none; }
+.phero-corner { position: absolute; top: 12px; right: 12px; z-index: 2; }
 .phero-corner .hero-btn { background: rgba(255, 255, 255, .9); border: 1px solid rgba(21, 52, 98, .08); color: var(--text); }
-.phero-main { padding: 0 6px; display: flex; flex-direction: column; gap: 6px; }
-.phero-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; margin-top: -46px; }
-.phero-avatar .avatar.xl { width: 92px; height: 92px; box-shadow: 0 0 0 4px var(--bg), 0 6px 16px rgba(21, 52, 98, .18); }
+.phero-id { position: absolute; left: 14px; right: 14px; bottom: -40px; display: flex; align-items: flex-end; gap: 12px; z-index: 1; }
+.phero-avatar { flex: none; }
+.phero-avatar .avatar.xl { width: 96px; height: 96px; box-shadow: 0 0 0 4px var(--bg), 0 6px 16px rgba(21, 52, 98, .22); }
 .phero-avatar .avatar-badge { right: -2px; bottom: 2px; background: var(--navy); color: #fff; border-color: var(--bg); }
-.phero-action { padding-bottom: 4px; }
+.phero-id-text { flex: 1; min-width: 0; padding-bottom: 50px; display: flex; flex-direction: column; gap: 4px; }
+.phero-name { margin: 0; font-family: var(--display); font-size: 26px; font-weight: 800; letter-spacing: -0.03em; line-height: 1.05; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.phero.has-cover .phero-name { color: #fff; text-shadow: 0 1px 8px rgba(0, 0, 0, .35); }
+.phero .featured-badges { justify-content: flex-start; margin: 0 0 0 -2px; }
+.phero-main { padding: 0 6px; display: flex; flex-direction: column; gap: 6px; }
+.phero-action { min-height: 44px; display: flex; justify-content: flex-end; align-items: center; margin-top: 8px; }
 .phero-action .btn.ghost { background: var(--surface); border: 1px solid var(--line); color: var(--text); }
-.phero-name { margin: 6px 0 0; font-family: var(--display); font-size: 26px; font-weight: 800; letter-spacing: -0.03em; }
-.phero .featured-badges { justify-content: flex-start; margin: 2px 0 0 -2px; }
-.phero .profile-bio { margin: 2px 0 0; text-align: left; max-width: none; line-height: 1.5; }
-.phero .muted.small { text-align: left; }
-
+.phero .profile-bio { margin: 6px 0 0; text-align: left; max-width: none; line-height: 1.5; }
+.phero .muted.small { text-align: left; margin-top: 6px; }
 .pstats { display: grid; grid-template-columns: repeat(4, 1fr); margin: 10px 0 0; padding: 12px 0 0; border-top: 1px solid var(--line); }
 .pstats div { display: flex; flex-direction: column; gap: 2px; padding-right: 6px; }
 .pstats div + div { padding-left: 10px; border-left: 1px solid var(--line); }
 .pstats dd { margin: 0; font-family: var(--display); font-weight: 800; font-size: 22px; line-height: 1; }
 .pstats dt { font-size: 11.5px; color: var(--muted); line-height: 1.25; }
-.profile-sheet .phero-cover { height: 130px; }
+.profile-sheet .phero-cover { height: 220px; }
 .profile-sheet .phero-avatar .avatar.xl { box-shadow: 0 0 0 4px var(--surface), 0 6px 16px rgba(21, 52, 98, .18); }
 
 /* ---------- Sequências (no lugar dos cartões com foguinho) ---------- */
@@ -200,3 +205,5 @@ button.settings-row:active { background: var(--surface-2); }
 .today-streak { flex-direction: column; align-items: flex-end; gap: 2px; line-height: 1; }
 .today-streak strong { font-family: var(--display); font-size: 18px; font-weight: 800; }
 .today-streak small { font-family: var(--body); font-size: 11px; font-weight: 500; color: var(--muted); }
+.notif-kind.tone-gold { background: #c98a12; }
+.notif-app { background: var(--surface-2) !important; }
