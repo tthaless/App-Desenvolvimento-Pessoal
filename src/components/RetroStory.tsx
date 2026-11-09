@@ -12,8 +12,10 @@ import {
   summarize,
   weekdayOf,
 } from '../lib/retro'
-import type { Period, RetroData, Summary } from '../lib/retro'
+import type { Period, RetroData, RetroDay, RetroPerson, Summary } from '../lib/retro'
 import { useMembers } from '../lib/members'
+import type { Member } from '../types'
+import Avatar from './Avatar'
 import { errorMessage } from '../lib/utils'
 import { ArrowMark, FlameMark } from './Logo'
 
@@ -56,7 +58,8 @@ export default function RetroStory({ period, userId, onClose }: { period: Period
     }
   }, [onClose])
 
-  const slides = data ? buildSlides(data, period, userId, me?.username ?? '') : []
+  const members = useMembers()
+  const slides = data ? buildSlides(data, period, userId, me?.username ?? '', members) : []
   const last = slides.length - 1
 
   const next = useCallback(() => {
@@ -152,7 +155,7 @@ function vsAvg(mine: number, avg: number, unit: string) {
   return `A média do grupo foi ${fmt(avg)} ${unit}`
 }
 
-function buildSlides(data: RetroData, period: Period, userId: string, name: string): Slide[] {
+function buildSlides(data: RetroData, period: Period, userId: string, name: string, members: Member[]): Slide[] {
   const s: Summary = summarize(data, userId)
   const me = s.me
   const title = period.kind === 'semana' ? 'Sua semana' : `Seu ${periodLabel(period)}`
@@ -226,7 +229,63 @@ function buildSlides(data: RetroData, period: Period, userId: string, name: stri
         <p className="retro-lead">pontos {period.kind === 'semana' ? 'na semana' : 'no mês'}</p>
         {me.pontos > 0 && <p className="retro-rank">{me.posicao === 1 ? 'Você terminou em 1º lugar!' : `Você terminou em ${me.posicao}º lugar`}</p>}
         {vsAvg(me.pontos, s.avg.pontos, 'pontos') && <p className="retro-chip">{vsAvg(me.pontos, s.avg.pontos, 'pontos')}</p>}
+        <PointsLine days={days} data={data} userId={userId} ativos={s.ativos} />
         {s.bestDay && <p className="retro-text">Seu melhor dia foi {WEEKDAYS_LONG[weekdayOf(s.bestDay.day)]}, com {s.bestDay.pts} pontos.</p>}
+      </>
+    ),
+  })
+
+  if (period.kind === 'mes') {
+    const weeks = weeksOf(days, s.myDays)
+    slides.push({
+      id: 'semanas',
+      tone: 'tone-weeks',
+      body: (
+        <>
+          <p className="retro-eyebrow">Semana a semana</p>
+          <h2 className="retro-title small">Como o mês andou</h2>
+          <div className="retro-weeks">
+            {weeks.map((w, i) => (
+              <div key={w.label} className="retro-week">
+                <span className="retro-week-pts">{w.pts}</span>
+                <i style={{ height: `${(w.pts / Math.max(1, ...weeks.map((x) => x.pts))) * 100}%`, animationDelay: `${0.3 + i * 0.08}s` }} />
+                <span className="retro-week-label">{w.label}</span>
+              </div>
+            ))}
+          </div>
+          <p className="retro-text">
+            {(() => {
+              const best = weeks.reduce((a, b) => (b.pts > a.pts ? b : a), weeks[0])
+              return best && best.pts > 0 ? `A melhor foi a semana de ${best.label}, com ${best.pts} pontos.` : 'Pontos de cada semana do mês.'
+            })()}
+          </p>
+        </>
+      ),
+    })
+  }
+
+  slides.push({
+    id: 'comparacao',
+    tone: 'tone-compare',
+    body: (
+      <>
+        <p className="retro-eyebrow">Você e o grupo</p>
+        <h2 className="retro-title small">Lado a lado com a média</h2>
+        <div className="retro-compare">
+          <CompareRow label="Dias com prova" mine={total} avg={s.avg.dias} />
+          <CompareRow label="Pontos" mine={me.pontos} avg={s.avg.pontos} />
+          <CompareRow label="Dias de exercício" mine={me.dias_exercicio} avg={s.avg.dias_exercicio} />
+          <CompareRow label="Dias de leitura" mine={me.dias_leitura} avg={s.avg.dias_leitura} />
+          {(me.paginas > 0 || s.avg.paginas > 0) && <CompareRow label="Páginas" mine={me.paginas} avg={s.avg.paginas} />}
+        </div>
+        <p className="retro-legend">
+          <span>
+            <i className="me" /> você
+          </span>
+          <span>
+            <i /> média de quem postou ({s.ativos} {s.ativos === 1 ? 'pessoa' : 'pessoas'})
+          </span>
+        </p>
       </>
     ),
   })
@@ -313,6 +372,35 @@ function buildSlides(data: RetroData, period: Period, userId: string, name: stri
     })
   }
 
+  const top = data.pessoas.filter((p) => p.pontos > 0).slice(0, 3)
+  if (top.length >= 2) {
+    const order = [top[1], top[0], top[2]].filter(Boolean) as RetroPerson[]
+    slides.push({
+      id: 'podio',
+      tone: 'tone-podium',
+      body: (
+        <>
+          <p className="retro-eyebrow">Pódio {period.kind === 'semana' ? 'da semana' : 'do mês'}</p>
+          <h2 className="retro-title small">Quem puxou o grupo</h2>
+          <div className="retro-podium">
+            {order.map((p) => {
+              const m = members.find((x) => x.id === p.user_id)
+              const place = p.posicao
+              return (
+                <div key={p.user_id} className={`podium-col p${Math.min(place, 3)} ${p.user_id === userId ? 'me' : ''}`}>
+                  <Avatar name={p.username} url={m?.avatar_url} size="lg" />
+                  <span className="podium-name">{p.username}</span>
+                  <span className="podium-pts">{p.pontos} pts</span>
+                  <span className="podium-block">{place}º</span>
+                </div>
+              )
+            })}
+          </div>
+        </>
+      ),
+    })
+  }
+
   const share = async () => {
     const text = `Minha ${period.kind === 'semana' ? 'semana' : 'retrospectiva do mês'} no Streak: ${total} dias com prova, ${me.pontos} pontos${me.paginas ? `, ${me.paginas} páginas lidas` : ''}.`
     try {
@@ -363,4 +451,74 @@ function buildSlides(data: RetroData, period: Period, userId: string, name: stri
     ),
   })
   return slides
+}
+
+/** Pontos acumulados dia a dia: você contra a média de quem postou. */
+function PointsLine({ days, data, userId, ativos }: { days: string[]; data: RetroData; userId: string; ativos: number }) {
+  const until = days.filter((d) => d <= data.fim)
+  if (until.length < 2) return null
+  const mineBy = new Map(data.dias.filter((d) => d.user_id === userId).map((d) => [d.day, d.pts]))
+  const groupBy = new Map<string, number>()
+  for (const d of data.dias) groupBy.set(d.day, (groupBy.get(d.day) ?? 0) + d.pts)
+  let a = 0
+  let b = 0
+  const mine = until.map((d) => (a += mineBy.get(d) ?? 0))
+  const avg = until.map((d) => (b += (groupBy.get(d) ?? 0) / Math.max(1, ativos)))
+  const max = Math.max(1, ...mine, ...avg)
+  const W = 300
+  const H = 120
+  const x = (i: number) => (i / (until.length - 1)) * W
+  const y = (v: number) => H - (v / max) * (H - 8) - 4
+  const path = (vals: number[]) => vals.map((v, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(' ')
+  return (
+    <div className="retro-line">
+      <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" aria-hidden>
+        <path d={`${path(mine)} L${W},${H} L0,${H}Z`} className="area" />
+        <path d={path(avg)} className="avg" />
+        <path d={path(mine)} className="mine" pathLength={1} />
+      </svg>
+      <p className="retro-legend dark">
+        <span>
+          <i className="me" /> você
+        </span>
+        <span>
+          <i /> média do grupo
+        </span>
+      </p>
+    </div>
+  )
+}
+
+function CompareRow({ label, mine, avg }: { label: string; mine: number; avg: number }) {
+  const max = Math.max(1, mine, avg)
+  return (
+    <div className="compare-row">
+      <span className="compare-label">{label}</span>
+      <div className="compare-bars">
+        <span className="me" style={{ width: `${(mine / max) * 100}%` }}>
+          <em>{fmt(mine)}</em>
+        </span>
+        <span style={{ width: `${(avg / max) * 100}%` }}>
+          <em>{avg % 1 && avg < 10 ? avg.toFixed(1).replace('.', ',') : fmt(avg)}</em>
+        </span>
+      </div>
+    </div>
+  )
+}
+
+/** Pontos de cada semana (segunda a domingo) dentro do mês. */
+function weeksOf(days: string[], myDays: RetroDay[]) {
+  const pts = new Map(myDays.map((d) => [d.day, d.pts]))
+  const weeks: { label: string; pts: number }[] = []
+  let cur: { start: string; end: string; pts: number } | null = null
+  for (const d of days) {
+    if (!cur || weekdayOf(d) === 1) {
+      if (cur) weeks.push({ label: `${Number(cur.start.slice(8))}–${Number(cur.end.slice(8))}`, pts: cur.pts })
+      cur = { start: d, end: d, pts: 0 }
+    }
+    cur.end = d
+    cur.pts += pts.get(d) ?? 0
+  }
+  if (cur) weeks.push({ label: `${Number(cur.start.slice(8))}–${Number(cur.end.slice(8))}`, pts: cur.pts })
+  return weeks
 }
