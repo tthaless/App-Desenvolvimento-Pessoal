@@ -1,4 +1,5 @@
 import { useEffect, useId, useRef } from 'react'
+import { createPortal } from 'react-dom'
 import type { ReactNode } from 'react'
 import { X } from 'lucide-react'
 import { useDragToClose } from '../lib/useDragToClose'
@@ -35,7 +36,8 @@ export default function Sheet({ title, onClose, children, className = '', action
     }
   }, [sheetRef])
 
-  return (
+  // Direto no body: assim nenhuma tela por baixo (com animação ou rolagem) corta ou cobre a janela.
+  return createPortal(
     <div className="sheet-backdrop" onClick={onClose}>
       <div
         ref={sheetRef}
@@ -58,6 +60,7 @@ export default function Sheet({ title, onClose, children, className = '', action
         </header>
         <div className="sheet-body">{children}</div>
       </div>
-    </div>
+    </div>,
+    document.body,
   )
 }

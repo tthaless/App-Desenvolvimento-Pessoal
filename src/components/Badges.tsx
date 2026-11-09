@@ -172,7 +172,7 @@ export function FeaturedBadges({ member }: { member: Member }) {
         {items.map((p) => (
           <li key={p.def.id}>
             <button onClick={() => setOpen(p.def.id)} aria-label={`${p.def.name}${p.tier && p.def.goals.length > 1 ? `, ${TIER_NAME[p.tier]}` : ''}`}>
-              <BadgeMedal icon={p.def.icon} tier={p.tier} size={40} />
+              <BadgeMedal icon={p.def.icon} tier={p.tier} size={44} />
             </button>
           </li>
         ))}
