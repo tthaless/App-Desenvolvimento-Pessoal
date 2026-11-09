@@ -257,3 +257,16 @@ button.settings-row:active { background: var(--surface-2); }
 /* O bloco do nome passa por cima da linha do botão: só a foto e as insígnias recebem toque. */
 .phero-id { pointer-events: none; }
 .phero-id .phero-avatar, .phero-id .featured-badges { pointer-events: auto; }
+/* ---------- Topo do perfil baixo, fora da aba Perfil ---------- */
+.phero-cover { transition: height .28s cubic-bezier(.2, .8, .2, 1); }
+.phero.compact .phero-cover, .profile-sheet .phero.compact .phero-cover { height: 92px; }
+.phero.compact .phero-scrim { height: 100%; border-radius: 22px; }
+.phero.compact .phero-id { bottom: 14px; align-items: center; }
+.phero.compact .phero-id-text { padding-bottom: 0; flex-direction: row; align-items: center; gap: 10px; }
+.phero.compact .phero-avatar .avatar.xl { width: 64px; height: 64px; box-shadow: 0 0 0 3px var(--bg); }
+.phero.compact .phero-name { font-size: 22px; flex: 0 1 auto; }
+.phero.compact .featured-badges { flex: none; }
+.phero.compact .featured-badges svg { width: 34px; height: 34px; }
+.phero.compact .phero-main, .phero.compact .phero-corner, .phero.compact .avatar-badge { display: none; }
+.phero.compact .avatar-edit { pointer-events: none; }
+

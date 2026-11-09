@@ -28,6 +28,7 @@ interface Props {
 export default function ProfileSheet({ userId, viewerId, onClose }: Props) {
   const member = useMembers().find((m) => m.id === userId)
   const [streaks, setStreaks] = useState<StreakRow[]>([])
+  const [compact, setCompact] = useState(false)
   const sheetRef = useDragToClose<HTMLDivElement>(onClose, !!member)
 
   useEffect(() => {
@@ -80,8 +81,9 @@ export default function ProfileSheet({ userId, viewerId, onClose }: Props) {
           badges={<FeaturedBadges member={member} />}
           bio={member.bio && <p className="profile-bio">{member.bio}</p>}
           stats={<ProfileStats member={member} />}
+          compact={compact}
         />
-        <ProfileTabs member={member} viewerId={asViewer}>
+        <ProfileTabs member={member} viewerId={asViewer} onSub={(s) => setCompact(s !== 'perfil')}>
           <ProfileDetails member={member} streaks={streaks} />
           <h2 className="section-title">Posts das últimas 24h</h2>
           <FeedList userId={asViewer} authorId={userId} emptyText={`${member.username} não postou nada no feed hoje.`} />

@@ -12,14 +12,16 @@ interface Props {
   badges?: ReactNode
   bio?: ReactNode
   stats?: ReactNode
+  /** Versão baixa, usada fora da aba Perfil. */
+  compact?: boolean
   /** Inputs escondidos e outras coisas sem lugar visual. */
   children?: ReactNode
 }
 
 /** Topo do perfil: plano de fundo grande, com a foto e o nome por cima da parte de baixo. */
-export default function ProfileHero({ coverUrl, corner, avatar, action, name, badges, bio, stats, children }: Props) {
+export default function ProfileHero({ coverUrl, corner, avatar, action, name, badges, bio, stats, compact, children }: Props) {
   return (
-    <section className={`phero ${coverUrl ? 'has-cover' : 'no-cover'}`}>
+    <section className={`phero ${coverUrl ? 'has-cover' : 'no-cover'} ${compact ? 'compact' : ''}`}>
       <div className="phero-cover" style={coverUrl ? { backgroundImage: `url("${coverUrl}")` } : undefined}>
         <span className="phero-scrim" aria-hidden />
         {corner && <div className="phero-corner">{corner}</div>}
