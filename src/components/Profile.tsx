@@ -177,7 +177,7 @@ export default function Profile({ userId }: { userId: string }) {
         name={me.username}
         badges={<FeaturedBadges member={me} />}
         bio={me.bio ? <p className="profile-bio">{me.bio}</p> : !editing && <p className="muted small">Sem descrição ainda. Toque em Editar perfil.</p>}
-        stats={<ProfileStats userId={userId} streaks={streaks} />}
+        stats={<ProfileStats userId={userId} />}
       >
         <input ref={coverRef} type="file" accept="image/*" hidden onChange={(e) => changeCover(e.target.files?.[0])} />
         <input ref={fileRef} type="file" accept="image/*" hidden onChange={(e) => changeAvatar(e.target.files?.[0])} />

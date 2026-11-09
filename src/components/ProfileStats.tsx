@@ -1,12 +1,10 @@
 import { BADGES, progressOf, useBadgeStats } from '../lib/badges'
-import type { StreakRow } from '../types'
 
 /** Números do perfil numa linha, como nos apps de rede social. */
-export default function ProfileStats({ userId, streaks }: { userId: string; streaks: StreakRow[] }) {
+export default function ProfileStats({ userId }: { userId: string }) {
   const stats = useBadgeStats(userId)
   const ok = stats && stats !== 'erro' ? stats : null
-  // Total de dias (as sequências atuais ficam no cartão Sequências, logo abaixo).
-  void streaks
+  // Totais (as sequências atuais ficam no cartão Sequências, logo abaixo).
   const items: [number | string, string][] = [
     [ok ? ok.dias_exercicio : '–', 'dias de treino'],
     [ok ? ok.dias_leitura : '–', 'dias de leitura'],

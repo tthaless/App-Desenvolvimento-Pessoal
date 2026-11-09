@@ -79,7 +79,7 @@ export default function ProfileSheet({ userId, viewerId, onClose }: Props) {
           name={member.username}
           badges={<FeaturedBadges member={member} />}
           bio={member.bio && <p className="profile-bio">{member.bio}</p>}
-          stats={<ProfileStats userId={member.id} streaks={streaks} />}
+          stats={<ProfileStats userId={member.id} />}
         />
         <ProfileTabs member={member} viewerId={asViewer}>
           <ProfileDetails member={member} streaks={streaks} />
