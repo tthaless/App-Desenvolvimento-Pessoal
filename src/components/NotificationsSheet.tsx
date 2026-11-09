@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { BellOff, BookOpen, Bookmark, Dumbbell, Heart, Lightbulb, MessageCircle, Target, X } from 'lucide-react'
+import { BellOff, BellRing, BookOpen, Bookmark, Dumbbell, Heart, Lightbulb, MessageCircle, Target, X } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import {
   clearNotifications,
@@ -43,6 +43,8 @@ function describe(n: AppNotification) {
       return <>também quer ler {livro}, da sua lista</>
     case 'challenge_vote':
       return <>votou na sua ideia de desafio {n.detail ? <em>{n.detail}</em> : ''}</>
+    case 'nudge':
+      return <>te cutucou: {n.detail === 'leitura' ? 'falta a sua leitura de hoje' : n.detail === 'exercicio' ? 'falta o seu exercício de hoje' : 'faltam as suas provas de hoje'}</>
     case 'last_one':
       return null
   }
@@ -60,6 +62,7 @@ function iconOf(n: AppNotification): { Icon: LucideIcon; tone: string } {
   if (n.kind === 'want_too') return { Icon: Bookmark, tone: 'reading' }
   if (n.kind === 'challenge_vote') return { Icon: Target, tone: 'challenge' }
   if (n.kind === 'tip') return { Icon: Lightbulb, tone: 'gold' }
+  if (n.kind === 'nudge') return { Icon: BellRing, tone: 'brand' }
   if (n.kind === 'last_one') return n.detail === 'leitura' ? { Icon: BookOpen, tone: 'reading' } : { Icon: Dumbbell, tone: 'exercise' }
   if (n.kind.startsWith('story')) {
     if (n.detail === 'exercicio') return { Icon: Dumbbell, tone: 'exercise' }
@@ -165,7 +168,7 @@ export default function NotificationsSheet() {
                   {n.preview && n.kind !== 'tip' && <span className="notif-preview">“{n.preview}”</span>}
                   <span className="notif-time">
                     {timeAgo(n.created_at)}
-                    {expired && (n.kind === 'last_one' ? ' · o dia acabou' : ' · já sumiu')}
+                    {expired && (n.kind === 'last_one' || n.kind === 'nudge' ? ' · o dia acabou' : ' · já sumiu')}
                   </span>
                 </span>
                 {fresh.has(n.id) && <span className="notif-dot" aria-label="Nova" />}

@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react'
-import { Crown } from 'lucide-react'
+import { BellRing, Check, Crown } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { openProfile, useMembers } from '../lib/members'
 import { useCamera } from '../lib/camera'
 import { useToday } from '../lib/today'
 import { errorMessage } from '../lib/utils'
+import { nudge, nudgedToday } from '../lib/nudge'
+import { toast } from '../lib/toast'
 import type { RankingRow } from '../types'
 import ActivityIcon from './ActivityIcon'
 import Avatar from './Avatar'
@@ -20,6 +22,21 @@ export default function RankingSection({ userId }: { userId: string }) {
   const members = useMembers()
   const today = useToday()
   const { posted } = useCamera()
+  const [nudged, setNudged] = useState<Set<string>>(() => nudgedToday(today.day))
+  const [nudging, setNudging] = useState<string | null>(null)
+
+  async function poke(id: string, name: string) {
+    setNudging(id)
+    try {
+      await nudge(id, today.day)
+      toast(`Você cutucou ${name}`)
+    } catch (e) {
+      toast(errorMessage(e), 'error')
+    } finally {
+      setNudged(nudgedToday(today.day))
+      setNudging(null)
+    }
+  }
   const avatarOf = (id: string) => members.find((m) => m.id === id)?.avatar_url
 
   // Recarrega ao trocar o período e quando alguém posta (pontos mudam).
@@ -91,6 +108,16 @@ export default function RankingSection({ userId }: { userId: string }) {
                   </span>
                 ))}
               </span>
+              {today.loaded && r.user_id !== userId && did.length < 2 && (
+                <button
+                  className={`rank-nudge ${nudged.has(r.user_id) ? 'done' : ''}`}
+                  onClick={() => poke(r.user_id, r.username)}
+                  disabled={nudged.has(r.user_id) || nudging === r.user_id}
+                  aria-label={nudged.has(r.user_id) ? `Você já cutucou ${r.username} hoje` : `Cutucar ${r.username}`}
+                >
+                  {nudged.has(r.user_id) ? <Check size={15} strokeWidth={2.6} aria-hidden /> : <BellRing size={15} aria-hidden />}
+                </button>
+              )}
               <span className="rank-pts">
                 {r.pontos}
                 <small>pts</small>
