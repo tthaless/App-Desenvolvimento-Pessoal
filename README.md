@@ -4,7 +4,7 @@ App fechado para um grupo de amigos manter a constância em desenvolvimento pess
 
 ## Ideia
 
-- **Abas**: Início (stories, seu dia e feed), Leitura (biblioteca), Câmera, Evolução (ranking, estatísticas e retrospectivas) e Perfil.
+- **Abas**: Início (stories, seu dia, ranking e feed), Câmera no meio e Perfil (perfil, leitura, evolução e insígnias).
 - **Prova do dia**: pelo botão da câmera no meio da barra, a pessoa tira a foto e escolhe se é exercício ou leitura. Na leitura dá pra informar a página em que parou.
 - **Stories de 24h**: as fotos ficam visíveis para o grupo por 24 horas e depois somem.
 - **Streak**: contador de dias seguidos sem faltar, por atividade.
@@ -43,7 +43,7 @@ npm run dev
 - **Pontos**: 10 por atividade feita no dia, +5 no dia em que faz exercício e leitura, bônus de streak, e +30 ao terminar um livro com resumo (140+ letras) ou PDF de anotações. A semana começa na segunda.
 - **Stories** juntam exercício e leitura das últimas 24 horas numa barra só.
 - **Perfil**: foto, descrição, livro que está lendo e exercícios que faz. Toque no nome de alguém para ver o perfil.
-- **Biblioteca** (Leitura → Biblioteca, e na Estante do perfil): lendo agora, lista "Quero ler" e concluídos, com contadores no topo. A capa vem automática da Open Library. Só entram livros começados no app; a data de conclusão é marcada sozinha ao terminar, com nota de 1 a 10 (com decimal) e comentário opcional. Cada livro pode ter um PDF de anotações (até 5 MB e 30 páginas), visível pro grupo ou só pra pessoa. Na lista de um amigo dá pra marcar "Quero ler também".
+- **Biblioteca** (Perfil → Leitura): lendo agora, lista "Quero ler" e concluídos, com contadores no topo. A capa vem automática da Open Library. Só entram livros começados no app; a data de conclusão é marcada sozinha ao terminar, com nota de 1 a 10 (com decimal) e comentário opcional. Cada livro pode ter um PDF de anotações (até 5 MB e 30 páginas), visível pro grupo ou só pra pessoa. Na lista de um amigo dá pra marcar "Quero ler também".
 - **Aviso automático no feed**: ao terminar um livro, o Streak publica um post (com o foguinho) que o grupo pode curtir e comentar. As curtidas ficam contadas na estante, mesmo depois que o post some.
 - **Insígnias**: vitórias, sequências, leitura e treino viram medalhas de bronze, prata, ouro e diamante. Cada pessoa escolhe até 3 pra mostrar no topo do perfil.
 - **Evolução**: números da semana e do mês comparados com a média do grupo, e retrospectiva em telas no fim de cada semana e mês.

@@ -73,7 +73,7 @@ const STEPS: Step[] = [
     title: 'Monte o seu perfil',
     text: (
       <>
-        Coloque uma <strong>foto</strong>, cadastre o <strong>livro</strong> que está lendo em Leitura → Biblioteca e, no celular, instale o Streak
+        Coloque uma <strong>foto</strong>, cadastre o <strong>livro</strong> que está lendo em Perfil → Leitura e, no celular, instale o Streak
         na tela inicial pra abrir como app.
       </>
     ),

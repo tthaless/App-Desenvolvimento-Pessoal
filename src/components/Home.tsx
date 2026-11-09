@@ -11,11 +11,12 @@ import ActivityIcon from './ActivityIcon'
 import { FlameMark } from './Logo'
 import PushOffer from './PushOffer'
 import FeedSection from './FeedSection'
+import RankingSection from './RankingSection'
 import Stories from './Stories'
 import TopBar from './TopBar'
 import { SkeletonCard } from './Skeleton'
 
-/** Início: stories, como está o seu dia e o feed do grupo. */
+/** Início: stories, como está o seu dia, o ranking e o feed do grupo. */
 export default function Home({ userId }: { userId: string }) {
   const { posted } = useCamera()
   const me = useMembers().find((m) => m.id === userId)
@@ -32,6 +33,7 @@ export default function Home({ userId }: { userId: string }) {
       <PushOffer show={posted > 0} />
       <RetroBanner userId={userId} />
       <TodayCard userId={userId} />
+      <RankingSection userId={userId} />
       <FeedSection userId={userId} />
     </div>
   )

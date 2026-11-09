@@ -420,7 +420,7 @@ function Review({
             aria-label="Legenda"
           />
         )}
-        {kind === 'leitura' && !book && <p className="cam-note">Dica: comece um livro em Leitura → Biblioteca pra acompanhar páginas e progresso.</p>}
+        {kind === 'leitura' && !book && <p className="cam-note">Dica: comece um livro em Perfil → Leitura pra acompanhar páginas e progresso.</p>}
         {chosen?.done && <p className="cam-note">Você já postou essa hoje. A foto vai pros stories, mas não soma pontos de novo.</p>}
         {error && <p className="msg error">{error}</p>}
 

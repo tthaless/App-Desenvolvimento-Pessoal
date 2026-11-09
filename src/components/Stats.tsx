@@ -17,14 +17,13 @@ import {
 import type { Period, PeriodKind, RetroData } from '../lib/retro'
 import { errorMessage } from '../lib/utils'
 import BadgeMedal from './BadgeMedal'
-import RankingSection from './RankingSection'
 import RetroStory from './RetroStory'
-import TopBar from './TopBar'
+import GroupBooks from './GroupBooks'
 import { SkeletonCard } from './Skeleton'
 
 const fmt = (n: number) => Math.round(n).toLocaleString('pt-BR')
 
-/** Aba Evolução: ranking, seus números comparados com a média do grupo e as retrospectivas. */
+/** Evolução (no Perfil): retrospectivas, seus números comparados com a média do grupo e o que o grupo leu. */
 export default function Stats({ userId }: { userId: string }) {
   const [kind, setKind] = useState<PeriodKind>('semana')
   const period = periodOf(kind, 0)
@@ -50,8 +49,6 @@ export default function Stats({ userId }: { userId: string }) {
 
   return (
     <div className="stats">
-      <TopBar title="Evolução" />
-
       <section className="retro-cards" aria-label="Retrospectivas">
         <button className="retro-card week" onClick={() => setStory(lastWeek)}>
           <span className="retro-card-eyebrow">Retrospectiva</span>
@@ -70,8 +67,6 @@ export default function Stats({ userId }: { userId: string }) {
           </span>
         </button>
       </section>
-
-      <RankingSection userId={userId} />
 
       <div className="section-head">
         <h2 className="section-heading">Seus números</h2>
@@ -94,6 +89,8 @@ export default function Stats({ userId }: { userId: string }) {
       {data && <PeriodStats data={data} period={period} userId={userId} />}
 
       <NextBadges userId={userId} />
+
+      <GroupBooks userId={userId} />
 
       {story && <RetroStory period={story} userId={userId} onClose={() => setStory(null)} />}
     </div>

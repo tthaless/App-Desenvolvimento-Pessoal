@@ -138,3 +138,10 @@ button.settings-row:active { background: var(--surface-2); }
 /* ---------- Comemoração ---------- */
 .celebration { background: rgba(247, 246, 232, .96); color: var(--text); }
 .camera .celebration { background: rgba(247, 246, 232, .97); }
+
+/* ---------- Barra com 2 abas e a câmera no meio ---------- */
+.tabbar { grid-template-columns: 1fr 1fr 1fr; padding-left: 12%; padding-right: 12%; }
+.subtabs.four { grid-template-columns: repeat(4, 1fr); }
+.subtabs.four button { font-size: 13.5px; padding-left: 0; padding-right: 0; }
+/* Evolução dentro do perfil: as seções seguem o mesmo ritmo. */
+.profile .stats { gap: 18px; }
