@@ -4,8 +4,8 @@ App fechado para um grupo de amigos manter a constância em desenvolvimento pess
 
 ## Ideia
 
-- **Abas de atividade**: Exercício e Leitura.
-- **Prova do dia**: cada pessoa posta uma foto (tirada na hora pela câmera) comprovando a atividade.
+- **Abas**: Início (stories, seu dia e ranking), Desafio, Câmera, Leitura (feed e biblioteca) e Perfil.
+- **Prova do dia**: pelo botão da câmera no meio da barra, a pessoa tira a foto e escolhe se é exercício, leitura ou desafio.
 - **Stories de 24h**: as fotos ficam visíveis para o grupo por 24 horas e depois somem.
 - **Streak**: contador de dias seguidos sem faltar, por atividade.
 - **Ranking**: pontos e vencedor da semana e do mês.
@@ -43,7 +43,7 @@ npm run dev
 - **Pontos**: 10 por atividade feita no dia, +5 no dia em que faz exercício e leitura, +30 por cumprir o desafio da semana em 5 dos 7 dias (+40 com os 7). A semana começa na segunda.
 - **Stories** juntam exercício e leitura das últimas 24 horas numa barra só.
 - **Perfil**: foto, descrição, livro que está lendo e exercícios que faz. Toque no nome de alguém para ver o perfil.
-- **Biblioteca** (aba Leitura → Biblioteca, e na Estante do perfil): lendo agora, lista "Quero ler" e concluídos, com contadores no topo. A capa vem automática da Open Library. Só entram livros começados no app; a data de conclusão é marcada sozinha ao terminar, com nota de 1 a 10 (com decimal) e comentário opcional. Cada livro pode ter um PDF de anotações (até 5 MB e 30 páginas), visível pro grupo ou só pra pessoa. Na lista de um amigo dá pra marcar "Quero ler também".
+- **Biblioteca** (Leitura → Biblioteca, e na Estante do perfil): lendo agora, lista "Quero ler" e concluídos, com contadores no topo. A capa vem automática da Open Library. Só entram livros começados no app; a data de conclusão é marcada sozinha ao terminar, com nota de 1 a 10 (com decimal) e comentário opcional. Cada livro pode ter um PDF de anotações (até 5 MB e 30 páginas), visível pro grupo ou só pra pessoa. Na lista de um amigo dá pra marcar "Quero ler também".
 - **Aviso automático no feed**: ao terminar um livro, o Streak publica um post (com o foguinho) que o grupo pode curtir e comentar. As curtidas ficam contadas na estante, mesmo depois que o post some.
 - **Desafio da semana**: durante a semana, cada um propõe desafios e vota (não vale votar na própria ideia). Na segunda, o mais votado vira o desafio; no empate, ganha quem propôs primeiro. Sem ideias, a semana fica sem desafio. Cumprir o desafio do dia exige foto e aparece nos stories.
 - **Feed**: posts de até 280 caracteres com uma foto opcional e comentários (também com uma foto opcional). Sem curtidas, exceto no aviso automático de livro terminado. Tudo some em 24 horas. Feed não vale ponto.

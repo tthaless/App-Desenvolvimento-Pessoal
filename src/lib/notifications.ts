@@ -32,7 +32,8 @@ export type NavTarget =
   | { type: 'story'; key: string }
   | { type: 'feed'; postId: string }
   | { type: 'library' }
-  | { type: 'tab'; tab: 'exercicio' | 'leitura' | 'desafio' }
+  | { type: 'tab'; tab: 'inicio' | 'desafio' }
+  | { type: 'camera'; activity: 'exercicio' | 'leitura' }
 
 interface State {
   items: AppNotification[]
@@ -151,6 +152,6 @@ export function targetOf(n: AppNotification): NavTarget | null {
   if ((n.kind === 'feed_comment' || n.kind === 'feed_reply') && n.feed_post_id) return { type: 'feed', postId: n.feed_post_id }
   if (n.kind === 'book_like' || n.kind === 'want_too') return { type: 'library' }
   if (n.kind === 'challenge_vote') return { type: 'tab', tab: 'desafio' }
-  if (n.kind === 'last_one') return { type: 'tab', tab: n.detail === 'leitura' ? 'leitura' : 'exercicio' }
+  if (n.kind === 'last_one') return { type: 'camera', activity: n.detail === 'leitura' ? 'leitura' : 'exercicio' }
   return null
 }

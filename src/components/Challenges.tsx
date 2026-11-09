@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import type { FormEvent } from 'react'
 import { supabase } from '../lib/supabase'
 import { openProfile, useMembers } from '../lib/members'
@@ -6,7 +6,6 @@ import {
   WEEKDAY_INITIALS,
   addDays,
   challengePoints,
-  checkin,
   deleteIdea,
   fetchActive,
   fetchCheckins,
@@ -23,8 +22,7 @@ import { errorMessage, todaySP } from '../lib/utils'
 import Avatar from './Avatar'
 import { Camera, Check, Crown, Plus, Target } from 'lucide-react'
 import TopBar from './TopBar'
-import { useDragToClose } from '../lib/useDragToClose'
-import Celebration from './Celebration'
+import { openCamera } from '../lib/camera'
 import { SkeletonCard, SkeletonRows } from './Skeleton'
 import { clearNavTarget, useNavTarget } from '../lib/notifications'
 
@@ -63,12 +61,6 @@ function ThisWeek({ userId, onGoVote }: { userId: string; onGoVote: () => void }
   const [checkins, setCheckins] = useState<Checkin[]>([])
   const [loaded, setLoaded] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [draft, setDraft] = useState<{ file: File; url: string } | null>(null)
-  const [sending, setSending] = useState(false)
-  const inputRef = useRef<HTMLInputElement>(null)
-  const [celebrate, setCelebrate] = useState<{ from: number; to: number } | null>(null)
-  const endCelebration = useCallback(() => setCelebrate(null), [])
-  const sheetRef = useDragToClose<HTMLDivElement>(() => !sending && closeDraft(), !!draft)
 
   const load = useCallback(async () => {
     try {
@@ -92,29 +84,6 @@ function ThisWeek({ userId, onGoVote }: { userId: string; onGoVote: () => void }
       supabase.removeChannel(channel)
     }
   }, [load])
-
-  function closeDraft() {
-    if (draft) URL.revokeObjectURL(draft.url)
-    setDraft(null)
-    if (inputRef.current) inputRef.current.value = ''
-  }
-
-  async function send() {
-    if (!draft || !challenge) return
-    setSending(true)
-    setError(null)
-    try {
-      await checkin(userId, challenge.id, draft.file)
-      const before = checkins.filter((c) => c.user_id === userId).length
-      closeDraft()
-      setCelebrate({ from: before, to: before + 1 })
-      await load()
-    } catch (e) {
-      setError(errorMessage(e))
-    } finally {
-      setSending(false)
-    }
-  }
 
   if (!loaded) return <SkeletonCard height={300} />
 
@@ -180,14 +149,10 @@ function ThisWeek({ userId, onGoVote }: { userId: string; onGoVote: () => void }
             <Check size={16} strokeWidth={3} aria-hidden /> Cumprido hoje. Volte amanhã!
           </p>
         ) : (
-          <button className="btn primary big-btn" onClick={() => inputRef.current?.click()}>
+          <button className="btn primary big-btn" onClick={() => openCamera('desafio')}>
             <Camera size={20} aria-hidden /> Cumpri hoje
           </button>
         )}
-        <input ref={inputRef} type="file" accept="image/*" capture="environment" hidden onChange={(e) => {
-          const f = e.target.files?.[0]
-          if (f) setDraft({ file: f, url: URL.createObjectURL(f) })
-        }} />
       </section>
 
       <section className="section">
@@ -219,32 +184,6 @@ function ThisWeek({ userId, onGoVote }: { userId: string; onGoVote: () => void }
 
       <p className="muted small rules">5 de 7 dias: +30 pontos · 7 de 7: +40</p>
 
-      {draft && (
-        <div className="sheet-backdrop" onClick={() => !sending && closeDraft()}>
-          <div className="sheet" ref={sheetRef} onClick={(e) => e.stopPropagation()}>
-            <span className="sheet-grip" aria-hidden />
-            <img src={draft.url} alt="Prévia da foto" className="preview" />
-            <p className="muted small center">{challenge.title}</p>
-            <div className="row">
-              <button className="btn ghost" onClick={closeDraft} disabled={sending}>
-                Cancelar
-              </button>
-              <button className="btn primary" onClick={send} disabled={sending}>
-                {sending ? 'Enviando…' : 'Confirmar'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-      {celebrate && (
-        <Celebration
-          from={celebrate.from}
-          to={celebrate.to}
-          unit="de 7 no desafio"
-          title={celebrate.to >= 7 ? 'Semana completa! +40' : celebrate.to === 5 ? '+30 pontos garantidos!' : 'Desafio do dia cumprido!'}
-          onDone={endCelebration}
-        />
-      )}
     </>
   )
 }

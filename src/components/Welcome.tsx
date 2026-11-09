@@ -33,8 +33,8 @@ const STEPS: Step[] = [
     title: 'Bem-vindo ao Streak',
     text: (
       <>
-        Todo dia, poste uma <strong>foto como prova</strong> do seu treino e da sua leitura. Ela aparece nos stories do grupo por 24h, e a
-        galera pode comentar.
+        Todo dia, poste uma <strong>foto como prova</strong> do seu treino e da sua leitura: toque na <strong>câmera</strong> no meio da
+        barra de baixo, tire a foto e escolha a atividade. Ela fica nos stories do grupo por 24h.
       </>
     ),
   },
@@ -73,7 +73,7 @@ const STEPS: Step[] = [
     title: 'Monte o seu perfil',
     text: (
       <>
-        Coloque uma <strong>foto</strong>, cadastre o <strong>livro</strong> que está lendo na aba Leitura e, no celular, instale o Streak
+        Coloque uma <strong>foto</strong>, cadastre o <strong>livro</strong> que está lendo em Leitura → Biblioteca e, no celular, instale o Streak
         na tela inicial pra abrir como app.
       </>
     ),
