@@ -52,6 +52,8 @@ export interface Member {
   current_book_page?: number | null
   /** Até 3 insígnias em destaque no topo do perfil. */
   featured_badges?: string[]
+  /** O que a pessoa escolheu mostrar no perfil (números e cartões da Evolução). Nada por padrão. */
+  pinned_stats?: string[]
   exercises: string | null
 }
 

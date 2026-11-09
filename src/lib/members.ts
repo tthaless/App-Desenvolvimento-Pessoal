@@ -14,10 +14,11 @@ async function fetchMembers(): Promise<Member[]> {
   const readingQuery = (fields: string) => supabase.from('books').select(fields).is('finished_at', null).is('abandoned_at', null)
   const profilesQuery = (fields: string) => supabase.from('profiles').select(fields).order('username')
   let [first, reading] = await Promise.all([
-    profilesQuery('id,username,avatar_path,cover_path,bio,exercises,featured_badges'),
+    profilesQuery('id,username,avatar_path,cover_path,bio,exercises,featured_badges,pinned_stats'),
     readingQuery('user_id,title,author,cover_url,total_pages,current_page'),
   ])
   // Banco ainda sem as colunas novas: busca sem elas.
+  if (first.error && /pinned_stats/.test(first.error.message)) first = await profilesQuery('id,username,avatar_path,cover_path,bio,exercises,featured_badges')
   if (first.error && /featured_badges/.test(first.error.message))
     first = await profilesQuery('id,username,avatar_path,cover_path,bio,exercises')
   if (reading.error && /total_pages|current_page/.test(reading.error.message)) reading = await readingQuery('user_id,title,author,cover_url')
@@ -36,6 +37,7 @@ async function fetchMembers(): Promise<Member[]> {
     current_book_total_pages: books.get(r.id)?.total_pages ?? null,
     current_book_page: books.get(r.id)?.current_page ?? null,
     featured_badges: (r as { featured_badges?: string[] }).featured_badges ?? [],
+    pinned_stats: (r as { pinned_stats?: string[] }).pinned_stats ?? [],
   }))
   const paths = rows.flatMap((r) => [r.avatar_path, r.cover_path]).filter((p): p is string => !!p)
   // Link de 7 dias, reaproveitado: a foto de perfil não é baixada de novo a cada abertura.

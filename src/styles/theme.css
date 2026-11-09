@@ -207,3 +207,39 @@ button.settings-row:active { background: var(--surface-2); }
 .today-streak small { font-family: var(--body); font-size: 11px; font-weight: 500; color: var(--muted); }
 .notif-kind.tone-gold { background: #c98a12; }
 .notif-app { background: var(--surface-2) !important; }
+
+/* ---------- Ranking: bolinha de ouro, prata e bronze no 1º, 2º e 3º ---------- */
+.rank-pos.m1, .rank-pos.m2, .rank-pos.m3 { color: #fff; text-shadow: 0 1px 1px rgba(0, 0, 0, .25); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .45), 0 1px 3px rgba(21, 52, 98, .2); }
+.rank-pos.m1 { background: radial-gradient(circle at 35% 30%, #ffe28a, #e0a623 60%, #b07c12); }
+.rank-pos.m2 { background: radial-gradient(circle at 35% 30%, #f4f6fa, #aeb6c4 60%, #7d8696); }
+.rank-pos.m3 { background: radial-gradient(circle at 35% 30%, #f2c49c, #c47a43 60%, #8f5428); }
+
+/* ---------- Fixar no perfil ---------- */
+.section-sub { margin: -4px 2px 12px; font-size: 13.5px; color: var(--muted); }
+.card-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 4px; }
+.card-head .card-title { margin: 0; }
+.pin-btn {
+  flex: none; width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; padding: 0;
+  border: 1px solid var(--line); background: var(--surface); color: #9aa5b5; transition: background-color .2s, color .2s, transform .12s;
+}
+.pin-btn:active { transform: scale(.9); }
+.pin-btn.on { background: var(--navy); border-color: var(--navy); color: var(--cream); }
+.pin-btn.on svg { fill: currentColor; }
+.totals-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.total-tile { position: relative; display: flex; flex-direction: column; gap: 2px; padding: 12px 12px 12px; border-radius: 16px; background: var(--surface); border: 1px solid var(--line); min-height: 84px; }
+.total-tile.pinned { border-color: rgba(21, 52, 98, .35); }
+.total-value { font-family: var(--display); font-weight: 800; font-size: 22px; line-height: 1.1; padding-right: 30px; }
+.total-label { font-size: 12px; color: var(--muted); line-height: 1.25; }
+.total-tile .pin-btn { position: absolute; top: 8px; right: 8px; width: 28px; height: 28px; }
+.section.pinnable .section-head { margin-bottom: 10px; }
+.pstats.n1 { grid-template-columns: 1fr; }
+.pstats.n2 { grid-template-columns: repeat(2, 1fr); }
+.pstats.n3 { grid-template-columns: repeat(3, 1fr); }
+
+/* ---------- Stories: tela preta, então textos e ícones em branco ---------- */
+.viewer { --text: #ffffff; --muted: rgba(255, 255, 255, .72); --line: rgba(255, 255, 255, .25); color: var(--text); }
+.viewer .viewer-close, .viewer .viewer-delete, .viewer .viewer-user, .viewer .viewer-caption, .viewer .comment-bar { color: #fff; }
+.viewer .comment-bar { background: rgba(255, 255, 255, .12); border-color: rgba(255, 255, 255, .3); }
+/* A conversa e a confirmação de excluir são janelas claras por cima da foto. */
+.viewer .story-chat, .viewer .viewer-confirm { --text: #153462; --muted: #5f6c80; --line: #e4e2cc; color: var(--text); }
+.viewer .story-chat .viewer-close { color: var(--text); }

@@ -1,42 +1,16 @@
-import { ACTIVITY } from '../types'
-import type { Activity, Member, StreakRow } from '../types'
+import type { Member, StreakRow } from '../types'
+import StreakCard from './StreakCard'
 import { BookOpen, Dumbbell } from 'lucide-react'
-import ActivityIcon from './ActivityIcon'
 import MonthCalendar from './MonthCalendar'
 import BookCover from './BookCover'
 import { ReadingProgress } from './ReadingProgress'
 
 /** Livro, exercícios e streaks: parte comum do meu perfil e do perfil dos amigos. */
 export default function ProfileDetails({ member, streaks }: { member: Member; streaks: StreakRow[] }) {
-  const activities: Activity[] = ['exercicio', 'leitura']
+  const pins = member.pinned_stats ?? []
   return (
     <>
-      <section className="card streak-card" aria-label="Sequências">
-        <h3 className="card-title">Sequências</h3>
-        {activities.map((a) => {
-          const st = streaks.find((r) => r.activity === a)
-          const cur = st?.current_streak ?? 0
-          const best = Math.max(st?.best_streak ?? 0, cur)
-          return (
-            <div key={a} className={`streak-row act-${a}`}>
-              <span className="streak-icon">
-                <ActivityIcon activity={a} size={18} />
-              </span>
-              <div className="streak-text">
-                <span className="streak-name">{ACTIVITY[a].label}</span>
-                <div className="meter small" aria-hidden>
-                  <span style={{ width: `${best ? (cur / best) * 100 : 0}%` }} />
-                </div>
-                <span className="streak-best">{cur > 0 && cur >= best ? 'No recorde agora' : `Recorde: ${best} ${best === 1 ? 'dia' : 'dias'}`}</span>
-              </div>
-              <span className="streak-now">
-                <strong>{cur}</strong>
-                <small>{cur === 1 ? 'dia' : 'dias'}</small>
-              </span>
-            </div>
-          )
-        })}
-      </section>
+      {pins.includes('sequencias') && <StreakCard streaks={streaks} />}
 
       <section className="card info-list">
         <div className="info act-leitura info-book">
@@ -65,7 +39,7 @@ export default function ProfileDetails({ member, streaks }: { member: Member; st
         </div>
       </section>
 
-      <MonthCalendar userId={member.id} />
+      {pins.includes('calendario') && <MonthCalendar userId={member.id} />}
     </>
   )
 }

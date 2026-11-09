@@ -1,22 +1,20 @@
-import { BADGES, progressOf, useBadgeStats } from '../lib/badges'
+import { useBadgeStats } from '../lib/badges'
+import { PIN_STATS } from '../lib/pins'
+import type { Member } from '../types'
 
-/** Números do perfil numa linha, como nos apps de rede social. */
-export default function ProfileStats({ userId }: { userId: string }) {
-  const stats = useBadgeStats(userId)
+/** Números que a pessoa fixou no perfil. Sem nada fixado, não aparece. */
+export default function ProfileStats({ member }: { member: Member }) {
+  const pins = member.pinned_stats ?? []
+  const chosen = PIN_STATS.filter((p) => pins.includes(p.id))
+  const stats = useBadgeStats(member.id)
+  if (!chosen.length) return null
   const ok = stats && stats !== 'erro' ? stats : null
-  // Totais (as sequências atuais ficam no cartão Sequências, logo abaixo).
-  const items: [number | string, string][] = [
-    [ok ? ok.dias_exercicio : '–', 'dias de treino'],
-    [ok ? ok.dias_leitura : '–', 'dias de leitura'],
-    [ok ? ok.livros : '–', 'livros lidos'],
-    [ok ? BADGES.filter((d) => progressOf(d, ok).level > 0).length : '–', 'insígnias'],
-  ]
   return (
-    <dl className="pstats">
-      {items.map(([v, label]) => (
-        <div key={label}>
-          <dd>{v}</dd>
-          <dt>{label}</dt>
+    <dl className={`pstats n${chosen.length}`}>
+      {chosen.map((p) => (
+        <div key={p.id}>
+          <dd>{ok ? p.value(ok).toLocaleString('pt-BR') : '–'}</dd>
+          <dt>{p.label}</dt>
         </div>
       ))}
     </dl>

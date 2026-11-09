@@ -19,6 +19,13 @@ import { errorMessage } from '../lib/utils'
 import BadgeMedal from './BadgeMedal'
 import RetroStory from './RetroStory'
 import GroupBooks from './GroupBooks'
+import MonthCalendar from './MonthCalendar'
+import StreakCard from './StreakCard'
+import { MAX_PINNED_STATS, PIN_STATS, savePins } from '../lib/pins'
+import { refreshMembers, useMembers } from '../lib/members'
+import { useToday } from '../lib/today'
+import { toast } from '../lib/toast'
+import { Pin } from 'lucide-react'
 import { SkeletonCard } from './Skeleton'
 
 const fmt = (n: number) => Math.round(n).toLocaleString('pt-BR')
@@ -67,6 +74,8 @@ export default function Stats({ userId }: { userId: string }) {
           </span>
         </button>
       </section>
+
+      <Totals userId={userId} />
 
       <div className="section-head">
         <h2 className="section-heading">Seus números</h2>
@@ -298,5 +307,77 @@ function NextBadges({ userId }: { userId: string }) {
         ))}
       </ul>
     </section>
+  )
+}
+
+/** Fixar ou tirar do perfil. */
+function usePins(userId: string) {
+  const me = useMembers().find((m) => m.id === userId)
+  const pins = me?.pinned_stats ?? []
+  const [busy, setBusy] = useState(false)
+  async function toggle(id: string, isStat: boolean) {
+    const on = pins.includes(id)
+    if (!on && isStat && pins.filter((p) => PIN_STATS.some((s) => s.id === p)).length >= MAX_PINNED_STATS)
+      return toast(`Dá pra fixar até ${MAX_PINNED_STATS} números no perfil`, 'info')
+    setBusy(true)
+    try {
+      await savePins(userId, on ? pins.filter((p) => p !== id) : [...pins, id])
+      await refreshMembers()
+      toast(on ? 'Tirado do perfil' : 'Fixado no perfil')
+    } catch (e) {
+      toast(errorMessage(e), 'error')
+    } finally {
+      setBusy(false)
+    }
+  }
+  return { pins, toggle, busy }
+}
+
+function PinButton({ on, label, onClick, disabled }: { on: boolean; label: string; onClick: () => void; disabled?: boolean }) {
+  return (
+    <button className={`pin-btn ${on ? 'on' : ''}`} onClick={onClick} disabled={disabled} aria-pressed={on} aria-label={on ? `Tirar ${label} do perfil` : `Fixar ${label} no perfil`}>
+      <Pin size={14} aria-hidden />
+    </button>
+  )
+}
+
+/** Totais de sempre, sequências e calendário: só a pessoa vê, e fixa no perfil o que quiser. */
+function Totals({ userId }: { userId: string }) {
+  const stats = useBadgeStats(userId)
+  const today = useToday()
+  const { pins, toggle, busy } = usePins(userId)
+  const mine = today.streaks.filter((s) => s.user_id === userId)
+  const ok = stats && stats !== 'erro' ? stats : null
+  return (
+    <>
+      <section className="section">
+        <div className="section-head">
+          <h2 className="section-heading">Seus totais</h2>
+        </div>
+        <p className="section-sub">Só você vê. Toque no alfinete pra mostrar no seu perfil.</p>
+        <ul className="totals-grid">
+          {PIN_STATS.map((p) => (
+            <li key={p.id} className={`total-tile ${pins.includes(p.id) ? 'pinned' : ''}`}>
+              <span className="total-value">{ok ? p.value(ok).toLocaleString('pt-BR') : '–'}</span>
+              <span className="total-label">{p.label}</span>
+              <PinButton on={pins.includes(p.id)} label={p.label} onClick={() => toggle(p.id, true)} disabled={busy} />
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <StreakCard
+        streaks={mine}
+        action={<PinButton on={pins.includes('sequencias')} label="as sequências" onClick={() => toggle('sequencias', false)} disabled={busy} />}
+      />
+
+      <section className="section pinnable">
+        <div className="section-head">
+          <h2 className="section-heading">Calendário do mês</h2>
+          <PinButton on={pins.includes('calendario')} label="o calendário" onClick={() => toggle('calendario', false)} disabled={busy} />
+        </div>
+        <MonthCalendar userId={userId} />
+      </section>
+    </>
   )
 }
