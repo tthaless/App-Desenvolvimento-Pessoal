@@ -297,7 +297,7 @@ button.settings-row:active { background: var(--surface-2); }
 
 /* ---------- Cutucar, no ranking ---------- */
 .rank-nudge {
-  flex: none; width: 32px; height: 32px; border-radius: 50%; padding: 0; display: grid; place-items: center;
+  flex: none; width: 24px; height: 24px; border-radius: 50%; padding: 0; display: grid; place-items: center;
   border: 0; background: var(--navy); color: var(--cream); transition: transform .12s, background-color .2s;
 }
 .rank-nudge svg { transform: rotate(-90deg) scaleX(-1); }

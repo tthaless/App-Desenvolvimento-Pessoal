@@ -115,7 +115,7 @@ export default function RankingSection({ userId }: { userId: string }) {
                   disabled={nudged.has(r.user_id) || nudging === r.user_id}
                   aria-label={nudged.has(r.user_id) ? `Você já cutucou ${r.username} hoje` : `Cutucar ${r.username}`}
                 >
-                  {nudged.has(r.user_id) ? <Check size={15} strokeWidth={2.6} aria-hidden /> : <Pointer size={17} strokeWidth={2.2} aria-hidden />}
+                  {nudged.has(r.user_id) ? <Check size={13} strokeWidth={2.8} aria-hidden /> : <Pointer size={14} strokeWidth={2.4} aria-hidden />}
                 </button>
               )}
               <span className="rank-pts">
