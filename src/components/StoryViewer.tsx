@@ -7,7 +7,7 @@ import { STORY_LABEL } from '../types'
 import type { Member, StoryItem } from '../types'
 import Avatar from './Avatar'
 import StoryChat from './StoryChat'
-import { MessageCircle, Trash2, X } from 'lucide-react'
+import { Images, MessageCircle, Trash2, X } from 'lucide-react'
 import { deleteStory } from '../lib/stories'
 import { errorMessage } from '../lib/utils'
 import ActivityIcon from './ActivityIcon'
@@ -154,6 +154,11 @@ export default function StoryViewer({ posts, start, startInChat = false, current
         <span className={`chip act-${post.activity}`}>
           <ActivityIcon activity={post.activity} size={13} /> {STORY_LABEL[post.activity]}
         </span>
+        {post.from_gallery && (
+          <span className="chip from-gallery">
+            <Images size={13} aria-hidden /> Galeria
+          </span>
+        )}
         <span className="muted">{timeAgo(post.created_at)}</span>
         {post.user_id === currentUserId && (
           <button className="viewer-delete" onClick={() => setConfirming(true)} aria-label="Excluir esta prova">

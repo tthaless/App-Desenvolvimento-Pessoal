@@ -25,6 +25,8 @@ export interface StoryItem {
   photo_path: string
   caption: string | null
   created_at: string
+  /** A foto veio da galeria, não foi tirada na hora. */
+  from_gallery?: boolean
 }
 
 export const STORY_LABEL: Record<StoryItem['activity'], string> = {

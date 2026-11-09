@@ -25,7 +25,7 @@ export default function CameraFlow({ userId }: { userId: string }) {
 }
 
 function Flow({ userId, preset }: { userId: string; preset: ProofKind | null }) {
-  const [photo, setPhoto] = useState<{ file: File; url: string } | null>(null)
+  const [photo, setPhoto] = useState<{ file: File; url: string; gallery: boolean } | null>(null)
   const [celebrate, setCelebrate] = useState<{ from: number; to: number; unit: string; title: string; activity: Activity } | null>(null)
 
   // Voltar do Android (ou o gesto de voltar) fecha a câmera em vez de sair do app.
@@ -62,7 +62,7 @@ function Flow({ userId, preset }: { userId: string; preset: ProofKind | null }) 
       {photo ? (
         <Review userId={userId} photo={photo} preset={preset} onRetake={() => setPhoto(null)} onClose={close} onPosted={setCelebrate} />
       ) : (
-        <Capture onPhoto={(file) => setPhoto({ file, url: URL.createObjectURL(file) })} onClose={close} />
+        <Capture onPhoto={(file, gallery) => setPhoto({ file, url: URL.createObjectURL(file), gallery })} onClose={close} />
       )}
       {celebrate && <Celebration {...celebrate} onDone={endCelebration} />}
     </div>
@@ -71,7 +71,7 @@ function Flow({ userId, preset }: { userId: string; preset: ProofKind | null }) 
 
 // ---------------- Câmera ----------------
 
-function Capture({ onPhoto, onClose }: { onPhoto: (file: File) => void; onClose: () => void }) {
+function Capture({ onPhoto, onClose }: { onPhoto: (file: File, gallery: boolean) => void; onClose: () => void }) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const streamRef = useRef<MediaStream | null>(null)
   const nativeRef = useRef<HTMLInputElement>(null)
@@ -155,17 +155,17 @@ function Capture({ onPhoto, onClose }: { onPhoto: (file: File) => void; onClose:
       (blob) => {
         if (!blob) return
         stop()
-        onPhoto(new File([blob], `prova-${Date.now()}.jpg`, { type: 'image/jpeg' }))
+        onPhoto(new File([blob], `prova-${Date.now()}.jpg`, { type: 'image/jpeg' }), false)
       },
       'image/jpeg',
       0.92,
     )
   }
 
-  function picked(file: File | undefined) {
+  function picked(file: File | undefined, gallery: boolean) {
     if (!file) return
     stop()
-    onPhoto(file)
+    onPhoto(file, gallery)
   }
 
   const live = status === 'live' || status === 'starting'
@@ -249,8 +249,8 @@ function Capture({ onPhoto, onClose }: { onPhoto: (file: File) => void; onClose:
         </footer>
       )}
 
-      <input ref={nativeRef} type="file" accept="image/*" capture="environment" hidden onChange={(e) => picked(e.target.files?.[0])} />
-      <input ref={galleryRef} type="file" accept="image/*" hidden onChange={(e) => picked(e.target.files?.[0])} />
+      <input ref={nativeRef} type="file" accept="image/*" capture="environment" hidden onChange={(e) => picked(e.target.files?.[0], false)} />
+      <input ref={galleryRef} type="file" accept="image/*" hidden onChange={(e) => picked(e.target.files?.[0], true)} />
     </div>
   )
 }
@@ -266,7 +266,7 @@ function Review({
   onPosted,
 }: {
   userId: string
-  photo: { file: File; url: string }
+  photo: { file: File; url: string; gallery: boolean }
   preset: ProofKind | null
   onRetake: () => void
   onClose: () => void
@@ -316,7 +316,13 @@ function Review({
       if (up.error) throw up.error
       const row: Record<string, unknown> = { activity, photo_path: path, caption: caption.trim() || null }
       if (activity === 'leitura' && pageNum) row.page = pageNum
+      if (photo.gallery) row.from_gallery = true
       let ins = await supabase.from('posts').insert(row)
+      // Banco ainda sem a coluna do selo de galeria: posta sem ela.
+      if (ins.error && /from_gallery/.test(ins.error.message)) {
+        delete row.from_gallery
+        ins = await supabase.from('posts').insert(row)
+      }
       // Banco ainda sem a coluna de página: posta sem ela.
       if (ins.error && /page/.test(ins.error.message) && 'page' in row) {
         delete row.page

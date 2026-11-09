@@ -304,3 +304,6 @@ button.settings-row:active { background: var(--surface-2); }
 .rank-nudge.done { background: var(--surface-2); color: var(--muted); border-color: transparent; }
 .rank-row { gap: 6px; }
 .rank-row .rank-sub { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* ---------- Selo de foto da galeria, no story ---------- */
+.chip.from-gallery { color: #fff; background: rgba(255, 255, 255, .2); }

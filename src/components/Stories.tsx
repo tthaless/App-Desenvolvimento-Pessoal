@@ -24,7 +24,7 @@ export default function Stories({ userId }: { userId: string }) {
     const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
     const provas = await supabase
       .from('posts')
-      .select('id,user_id,activity,photo_path,caption,created_at')
+      .select('*')
       .gte('created_at', since)
     const items: StoryItem[] = [
       ...((provas.data ?? []) as Omit<StoryItem, 'key'>[]).map((p) => ({ ...p, key: `post:${p.id}` })),
