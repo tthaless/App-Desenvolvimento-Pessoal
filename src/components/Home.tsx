@@ -8,7 +8,6 @@ import { openCamera, useCamera } from '../lib/camera'
 import { streakOf, useToday } from '../lib/today'
 import { streakBonus } from '../lib/utils'
 import ActivityIcon from './ActivityIcon'
-import { FlameMark } from './Logo'
 import PushOffer from './PushOffer'
 import FeedSection from './FeedSection'
 import RankingSection from './RankingSection'
@@ -116,8 +115,8 @@ function TodayCard({ userId }: { userId: string }) {
                 </span>
               </span>
               <span className="today-streak" aria-label={`${r.streak} dias seguidos`}>
-                <FlameMark size={16} />
-                {r.streak}
+                <strong>{r.streak}</strong>
+                <small>{r.streak === 1 ? 'dia' : 'dias'}</small>
               </span>
             </button>
           </li>

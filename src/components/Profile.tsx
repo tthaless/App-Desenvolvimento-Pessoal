@@ -12,6 +12,7 @@ import ProfileTabs from './ProfileTabs'
 import { FeaturedBadges } from './Badges'
 import { Camera, ImagePlus, Settings as SettingsIcon, Trash2 } from 'lucide-react'
 import ProfileHero from './ProfileHero'
+import ProfileStats from './ProfileStats'
 import Settings from './Settings'
 import { toast } from '../lib/toast'
 import TopBar from './TopBar'
@@ -160,21 +161,26 @@ export default function Profile({ userId }: { userId: string }) {
             {coverBusy ? '…' : <ImagePlus size={17} aria-hidden />}
           </button>
         }
+        avatar={
+          <button className="avatar-edit" onClick={() => fileRef.current?.click()} disabled={uploading} aria-label="Trocar foto de perfil">
+            <Avatar name={me.username} url={me.avatar_url} size="xl" />
+            <span className="avatar-badge">{uploading ? '…' : <Camera size={15} aria-hidden />}</span>
+          </button>
+        }
+        action={
+          !editing && (
+            <button className="btn ghost small-btn" onClick={startEditing}>
+              Editar perfil
+            </button>
+          )
+        }
+        name={me.username}
+        badges={<FeaturedBadges member={me} />}
+        bio={me.bio ? <p className="profile-bio">{me.bio}</p> : !editing && <p className="muted small">Sem descrição ainda. Toque em Editar perfil.</p>}
+        stats={<ProfileStats userId={userId} streaks={streaks} />}
       >
         <input ref={coverRef} type="file" accept="image/*" hidden onChange={(e) => changeCover(e.target.files?.[0])} />
-        <button className="avatar-edit" onClick={() => fileRef.current?.click()} disabled={uploading} aria-label="Trocar foto de perfil">
-          <Avatar name={me.username} url={me.avatar_url} size="xl" />
-          <span className="avatar-badge">{uploading ? '…' : <Camera size={15} aria-hidden />}</span>
-        </button>
         <input ref={fileRef} type="file" accept="image/*" hidden onChange={(e) => changeAvatar(e.target.files?.[0])} />
-        <p className="profile-name">{me.username}</p>
-        <FeaturedBadges member={me} />
-        {me.bio ? <p className="profile-bio">{me.bio}</p> : !editing && <p className="muted small">Sem descrição ainda</p>}
-        {!editing && (
-          <button className="btn ghost" onClick={startEditing}>
-            Editar perfil
-          </button>
-        )}
       </ProfileHero>
 
       {error && <p className="msg error">{error}</p>}

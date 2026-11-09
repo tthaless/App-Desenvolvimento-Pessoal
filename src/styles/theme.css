@@ -145,3 +145,58 @@ button.settings-row:active { background: var(--surface-2); }
 .subtabs.four button { font-size: 13.5px; padding-left: 0; padding-right: 0; }
 /* Evolução dentro do perfil: as seções seguem o mesmo ritmo. */
 .profile .stats { gap: 18px; }
+
+/* ---------- Botão principal: azul-marinho (combina com a câmera e o logo) ---------- */
+.btn.primary { background: var(--navy); color: #fff; }
+.btn.primary:disabled { background: #8d9ab0; }
+.want-paper .btn.primary { background: var(--navy); color: #fff; }
+.shelf-tool-btn.on { background: var(--navy); border-color: var(--navy); }
+.cam-fallback .btn.primary { background: var(--cream); color: var(--navy); }
+
+/* ---------- Topo do perfil: plano de fundo inteiro, foto sobreposta ---------- */
+.phero { display: flex; flex-direction: column; flex: none; }
+.phero-cover {
+  position: relative; height: 150px; border-radius: 20px; background-size: cover; background-position: center;
+  box-shadow: inset 0 0 0 1px rgba(21, 52, 98, .06);
+}
+.phero-cover.empty { background: linear-gradient(135deg, #bad1c2 0%, #dfe8d6 45%, #f6f6c9 100%); }
+.phero-corner { position: absolute; top: 10px; right: 10px; }
+.phero-corner .hero-btn { background: rgba(255, 255, 255, .9); border: 1px solid rgba(21, 52, 98, .08); color: var(--text); }
+.phero-main { padding: 0 6px; display: flex; flex-direction: column; gap: 6px; }
+.phero-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; margin-top: -46px; }
+.phero-avatar .avatar.xl { width: 92px; height: 92px; box-shadow: 0 0 0 4px var(--bg), 0 6px 16px rgba(21, 52, 98, .18); }
+.phero-avatar .avatar-badge { right: -2px; bottom: 2px; background: var(--navy); color: #fff; border-color: var(--bg); }
+.phero-action { padding-bottom: 4px; }
+.phero-action .btn.ghost { background: var(--surface); border: 1px solid var(--line); color: var(--text); }
+.phero-name { margin: 6px 0 0; font-family: var(--display); font-size: 26px; font-weight: 800; letter-spacing: -0.03em; }
+.phero .featured-badges { justify-content: flex-start; margin: 2px 0 0 -2px; }
+.phero .profile-bio { margin: 2px 0 0; text-align: left; max-width: none; line-height: 1.5; }
+.phero .muted.small { text-align: left; }
+
+.pstats { display: grid; grid-template-columns: repeat(4, 1fr); margin: 10px 0 0; padding: 12px 0 0; border-top: 1px solid var(--line); }
+.pstats div { display: flex; flex-direction: column; gap: 2px; padding-right: 6px; }
+.pstats div + div { padding-left: 10px; border-left: 1px solid var(--line); }
+.pstats dd { margin: 0; font-family: var(--display); font-weight: 800; font-size: 22px; line-height: 1; }
+.pstats dt { font-size: 11.5px; color: var(--muted); line-height: 1.25; }
+.profile-sheet .phero-cover { height: 130px; }
+.profile-sheet .phero-avatar .avatar.xl { box-shadow: 0 0 0 4px var(--surface), 0 6px 16px rgba(21, 52, 98, .18); }
+
+/* ---------- Sequências (no lugar dos cartões com foguinho) ---------- */
+.card-title { margin: 0 0 4px; font-family: var(--display); font-size: 17px; font-weight: 800; letter-spacing: -0.01em; }
+.streak-card { display: flex; flex-direction: column; }
+.streak-row { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-top: 1px solid var(--line); }
+.streak-row:nth-of-type(1) { border-top: 0; }
+.streak-icon { width: 38px; height: 38px; border-radius: 12px; display: grid; place-items: center; flex: none; background: rgba(47, 125, 112, .12); color: var(--exercise); }
+.streak-row.act-leitura .streak-icon { background: rgba(47, 90, 168, .1); color: var(--reading); }
+.streak-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 5px; }
+.streak-name { font-weight: 650; }
+.streak-row.act-leitura .meter > span { background: var(--reading); }
+.streak-best { font-size: 12.5px; color: var(--muted); }
+.streak-now { flex: none; display: flex; flex-direction: column; align-items: flex-end; line-height: 1; }
+.streak-now strong { font-family: var(--display); font-size: 26px; font-weight: 800; }
+.streak-now small { font-size: 12px; color: var(--muted); margin-top: 3px; }
+
+/* ---------- Seu dia: número de dias sem foguinho ---------- */
+.today-streak { flex-direction: column; align-items: flex-end; gap: 2px; line-height: 1; }
+.today-streak strong { font-family: var(--display); font-size: 18px; font-weight: 800; }
+.today-streak small { font-family: var(--body); font-size: 11px; font-weight: 500; color: var(--muted); }

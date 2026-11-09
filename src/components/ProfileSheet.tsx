@@ -6,6 +6,7 @@ import { useMembers } from '../lib/members'
 import type { StreakRow } from '../types'
 import Avatar from './Avatar'
 import ProfileHero from './ProfileHero'
+import ProfileStats from './ProfileStats'
 import FeedList from './FeedList'
 import ProfileDetails from './ProfileDetails'
 import ProfileTabs from './ProfileTabs'
@@ -72,12 +73,14 @@ export default function ProfileSheet({ userId, viewerId, onClose }: Props) {
             <Eye size={14} aria-hidden /> É assim que o grupo vê o seu perfil
           </p>
         )}
-        <ProfileHero coverUrl={member.cover_url}>
-          <Avatar name={member.username} url={member.avatar_url} size="xl" />
-          <p className="profile-name">{member.username}</p>
-          <FeaturedBadges member={member} />
-          {member.bio && <p className="profile-bio">{member.bio}</p>}
-        </ProfileHero>
+        <ProfileHero
+          coverUrl={member.cover_url}
+          avatar={<Avatar name={member.username} url={member.avatar_url} size="xl" />}
+          name={member.username}
+          badges={<FeaturedBadges member={member} />}
+          bio={member.bio && <p className="profile-bio">{member.bio}</p>}
+          stats={<ProfileStats userId={member.id} streaks={streaks} />}
+        />
         <ProfileTabs member={member} viewerId={asViewer}>
           <ProfileDetails member={member} streaks={streaks} />
           <h2 className="section-title">Posts das últimas 24h</h2>

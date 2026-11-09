@@ -2,7 +2,6 @@ import { ACTIVITY } from '../types'
 import type { Activity, Member, StreakRow } from '../types'
 import { BookOpen, Dumbbell } from 'lucide-react'
 import ActivityIcon from './ActivityIcon'
-import { FlameMark } from './Logo'
 import MonthCalendar from './MonthCalendar'
 import BookCover from './BookCover'
 import { ReadingProgress } from './ReadingProgress'
@@ -12,22 +11,32 @@ export default function ProfileDetails({ member, streaks }: { member: Member; st
   const activities: Activity[] = ['exercicio', 'leitura']
   return (
     <>
-      <div className="stat-grid">
+      <section className="card streak-card" aria-label="Sequências">
+        <h3 className="card-title">Sequências</h3>
         {activities.map((a) => {
-          const s = streaks.find((r) => r.activity === a)
+          const st = streaks.find((r) => r.activity === a)
+          const cur = st?.current_streak ?? 0
+          const best = Math.max(st?.best_streak ?? 0, cur)
           return (
-            <section key={a} className={`card stat act-${a}`}>
-              <p className="muted small stat-label">
-                <ActivityIcon activity={a} size={14} /> {ACTIVITY[a].label}
-              </p>
-              <p className="stat-big">
-                <FlameMark size={26} /> {s?.current_streak ?? 0}
-              </p>
-              <p className="muted small">Recorde: {s?.best_streak ?? 0}</p>
-            </section>
+            <div key={a} className={`streak-row act-${a}`}>
+              <span className="streak-icon">
+                <ActivityIcon activity={a} size={18} />
+              </span>
+              <div className="streak-text">
+                <span className="streak-name">{ACTIVITY[a].label}</span>
+                <div className="meter small" aria-hidden>
+                  <span style={{ width: `${best ? (cur / best) * 100 : 0}%` }} />
+                </div>
+                <span className="streak-best">{cur > 0 && cur >= best ? 'No recorde agora' : `Recorde: ${best} ${best === 1 ? 'dia' : 'dias'}`}</span>
+              </div>
+              <span className="streak-now">
+                <strong>{cur}</strong>
+                <small>{cur === 1 ? 'dia' : 'dias'}</small>
+              </span>
+            </div>
           )
         })}
-      </div>
+      </section>
 
       <section className="card info-list">
         <div className="info act-leitura info-book">
