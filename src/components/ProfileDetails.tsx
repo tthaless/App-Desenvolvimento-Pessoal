@@ -1,16 +1,15 @@
 import { ACTIVITY } from '../types'
 import type { Activity, Member, StreakRow } from '../types'
-import { BookOpen, Dumbbell, Trophy } from 'lucide-react'
-import { useWeeklyWins } from '../lib/wins'
+import { BookOpen, Dumbbell } from 'lucide-react'
 import ActivityIcon from './ActivityIcon'
 import { FlameMark } from './Logo'
 import MonthCalendar from './MonthCalendar'
 import BookCover from './BookCover'
+import { ReadingProgress } from './ReadingProgress'
 
 /** Livro, exercícios e streaks: parte comum do meu perfil e do perfil dos amigos. */
 export default function ProfileDetails({ member, streaks }: { member: Member; streaks: StreakRow[] }) {
   const activities: Activity[] = ['exercicio', 'leitura']
-  const wins = useWeeklyWins(member.id)
   return (
     <>
       <div className="stat-grid">
@@ -31,7 +30,7 @@ export default function ProfileDetails({ member, streaks }: { member: Member; st
       </div>
 
       <section className="card info-list">
-        <div className="info act-leitura">
+        <div className="info act-leitura info-book">
           {member.current_book ? (
             <BookCover url={member.current_book_cover ?? null} title={member.current_book} size="sm" />
           ) : (
@@ -43,6 +42,7 @@ export default function ProfileDetails({ member, streaks }: { member: Member; st
             <p className="muted small">Lendo agora</p>
             <p className="info-value">{member.current_book || <span className="muted">Nenhum livro ainda</span>}</p>
             {member.current_book_author && <p className="muted small">{member.current_book_author}</p>}
+            {member.current_book && <ReadingProgress page={member.current_book_page} total={member.current_book_total_pages} />}
           </div>
         </div>
         <div className="info act-exercicio">
@@ -54,22 +54,10 @@ export default function ProfileDetails({ member, streaks }: { member: Member; st
             <p className="info-value">{member.exercises || <span className="muted">Nada informado</span>}</p>
           </div>
         </div>
-        {wins !== null && (
-          <div className="info act-wins">
-            <span className="info-icon" aria-hidden>
-              <Trophy size={18} />
-            </span>
-            <div>
-              <p className="muted small">Vitórias semanais</p>
-              <p className="info-value">
-                {wins === 0 ? <span className="muted">Nenhuma ainda</span> : `${wins} ${wins === 1 ? 'semana em 1º lugar' : 'semanas em 1º lugar'}`}
-              </p>
-            </div>
-          </div>
-        )}
       </section>
 
       <MonthCalendar userId={member.id} />
     </>
   )
 }
+

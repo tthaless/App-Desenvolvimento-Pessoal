@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { ReactNode } from 'react'
 import type { Member } from '../types'
+import Badges from './Badges'
 import Library from './Library'
 
 interface Props {
@@ -10,21 +11,30 @@ interface Props {
   children: ReactNode
 }
 
-/** Abas do perfil (meu e dos amigos): Perfil e Estante (a biblioteca da pessoa). */
+type Sub = 'perfil' | 'estante' | 'insignias'
+
+const SUBS: [Sub, string][] = [
+  ['perfil', 'Perfil'],
+  ['estante', 'Estante'],
+  ['insignias', 'Insígnias'],
+]
+
+/** Abas do perfil (meu e dos amigos): Perfil, Estante e Insígnias. */
 export default function ProfileTabs({ member, viewerId, children }: Props) {
-  const [sub, setSub] = useState<'perfil' | 'estante'>('perfil')
+  const [sub, setSub] = useState<Sub>('perfil')
 
   return (
     <>
-      <nav className="subtabs" aria-label="Seções do perfil">
-        <button className={sub === 'perfil' ? 'on' : ''} onClick={() => setSub('perfil')} aria-current={sub === 'perfil' ? 'page' : undefined}>
-          Perfil
-        </button>
-        <button className={sub === 'estante' ? 'on' : ''} onClick={() => setSub('estante')} aria-current={sub === 'estante' ? 'page' : undefined}>
-          Estante
-        </button>
+      <nav className="subtabs three" aria-label="Seções do perfil">
+        {SUBS.map(([id, label]) => (
+          <button key={id} className={sub === id ? 'on' : ''} onClick={() => setSub(id)} aria-current={sub === id ? 'page' : undefined}>
+            {label}
+          </button>
+        ))}
       </nav>
-      {sub === 'perfil' ? children : <Library ownerId={member.id} viewerId={viewerId} />}
+      {sub === 'perfil' && children}
+      {sub === 'estante' && <Library ownerId={member.id} viewerId={viewerId} />}
+      {sub === 'insignias' && <Badges member={member} isMe={member.id === viewerId} />}
     </>
   )
 }

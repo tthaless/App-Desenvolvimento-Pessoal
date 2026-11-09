@@ -9,12 +9,13 @@ import ProfileHero from './ProfileHero'
 import FeedList from './FeedList'
 import ProfileDetails from './ProfileDetails'
 import ProfileTabs from './ProfileTabs'
+import { FeaturedBadges } from './Badges'
 import { useDragToClose } from '../lib/useDragToClose'
 
 // Um "visitante" que não é ninguém do grupo: assim nada aparece como se fosse seu.
 const VISITOR = '00000000-0000-0000-0000-000000000000'
 // No modo "como o grupo vê" só dá pra navegar e olhar.
-const ALLOWED_IN_PREVIEW = '.subtabs button, .shelf-item, .pdf-chip, .pdf-viewer, .month-day, .want-others, .viewer-close'
+const ALLOWED_IN_PREVIEW = '.subtabs button, .badge-cell, .featured-badges button, .badge-sheet, .shelf-item, .pdf-chip, .pdf-viewer, .month-day, .want-others, .viewer-close'
 
 interface Props {
   userId: string
@@ -74,6 +75,7 @@ export default function ProfileSheet({ userId, viewerId, onClose }: Props) {
         <ProfileHero coverUrl={member.cover_url}>
           <Avatar name={member.username} url={member.avatar_url} size="xl" />
           <p className="profile-name">{member.username}</p>
+          <FeaturedBadges member={member} />
           {member.bio && <p className="profile-bio">{member.bio}</p>}
         </ProfileHero>
         <ProfileTabs member={member} viewerId={asViewer}>

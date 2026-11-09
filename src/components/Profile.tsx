@@ -9,6 +9,7 @@ import Avatar from './Avatar'
 import FeedList from './FeedList'
 import ProfileDetails from './ProfileDetails'
 import ProfileTabs from './ProfileTabs'
+import { FeaturedBadges } from './Badges'
 import { Camera, ImagePlus, Settings as SettingsIcon, Trash2 } from 'lucide-react'
 import ProfileHero from './ProfileHero'
 import Settings from './Settings'
@@ -162,6 +163,7 @@ export default function Profile({ userId }: { userId: string }) {
         </button>
         <input ref={fileRef} type="file" accept="image/*" hidden onChange={(e) => changeAvatar(e.target.files?.[0])} />
         <p className="profile-name">{me.username}</p>
+        <FeaturedBadges member={me} />
         {me.bio ? <p className="profile-bio">{me.bio}</p> : !editing && <p className="muted small">Sem descrição ainda</p>}
         {!editing && (
           <button className="btn ghost" onClick={startEditing}>
