@@ -103,9 +103,6 @@ function Privacy() {
         <li>
           <strong>Google Books e Open Library:</strong> recebem só o texto que você digita ao buscar um livro.
         </li>
-        <li>
-          <strong>Google Fonts:</strong> fornece as fontes do app.
-        </li>
       </ul>
 
       <h3>No seu aparelho</h3>

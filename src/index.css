@@ -15,8 +15,8 @@
   --accent: var(--brand);
   --accent-rgb: 255, 106, 43;
   --radius: 16px;
-  --display: 'Bricolage Grotesque', system-ui, sans-serif;
-  --body: 'Inter', system-ui, sans-serif;
+  --display: 'Bricolage Grotesque Variable', 'Bricolage Grotesque', system-ui, sans-serif;
+  --body: 'Inter Variable', 'Inter', system-ui, sans-serif;
   color-scheme: dark;
 }
 
