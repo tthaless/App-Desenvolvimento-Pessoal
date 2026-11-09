@@ -250,3 +250,7 @@ button.settings-row:active { background: var(--surface-2); }
 }
 .celebration-icon.act-leitura { background: var(--reading); box-shadow: 0 14px 34px rgba(47, 90, 168, .35); }
 .celebration-number { color: var(--text); }
+
+/* Botões − e + da nota: ícone centralizado no círculo em qualquer celular. */
+.rating-steps button { display: grid; place-items: center; padding: 0; line-height: 0; color: var(--text); -webkit-appearance: none; appearance: none; }
+.rating-steps button svg { display: block; }

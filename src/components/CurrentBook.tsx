@@ -6,7 +6,7 @@ import { errorMessage } from '../lib/utils'
 import CoverPicker from './CoverPicker'
 import BookSearch from './BookSearch'
 import PdfAttachment from './PdfAttachment'
-import { BookOpen, Check, FileText, PenLine, Sparkles } from 'lucide-react'
+import { BookOpen, Check, FileText, Minus, PenLine, Plus, Sparkles } from 'lucide-react'
 import EmptyState from './EmptyState'
 import { toast } from '../lib/toast'
 import { ReadingProgress } from './ReadingProgress'
@@ -184,11 +184,11 @@ function FinishSheet({ book, onClose, onDone }: { book: Book; onClose: () => voi
         />
         <div className="rating-steps">
           <button type="button" onClick={() => setRating((r) => Math.max(1, Math.round((r - 0.1) * 10) / 10))} aria-label="Diminuir 0,1">
-            −
+            <Minus size={18} strokeWidth={2.6} aria-hidden />
           </button>
           <span className="muted small">Arraste ou ajuste de 0,1 em 0,1</span>
           <button type="button" onClick={() => setRating((r) => Math.min(10, Math.round((r + 0.1) * 10) / 10))} aria-label="Aumentar 0,1">
-            +
+            <Plus size={18} strokeWidth={2.6} aria-hidden />
           </button>
         </div>
 
