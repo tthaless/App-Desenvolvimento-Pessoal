@@ -98,7 +98,8 @@ export default function App() {
   useEffect(() => {
     if (!navTarget) return
     if (navTarget.type === 'story') setTab('inicio')
-    if (navTarget.type === 'feed' || navTarget.type === 'library') setTab('leitura')
+    if (navTarget.type === 'feed') setTab('inicio')
+    if (navTarget.type === 'library') setTab('leitura')
     if (navTarget.type === 'tab') {
       setTab(navTarget.tab)
       if (navTarget.tab === 'inicio') clearNavTarget()

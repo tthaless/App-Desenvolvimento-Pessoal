@@ -4,7 +4,7 @@ App fechado para um grupo de amigos manter a constância em desenvolvimento pess
 
 ## Ideia
 
-- **Abas**: Início (stories, seu dia e ranking), Leitura (feed e biblioteca), Câmera, Evolução (estatísticas e retrospectivas) e Perfil.
+- **Abas**: Início (stories, seu dia e feed), Leitura (biblioteca), Câmera, Evolução (ranking, estatísticas e retrospectivas) e Perfil.
 - **Prova do dia**: pelo botão da câmera no meio da barra, a pessoa tira a foto e escolhe se é exercício ou leitura. Na leitura dá pra informar a página em que parou.
 - **Stories de 24h**: as fotos ficam visíveis para o grupo por 24 horas e depois somem.
 - **Streak**: contador de dias seguidos sem faltar, por atividade.

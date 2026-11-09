@@ -10,12 +10,12 @@ import { streakBonus } from '../lib/utils'
 import ActivityIcon from './ActivityIcon'
 import { FlameMark } from './Logo'
 import PushOffer from './PushOffer'
-import RankingSection from './RankingSection'
+import FeedSection from './FeedSection'
 import Stories from './Stories'
 import TopBar from './TopBar'
 import { SkeletonCard } from './Skeleton'
 
-/** Início: stories, como está o seu dia e o ranking. */
+/** Início: stories, como está o seu dia e o feed do grupo. */
 export default function Home({ userId }: { userId: string }) {
   const { posted } = useCamera()
 
@@ -30,7 +30,7 @@ export default function Home({ userId }: { userId: string }) {
       <PushOffer show={posted > 0} />
       <RetroBanner userId={userId} />
       <TodayCard userId={userId} />
-      <RankingSection userId={userId} />
+      <FeedSection userId={userId} />
     </div>
   )
 }

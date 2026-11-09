@@ -16,13 +16,14 @@ import {
 import type { Period, PeriodKind, RetroData } from '../lib/retro'
 import { errorMessage } from '../lib/utils'
 import BadgeMedal from './BadgeMedal'
+import RankingSection from './RankingSection'
 import RetroStory from './RetroStory'
 import TopBar from './TopBar'
 import { SkeletonCard } from './Skeleton'
 
 const fmt = (n: number) => Math.round(n).toLocaleString('pt-BR')
 
-/** Aba Evolução: seus números da semana ou do mês, comparados com a média do grupo, e as retrospectivas. */
+/** Aba Evolução: ranking, seus números comparados com a média do grupo e as retrospectivas. */
 export default function Stats({ userId }: { userId: string }) {
   const [kind, setKind] = useState<PeriodKind>('semana')
   const period = periodOf(kind, 0)
@@ -69,8 +70,10 @@ export default function Stats({ userId }: { userId: string }) {
         </button>
       </section>
 
+      <RankingSection userId={userId} />
+
       <div className="section-head">
-        <h2 className="section-heading">{kind === 'semana' ? 'Esta semana' : 'Este mês'}</h2>
+        <h2 className="section-heading">Seus números</h2>
         <div className="pill-switch" role="tablist" aria-label="Período">
           {(
             [
