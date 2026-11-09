@@ -18,6 +18,13 @@ export type PinCard = keyof typeof PIN_CARDS
 
 export const MAX_PINNED_STATS = 4
 
+/** O que aparece no perfil de quem nunca mexeu: calendário, sequências, dias de treino e de leitura. */
+export const DEFAULT_PINS = ['calendario', 'sequencias', 'dias_treino', 'dias_leitura']
+
+export function pinsOf(m: { pinned_stats?: string[] | null } | undefined) {
+  return m?.pinned_stats ?? DEFAULT_PINS
+}
+
 export async function savePins(userId: string, pins: string[]) {
   const { error } = await supabase.from('profiles').update({ pinned_stats: pins }).eq('id', userId)
   if (error) {

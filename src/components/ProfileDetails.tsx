@@ -1,5 +1,6 @@
 import type { Member, StreakRow } from '../types'
 import StreakCard from './StreakCard'
+import { pinsOf } from '../lib/pins'
 import { BookOpen, Dumbbell } from 'lucide-react'
 import MonthCalendar from './MonthCalendar'
 import BookCover from './BookCover'
@@ -7,7 +8,7 @@ import { ReadingProgress } from './ReadingProgress'
 
 /** Livro, exercícios e streaks: parte comum do meu perfil e do perfil dos amigos. */
 export default function ProfileDetails({ member, streaks }: { member: Member; streaks: StreakRow[] }) {
-  const pins = member.pinned_stats ?? []
+  const pins = pinsOf(member)
   return (
     <>
       {pins.includes('sequencias') && <StreakCard streaks={streaks} />}

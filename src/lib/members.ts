@@ -37,7 +37,7 @@ async function fetchMembers(): Promise<Member[]> {
     current_book_total_pages: books.get(r.id)?.total_pages ?? null,
     current_book_page: books.get(r.id)?.current_page ?? null,
     featured_badges: (r as { featured_badges?: string[] }).featured_badges ?? [],
-    pinned_stats: (r as { pinned_stats?: string[] }).pinned_stats ?? [],
+    pinned_stats: (r as { pinned_stats?: string[] | null }).pinned_stats ?? null,
   }))
   const paths = rows.flatMap((r) => [r.avatar_path, r.cover_path]).filter((p): p is string => !!p)
   // Link de 7 dias, reaproveitado: a foto de perfil não é baixada de novo a cada abertura.

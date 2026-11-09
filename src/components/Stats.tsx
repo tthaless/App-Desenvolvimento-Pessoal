@@ -21,7 +21,7 @@ import RetroStory from './RetroStory'
 import GroupBooks from './GroupBooks'
 import MonthCalendar from './MonthCalendar'
 import StreakCard from './StreakCard'
-import { MAX_PINNED_STATS, PIN_STATS, savePins } from '../lib/pins'
+import { MAX_PINNED_STATS, PIN_STATS, pinsOf, savePins } from '../lib/pins'
 import { refreshMembers, useMembers } from '../lib/members'
 import { useToday } from '../lib/today'
 import { toast } from '../lib/toast'
@@ -313,7 +313,7 @@ function NextBadges({ userId }: { userId: string }) {
 /** Fixar ou tirar do perfil. */
 function usePins(userId: string) {
   const me = useMembers().find((m) => m.id === userId)
-  const pins = me?.pinned_stats ?? []
+  const pins = pinsOf(me)
   const [busy, setBusy] = useState(false)
   async function toggle(id: string, isStat: boolean) {
     const on = pins.includes(id)
