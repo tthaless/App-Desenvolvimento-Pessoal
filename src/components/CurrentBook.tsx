@@ -97,7 +97,6 @@ export default function CurrentBook({ userId, refreshKey, onShelfChanged, onLoad
             </div>
           </div>
           <PagesEditor book={book} onSaved={afterChange} />
-          <PdfAttachment book={book} viewerId={userId} onChanged={load} />
           <div className="row book-actions">
             <button className="btn ghost" onClick={abandon}>
               Larguei
@@ -129,6 +128,8 @@ export default function CurrentBook({ userId, refreshKey, onShelfChanged, onLoad
       {finishing && book && (
         <FinishSheet
           book={book}
+          userId={userId}
+          onChanged={load}
           onClose={() => setFinishing(false)}
           onDone={async () => {
             setFinishing(false)
@@ -140,7 +141,19 @@ export default function CurrentBook({ userId, refreshKey, onShelfChanged, onLoad
   )
 }
 
-function FinishSheet({ book, onClose, onDone }: { book: Book; onClose: () => void; onDone: () => void }) {
+function FinishSheet({
+  book,
+  userId,
+  onChanged,
+  onClose,
+  onDone,
+}: {
+  book: Book
+  userId: string
+  onChanged: () => void
+  onClose: () => void
+  onDone: () => void
+}) {
   const [rating, setRating] = useState(8)
   const [review, setReview] = useState('')
   const [busy, setBusy] = useState(false)
@@ -205,6 +218,7 @@ function FinishSheet({ book, onClose, onDone }: { book: Book; onClose: () => voi
           />
           <span className="counter">{review.length}/2000</span>
         </label>
+        <PdfAttachment book={book} viewerId={userId} onChanged={onChanged} />
         <p className="muted small">Vai pra sua estante, e o Streak avisa o grupo no feed.</p>
         {error && <p className="msg error">{error}</p>}
         <div className="row">
