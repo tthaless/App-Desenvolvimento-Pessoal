@@ -1,32 +1,42 @@
-import { useEffect, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import type { ReactNode } from 'react'
 import type { Member } from '../types'
 import { clearNavTarget, useNavTarget } from '../lib/notifications'
 import Badges from './Badges'
-import Library from './Library'
-import Stats from './Stats'
+import { lazyScreen } from '../lib/lazy'
+import { SkeletonRows } from './Skeleton'
+
+const Library = lazyScreen(() => import('./Library'))
+const Stats = lazyScreen(() => import('./Stats'))
 
 interface Props {
   member: Member
   viewerId: string
   /** Conteúdo da aba Perfil. */
   children: ReactNode
+  /** Avisa quando a pessoa troca de aba (o topo encolhe fora da aba Perfil). */
+  onSub?: (sub: Sub) => void
 }
 
-type Sub = 'perfil' | 'leitura' | 'evolucao' | 'insignias'
+export type Sub = 'perfil' | 'leitura' | 'evolucao' | 'insignias'
 
 /** Abas do perfil. No meu: Perfil, Leitura, Evolução e Insígnias. No dos amigos, sem a Evolução. */
-export default function ProfileTabs({ member, viewerId, children }: Props) {
+export default function ProfileTabs({ member, viewerId, children, onSub }: Props) {
   const isMe = member.id === viewerId
-  const [sub, setSub] = useState<Sub>('perfil')
+  const [sub, setSubState] = useState<Sub>('perfil')
+  const setSub = (s: Sub) => {
+    setSubState(s)
+    onSub?.(s)
+  }
   const target = useNavTarget()
 
   // Curtida ou "quero ler também" abre a minha Leitura.
   useEffect(() => {
     if (!isMe || target?.type !== 'library') return
-    setSub('leitura')
+    setSubState('leitura')
+    onSub?.('leitura')
     clearNavTarget()
-  }, [isMe, target])
+  }, [isMe, target, onSub])
 
   const subs: [Sub, string][] = [
     ['perfil', 'Perfil'],
@@ -45,9 +55,11 @@ export default function ProfileTabs({ member, viewerId, children }: Props) {
         ))}
       </nav>
       {sub === 'perfil' && children}
-      {sub === 'leitura' && <Library ownerId={member.id} viewerId={viewerId} />}
-      {sub === 'evolucao' && <Stats userId={viewerId} />}
-      {sub === 'insignias' && <Badges member={member} isMe={isMe} />}
+      <Suspense fallback={<SkeletonRows count={4} />}>
+        {sub === 'leitura' && <Library ownerId={member.id} viewerId={viewerId} />}
+        {sub === 'evolucao' && <Stats userId={viewerId} />}
+        {sub === 'insignias' && <Badges member={member} isMe={isMe} />}
+      </Suspense>
     </>
   )
 }

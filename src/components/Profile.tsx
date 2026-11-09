@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { Suspense, useEffect, useRef, useState } from 'react'
 import type { FormEvent } from 'react'
 import { supabase } from '../lib/supabase'
 import { refreshMembers, useMembers } from '../lib/members'
@@ -10,13 +10,16 @@ import FeedList from './FeedList'
 import ProfileDetails from './ProfileDetails'
 import ProfileTabs from './ProfileTabs'
 import { FeaturedBadges } from './Badges'
-import { Camera, ImagePlus, Settings as SettingsIcon, Trash2 } from 'lucide-react'
+import { Camera, Check, ImagePlus, Settings as SettingsIcon, Trash2 } from 'lucide-react'
 import ProfileHero from './ProfileHero'
 import ProfileStats from './ProfileStats'
-import Settings from './Settings'
+import { MAX_PINNED_STATS, PIN_CARDS, PIN_STATS, pinsOf, savePins } from '../lib/pins'
+import { lazyScreen } from '../lib/lazy'
 import { toast } from '../lib/toast'
 import TopBar from './TopBar'
 import { SkeletonBlock, SkeletonCard } from './Skeleton'
+
+const Settings = lazyScreen(() => import('./Settings'))
 
 export default function Profile({ userId }: { userId: string }) {
   const me = useMembers().find((m) => m.id === userId)
@@ -30,6 +33,8 @@ export default function Profile({ userId }: { userId: string }) {
   const coverRef = useRef<HTMLInputElement>(null)
   const [coverBusy, setCoverBusy] = useState(false)
   const [settings, setSettings] = useState(false)
+  const [compact, setCompact] = useState(false)
+  const [pins, setPins] = useState<string[]>([])
 
   useEffect(() => {
     supabase.rpc('streaks').then(({ data }) => setStreaks(((data ?? []) as StreakRow[]).filter((r) => r.user_id === userId)))
@@ -42,6 +47,7 @@ export default function Profile({ userId }: { userId: string }) {
       bio: me.bio ?? '',
       exercises: me.exercises ?? '',
     })
+    setPins(pinsOf(me))
     setError(null)
     setEditing(true)
   }
@@ -60,10 +66,23 @@ export default function Profile({ userId }: { userId: string }) {
         exercises: form.exercises.trim() || null,
       })
       .eq('id', userId)
-    setSaving(false)
-    if (error) return setError(errorMessage(error))
+    if (error) {
+      setSaving(false)
+      return setError(errorMessage(error))
+    }
+    if (me && pins.slice().sort().join() !== pinsOf(me).slice().sort().join()) {
+      try {
+        await savePins(userId, pins)
+      } catch (e) {
+        await refreshMembers()
+        setSaving(false)
+        return setError(errorMessage(e))
+      }
+    }
     await refreshMembers()
+    setSaving(false)
     setEditing(false)
+    setCompact(false)
     toast('Perfil salvo')
   }
 
@@ -144,6 +163,9 @@ export default function Profile({ userId }: { userId: string }) {
       </div>
     )
 
+  const pinnedStats = pins.filter((p) => PIN_STATS.some((s) => s.id === p)).length
+  const togglePin = (id: string) => setPins((cur) => (cur.includes(id) ? cur.filter((p) => p !== id) : [...cur, id]))
+
   const settingsButton = (
     <button className="icon-btn topbar-btn" onClick={() => setSettings(true)} aria-label="Ajustes">
       <SettingsIcon size={19} aria-hidden />
@@ -178,6 +200,7 @@ export default function Profile({ userId }: { userId: string }) {
         badges={<FeaturedBadges member={me} />}
         bio={me.bio ? <p className="profile-bio">{me.bio}</p> : !editing && <p className="muted small">Sem descrição ainda. Toque em Editar perfil.</p>}
         stats={<ProfileStats member={me} />}
+        compact={compact && !editing}
       >
         <input ref={coverRef} type="file" accept="image/*" hidden onChange={(e) => changeCover(e.target.files?.[0])} />
         <input ref={fileRef} type="file" accept="image/*" hidden onChange={(e) => changeAvatar(e.target.files?.[0])} />
@@ -224,6 +247,35 @@ export default function Profile({ userId }: { userId: string }) {
               )}
             </div>
           </div>
+          <fieldset className="pin-field">
+            <legend>Números no perfil</legend>
+            <p className="muted small">Até {MAX_PINNED_STATS}. {pinnedStats}/{MAX_PINNED_STATS} escolhidos.</p>
+            <div className="pin-options">
+              {PIN_STATS.map((p) => {
+                const on = pins.includes(p.id)
+                return (
+                  <button key={p.id} type="button" className={on ? 'on' : ''} aria-pressed={on} disabled={!on && pinnedStats >= MAX_PINNED_STATS} onClick={() => togglePin(p.id)}>
+                    {on && <Check size={14} strokeWidth={3} aria-hidden />}
+                    {p.label}
+                  </button>
+                )
+              })}
+            </div>
+          </fieldset>
+          <fieldset className="pin-field">
+            <legend>Cartões no perfil</legend>
+            <div className="pin-options">
+              {(Object.keys(PIN_CARDS) as (keyof typeof PIN_CARDS)[]).map((id) => {
+                const on = pins.includes(id)
+                return (
+                  <button key={id} type="button" className={on ? 'on' : ''} aria-pressed={on} onClick={() => togglePin(id)}>
+                    {on && <Check size={14} strokeWidth={3} aria-hidden />}
+                    {PIN_CARDS[id]}
+                  </button>
+                )
+              })}
+            </div>
+          </fieldset>
           <div className="row">
             <button type="button" className="btn ghost" onClick={() => setEditing(false)} disabled={saving}>
               Cancelar
@@ -234,14 +286,18 @@ export default function Profile({ userId }: { userId: string }) {
           </div>
         </form>
       ) : (
-        <ProfileTabs member={me} viewerId={userId}>
+        <ProfileTabs member={me} viewerId={userId} onSub={(s) => setCompact(s !== 'perfil')}>
           <ProfileDetails member={me} streaks={streaks} />
           <h2 className="section-title">Seus posts das últimas 24h</h2>
           <FeedList userId={userId} authorId={userId} emptyText="Você não postou nada no feed hoje." />
         </ProfileTabs>
       )}
 
-      {settings && <Settings userId={userId} onClose={() => setSettings(false)} />}
+      {settings && (
+        <Suspense fallback={null}>
+          <Settings userId={userId} onClose={() => setSettings(false)} />
+        </Suspense>
+      )}
     </div>
   )
 }

@@ -216,19 +216,10 @@ button.settings-row:active { background: var(--surface-2); }
 .section-sub { margin: -4px 2px 12px; font-size: 13.5px; color: var(--muted); }
 .card-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 4px; }
 .card-head .card-title { margin: 0; }
-.pin-btn {
-  flex: none; width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; padding: 0;
-  border: 1px solid var(--line); background: var(--surface); color: #9aa5b5; transition: background-color .2s, color .2s, transform .12s;
-}
-.pin-btn:active { transform: scale(.9); }
-.pin-btn.on { background: var(--navy); border-color: var(--navy); color: var(--cream); }
-.pin-btn.on svg { fill: currentColor; }
 .totals-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
 .total-tile { position: relative; display: flex; flex-direction: column; gap: 2px; padding: 12px 12px 12px; border-radius: 16px; background: var(--surface); border: 1px solid var(--line); min-height: 84px; }
-.total-tile.pinned { border-color: rgba(21, 52, 98, .35); }
-.total-value { font-family: var(--display); font-weight: 800; font-size: 22px; line-height: 1.1; padding-right: 30px; }
+.total-value { font-family: var(--display); font-weight: 800; font-size: 22px; line-height: 1.1; }
 .total-label { font-size: 12px; color: var(--muted); line-height: 1.25; }
-.total-tile .pin-btn { position: absolute; top: 8px; right: 8px; width: 28px; height: 28px; }
 .section.pinnable .section-head { margin-bottom: 10px; }
 .pstats.n1 { grid-template-columns: 1fr; }
 .pstats.n2 { grid-template-columns: repeat(2, 1fr); }
@@ -270,3 +261,16 @@ button.settings-row:active { background: var(--surface-2); }
 .phero.compact .phero-main, .phero.compact .phero-corner, .phero.compact .avatar-badge { display: none; }
 .phero.compact .avatar-edit { pointer-events: none; }
 
+
+/* ---------- Editar perfil: o que aparece ---------- */
+.pin-field { border: 0; margin: 0; padding: 0; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+.pin-field legend { padding: 0; font-size: 14px; color: var(--muted); margin-bottom: 6px; }
+.pin-field .muted.small { margin: -4px 0 0; }
+.pin-options { display: flex; flex-wrap: wrap; gap: 8px; }
+.pin-options button {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 38px; padding: 8px 14px; border-radius: 99px;
+  border: 1px solid var(--line); background: var(--surface); color: var(--text); font-size: 14px; font-weight: 600;
+  transition: background-color .2s, color .2s, border-color .2s;
+}
+.pin-options button.on { background: var(--navy); border-color: var(--navy); color: #fff; }
+.pin-options button:disabled { opacity: .45; }

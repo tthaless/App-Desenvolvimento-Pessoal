@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { Camera, Check, Play, X } from 'lucide-react'
 import { fetchRetro, markRetroSeen, pendingRetro, periodLabel } from '../lib/retro'
 import type { Period } from '../lib/retro'
-import RetroStory from './RetroStory'
+import { lazyScreen } from '../lib/lazy'
 import { refreshMembers, useMembers } from '../lib/members'
 import { openCamera, useCamera } from '../lib/camera'
 import { streakOf, useToday } from '../lib/today'
@@ -14,6 +14,8 @@ import RankingSection from './RankingSection'
 import Stories from './Stories'
 import TopBar from './TopBar'
 import { SkeletonCard } from './Skeleton'
+
+const RetroStory = lazyScreen(() => import('./RetroStory'))
 
 /** Início: stories, como está o seu dia, o ranking e o feed do grupo. */
 export default function Home({ userId }: { userId: string }) {
@@ -177,14 +179,16 @@ function RetroBanner({ userId }: { userId: string }) {
         </button>
       </section>
       {open && (
-        <RetroStory
-          period={period}
-          userId={userId}
-          onClose={() => {
-            setOpen(false)
-            setPeriod(null)
-          }}
-        />
+        <Suspense fallback={null}>
+          <RetroStory
+            period={period}
+            userId={userId}
+            onClose={() => {
+              setOpen(false)
+              setPeriod(null)
+            }}
+          />
+        </Suspense>
       )}
     </>
   )
