@@ -13,6 +13,8 @@ export interface Book {
   review: string | null
   attachment_path: string | null
   attachment_public: boolean
+  total_pages: number | null
+  current_page: number | null
   proofs: number
   likes: number
 }
@@ -31,13 +33,20 @@ export interface BookDraft {
   title: string
   author: string
   cover_url: string | null
+  /** Total de páginas (opcional), sugerido pela busca. */
+  total_pages?: number | null
 }
 
-const FIELDS =
+const BASE_FIELDS =
   'id,user_id,title,author,cover_url,started_at,finished_at,abandoned_at,rating,review,attachment_path,attachment_public,posts(count),book_likes(count)'
+// Banco ainda sem as colunas de páginas: o app continua funcionando sem elas.
+let FIELDS = `${BASE_FIELDS},total_pages,current_page`
+const missingPages = (e: { message: string } | null) => !!e && /total_pages|current_page/.test(e.message)
 
 function toBook(row: unknown): Book {
-  const r = row as Omit<Book, 'proofs' | 'likes' | 'rating'> & {
+  const r = row as Omit<Book, 'proofs' | 'likes' | 'rating' | 'total_pages' | 'current_page'> & {
+    total_pages?: number | null
+    current_page?: number | null
     rating: number | string | null
     posts: { count: number }[]
     book_likes: { count: number }[]
@@ -45,25 +54,26 @@ function toBook(row: unknown): Book {
   return {
     ...r,
     rating: r.rating === null ? null : Number(r.rating),
+    total_pages: r.total_pages ?? null,
+    current_page: r.current_page ?? null,
     proofs: r.posts?.[0]?.count ?? 0,
     likes: r.book_likes?.[0]?.count ?? 0,
   }
 }
 
 export async function fetchCurrentBook(userId: string): Promise<Book | null> {
-  const { data, error } = await supabase
-    .from('books')
-    .select(FIELDS)
-    .eq('user_id', userId)
-    .is('finished_at', null)
-    .is('abandoned_at', null)
-    .maybeSingle()
+  const query = () => supabase.from('books').select(FIELDS).eq('user_id', userId).is('finished_at', null).is('abandoned_at', null).maybeSingle()
+  let { data, error } = await query()
+  if (missingPages(error)) {
+    FIELDS = BASE_FIELDS
+    ;({ data, error } = await query())
+  }
   if (error) throw error
   return data ? toBook(data) : null
 }
 
 export async function fetchShelf(userId: string): Promise<Book[]> {
-  const base = () => supabase.from('books').select(FIELDS).eq('user_id', userId).not('finished_at', 'is', null)
+  const base = () => supabase.from('books').select(BASE_FIELDS).eq('user_id', userId).not('finished_at', 'is', null)
   // Ordem escolhida pela pessoa; livros sem posição (recém-terminados) vêm primeiro.
   let { data, error } = await base()
     .order('shelf_order', { ascending: true, nullsFirst: true })
@@ -87,7 +97,7 @@ export async function saveShelfOrder(ids: string[]) {
 export async function fetchGroupFinished(limit = 50): Promise<Book[]> {
   const { data, error } = await supabase
     .from('books')
-    .select(FIELDS)
+    .select(BASE_FIELDS)
     .not('finished_at', 'is', null)
     .order('finished_at', { ascending: false })
     .limit(limit)
@@ -96,8 +106,13 @@ export async function fetchGroupFinished(limit = 50): Promise<Book[]> {
 }
 
 export async function startBook(draft: BookDraft) {
-  const row = { title: draft.title.trim(), author: draft.author.trim() || null, cover_url: draft.cover_url }
+  const row: Record<string, unknown> = { title: draft.title.trim(), author: draft.author.trim() || null, cover_url: draft.cover_url }
+  if (draft.total_pages) row.total_pages = draft.total_pages
   let { error } = await supabase.from('books').insert(row)
+  if (missingPages(error)) {
+    delete row.total_pages
+    ;({ error } = await supabase.from('books').insert(row))
+  }
   // Capa de um endereço que o banco ainda não aceita: salva sem a capa.
   if (error?.code === '23514' && /cover_url/.test(error.message)) ({ error } = await supabase.from('books').insert({ ...row, cover_url: null }))
   if (error) {
@@ -105,6 +120,16 @@ export async function startBook(draft: BookDraft) {
     throw error
   }
 }
+
+/** Total de páginas e página atual do livro em andamento. */
+export async function setBookPages(id: string, total: number | null, current: number | null) {
+  const { error } = await supabase.from('books').update({ total_pages: total, current_page: current }).eq('id', id)
+  if (error) throw error
+}
+
+/** Resumo de 140 letras ou mais (ou um PDF de anotações) vale +30 ao terminar o livro. */
+export const SUMMARY_MIN = 140
+export const BOOK_BONUS = 30
 
 export async function finishBook(id: string, rating: number, review: string) {
   const { error } = await supabase.rpc('finish_book', { book: id, nota: rating, comentario: review })

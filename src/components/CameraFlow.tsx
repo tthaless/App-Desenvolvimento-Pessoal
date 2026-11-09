@@ -2,11 +2,10 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { Camera, Check, ImageIcon, RefreshCw, SwitchCamera, X } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { LONG_CACHE } from '../lib/signed'
-import { checkin } from '../lib/challenges'
 import { closeCamera, notifyPosted, useCamera } from '../lib/camera'
 import type { ProofKind } from '../lib/camera'
-import { challengeDaysOf, reloadToday, streakOf, useToday } from '../lib/today'
-import { useMembers } from '../lib/members'
+import { reloadToday, streakOf, useToday } from '../lib/today'
+import { refreshMembers, useMembers } from '../lib/members'
 import { compressImage, errorMessage } from '../lib/utils'
 import ActivityIcon from './ActivityIcon'
 import Celebration from './Celebration'
@@ -256,15 +255,6 @@ function Capture({ onPhoto, onClose }: { onPhoto: (file: File) => void; onClose:
 
 // ---------------- Escolher a atividade e postar ----------------
 
-interface Option {
-  kind: ProofKind
-  label: string
-  detail: string
-  done: boolean
-  /** Desafio já cumprido hoje não aceita outra foto. */
-  locked: boolean
-}
-
 function Review({
   userId,
   photo,
@@ -284,87 +274,74 @@ function Review({
   const me = useMembers().find((m) => m.id === userId)
   const [kind, setKind] = useState<ProofKind | null>(preset)
   const [caption, setCaption] = useState('')
+  const [page, setPage] = useState('')
   const [sending, setSending] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const challengeDays = challengeDaysOf(today, userId)
-  const challengeDone = challengeDays.has(today.day)
-  const options: Option[] = [
-    {
-      kind: 'exercicio',
-      label: 'Exercício',
-      detail: today.done.exercicio.has(userId) ? 'Feito hoje' : `${streakOf(today, userId, 'exercicio')} dias seguidos`,
-      done: today.done.exercicio.has(userId),
-      locked: false,
-    },
-    {
-      kind: 'leitura',
-      label: 'Leitura',
-      detail: today.done.leitura.has(userId) ? 'Feito hoje' : `${streakOf(today, userId, 'leitura')} dias seguidos`,
-      done: today.done.leitura.has(userId),
-      locked: false,
-    },
-  ]
-  if (today.challenge)
-    options.push({
-      kind: 'desafio',
-      label: 'Desafio',
-      detail: challengeDone ? 'Cumprido hoje' : `${challengeDays.size} de 7 na semana`,
-      done: challengeDone,
-      locked: challengeDone,
-    })
-
+  const options = (['exercicio', 'leitura'] as const).map((a) => {
+    const done = today.done[a].has(userId)
+    return {
+      kind: a,
+      label: a === 'exercicio' ? 'Exercício' : 'Leitura',
+      detail: done ? 'Feito hoje' : `${streakOf(today, userId, a)} dias seguidos`,
+      done,
+    }
+  })
   const chosen = options.find((o) => o.kind === kind)
 
+  const book = me?.current_book ? me : null
+  const total = book?.current_book_total_pages ?? null
+  const lastPage = book?.current_book_page ?? null
+  const pageNum = page.trim() ? Number(page) : null
+  const pageError =
+    pageNum === null
+      ? null
+      : !Number.isInteger(pageNum) || pageNum < 1
+        ? 'Digite o número da página.'
+        : total && pageNum > total
+          ? `O livro tem ${total} páginas.`
+          : null
+
   async function send() {
-    if (!chosen || chosen.locked) return
+    if (!chosen || pageError) return
     setSending(true)
     setError(null)
     try {
-      if (chosen.kind === 'desafio') {
-        await checkin(userId, today.challenge!.id, photo.file)
-        const before = challengeDays.size
-        const to = before + 1
-        await reloadToday()
-        notifyPosted()
+      const activity = chosen.kind
+      const path = `${userId}/${activity}-${Date.now()}.jpg`
+      const blob = await compressImage(photo.file)
+      const up = await supabase.storage.from('provas').upload(path, blob, { contentType: 'image/jpeg', ...LONG_CACHE })
+      if (up.error) throw up.error
+      const row: Record<string, unknown> = { activity, photo_path: path, caption: caption.trim() || null }
+      if (activity === 'leitura' && pageNum) row.page = pageNum
+      let ins = await supabase.from('posts').insert(row)
+      // Banco ainda sem a coluna de página: posta sem ela.
+      if (ins.error && /page/.test(ins.error.message) && 'page' in row) {
+        delete row.page
+        ins = await supabase.from('posts').insert(row)
+      }
+      if (ins.error) {
+        await supabase.storage.from('provas').remove([path])
+        throw ins.error
+      }
+      const before = streakOf(today, userId, activity)
+      const first = !chosen.done
+      await reloadToday()
+      if (activity === 'leitura' && pageNum) refreshMembers().catch(() => {})
+      notifyPosted()
+      if (first)
         onPosted({
           from: before,
-          to,
-          unit: 'de 7 no desafio',
-          title: to >= 7 ? 'Semana completa! +40' : to === 5 ? '+30 pontos garantidos!' : 'Desafio do dia cumprido!',
+          to: before + 1,
+          unit: before + 1 === 1 ? 'dia seguido' : 'dias seguidos',
+          title: activity === 'leitura' ? 'Leitura do dia feita!' : 'Treino do dia feito!',
         })
-      } else {
-        const activity = chosen.kind
-        const path = `${userId}/${activity}-${Date.now()}.jpg`
-        const blob = await compressImage(photo.file)
-        const up = await supabase.storage.from('provas').upload(path, blob, { contentType: 'image/jpeg', ...LONG_CACHE })
-        if (up.error) throw up.error
-        const ins = await supabase.from('posts').insert({ activity, photo_path: path, caption: caption.trim() || null })
-        if (ins.error) {
-          await supabase.storage.from('provas').remove([path])
-          throw ins.error
-        }
-        const before = streakOf(today, userId, activity)
-        const first = !chosen.done
-        await reloadToday()
-        notifyPosted()
-        if (first)
-          onPosted({
-            from: before,
-            to: before + 1,
-            unit: before + 1 === 1 ? 'dia seguido' : 'dias seguidos',
-            title: activity === 'leitura' ? 'Leitura do dia feita!' : 'Treino do dia feito!',
-          })
-        else onClose()
-      }
+      else onClose()
     } catch (e) {
       setError(errorMessage(e))
       setSending(false)
     }
   }
-
-  const placeholder =
-    kind === 'leitura' ? (me?.current_book ? `Quantas páginas de ${me.current_book}?` : 'O que você está lendo?') : 'Qual foi o treino?'
 
   return (
     <div className="cam-review">
@@ -386,15 +363,15 @@ function Review({
         <p className="cam-question" id="cam-question">
           Essa prova é de quê?
         </p>
-        <div className={`cam-options n${options.length}`} role="radiogroup" aria-labelledby="cam-question">
+        <div className="cam-options" role="radiogroup" aria-labelledby="cam-question">
           {options.map((o) => (
             <button
               key={o.kind}
               role="radio"
               aria-checked={kind === o.kind}
               className={`cam-option act-${o.kind} ${kind === o.kind ? 'on' : ''} ${o.done ? 'done' : ''}`}
-              onClick={() => !o.locked && setKind(o.kind)}
-              disabled={o.locked || sending || !today.loaded}
+              onClick={() => setKind(o.kind)}
+              disabled={sending || !today.loaded}
             >
               <span className="cam-option-icon">
                 {o.done ? <Check size={20} strokeWidth={3} aria-hidden /> : <ActivityIcon activity={o.kind} size={20} />}
@@ -405,23 +382,45 @@ function Review({
           ))}
         </div>
 
-        {chosen && chosen.kind !== 'desafio' && (
+        {kind === 'leitura' && book && (
+          <label className="cam-page">
+            <span>
+              Página em que parou em <strong>{book.current_book}</strong>
+            </span>
+            <span className="cam-page-row">
+              <input
+                type="number"
+                inputMode="numeric"
+                min={1}
+                max={total ?? undefined}
+                value={page}
+                onChange={(e) => setPage(e.target.value)}
+                placeholder={lastPage ? String(lastPage) : 'ex: 42'}
+                aria-describedby="cam-page-hint"
+              />
+              {total && <span className="cam-page-total">de {total}</span>}
+            </span>
+            <span id="cam-page-hint" className={`cam-page-hint ${pageError ? 'error' : ''}`}>
+              {pageError ?? (lastPage ? `Na última prova você estava na página ${lastPage}. Opcional.` : 'Opcional. Serve pra mostrar seu progresso e suas estatísticas.')}
+            </span>
+          </label>
+        )}
+
+        {chosen && (
           <input
             className="cam-caption"
             value={caption}
             onChange={(e) => setCaption(e.target.value)}
-            placeholder={placeholder}
+            placeholder={kind === 'leitura' ? 'Legenda (opcional)' : 'Qual foi o treino? (opcional)'}
             maxLength={140}
             aria-label="Legenda"
           />
         )}
-        {chosen?.kind === 'desafio' && today.challenge && <p className="cam-note">{today.challenge.title}</p>}
-        {chosen?.done && !chosen.locked && (
-          <p className="cam-note">Você já postou essa hoje. A foto vai pros stories, mas não soma pontos de novo.</p>
-        )}
+        {kind === 'leitura' && !book && <p className="cam-note">Dica: comece um livro em Leitura → Biblioteca pra acompanhar páginas e progresso.</p>}
+        {chosen?.done && <p className="cam-note">Você já postou essa hoje. A foto vai pros stories, mas não soma pontos de novo.</p>}
         {error && <p className="msg error">{error}</p>}
 
-        <button className="btn primary big-btn" onClick={send} disabled={!chosen || chosen.locked || sending}>
+        <button className="btn primary big-btn" onClick={send} disabled={!chosen || !!pageError || sending}>
           {sending ? 'Enviando…' : chosen ? `Postar prova de ${chosen.label.toLowerCase()}` : 'Escolha a atividade'}
         </button>
       </section>

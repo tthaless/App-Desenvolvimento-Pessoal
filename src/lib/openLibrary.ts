@@ -8,6 +8,7 @@ interface OlDoc {
   title?: string
   author_name?: string[]
   cover_i?: number
+  number_of_pages_median?: number
 }
 
 interface GVolume {
@@ -16,6 +17,7 @@ interface GVolume {
     subtitle?: string
     authors?: string[]
     imageLinks?: { thumbnail?: string; smallThumbnail?: string }
+    pageCount?: number
   }
 }
 
@@ -45,7 +47,7 @@ function googleCover(link?: string): string | null {
 }
 
 async function fromGoogle(query: string, signal?: AbortSignal): Promise<BookDraft[]> {
-  const url = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&maxResults=10&printType=books&fields=items(volumeInfo(title,subtitle,authors,imageLinks))`
+  const url = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&maxResults=10&printType=books&fields=items(volumeInfo(title,subtitle,authors,imageLinks,pageCount))`
   const json = await getJson<{ items?: GVolume[] }>(url, signal)
   return (json?.items ?? []).flatMap((v) => {
     const i = v.volumeInfo
@@ -55,13 +57,14 @@ async function fromGoogle(query: string, signal?: AbortSignal): Promise<BookDraf
         title: i.title.slice(0, 120),
         author: (i.authors?.[0] ?? '').slice(0, 80),
         cover_url: googleCover(i.imageLinks?.thumbnail ?? i.imageLinks?.smallThumbnail),
+        total_pages: i.pageCount && i.pageCount > 0 ? i.pageCount : null,
       },
     ]
   })
 }
 
 async function fromOpenLibrary(query: string, signal?: AbortSignal): Promise<BookDraft[]> {
-  const url = `https://openlibrary.org/search.json?q=${encodeURIComponent(query)}&limit=10&fields=title,author_name,cover_i`
+  const url = `https://openlibrary.org/search.json?q=${encodeURIComponent(query)}&limit=10&fields=title,author_name,cover_i,number_of_pages_median`
   const json = await getJson<{ docs?: OlDoc[] }>(url, signal)
   return (json?.docs ?? []).flatMap((d) =>
     d.title
@@ -70,6 +73,7 @@ async function fromOpenLibrary(query: string, signal?: AbortSignal): Promise<Boo
             title: d.title.slice(0, 120),
             author: (d.author_name?.[0] ?? '').slice(0, 80),
             cover_url: d.cover_i ? `https://covers.openlibrary.org/b/id/${d.cover_i}-M.jpg` : null,
+            total_pages: d.number_of_pages_median ?? null,
           },
         ]
       : [],
@@ -90,7 +94,7 @@ export async function searchBooks(query: string, signal?: AbortSignal): Promise<
     const prev = byKey.get(key)
     // Mesmo livro nas duas fontes: fica com o que tem capa.
     if (!prev) byKey.set(key, b)
-    else if (!prev.cover_url && b.cover_url) byKey.set(key, { ...prev, cover_url: b.cover_url })
+    else byKey.set(key, { ...prev, cover_url: prev.cover_url ?? b.cover_url, total_pages: prev.total_pages ?? b.total_pages })
   }
   const out = [...byKey.values()].slice(0, 8)
   // Os que têm capa primeiro, mantendo a ordem de relevância entre eles.

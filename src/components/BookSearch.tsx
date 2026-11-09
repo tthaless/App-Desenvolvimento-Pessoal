@@ -8,14 +8,17 @@ interface Props {
   submitLabel: string
   busy?: boolean
   onSubmit: (draft: BookDraft) => void
+  /** Pede o total de páginas (ao começar a ler). */
+  askPages?: boolean
   onCancel: () => void
 }
 
 /** Formulário de livro: digita o título, escolhe uma sugestão com capa ou segue só com o texto. */
-export default function BookSearch({ submitLabel, busy, onSubmit, onCancel }: Props) {
+export default function BookSearch({ submitLabel, busy, onSubmit, onCancel, askPages }: Props) {
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [cover, setCover] = useState<string | null>(null)
+  const [pages, setPages] = useState('')
   const [picked, setPicked] = useState(false)
   const [results, setResults] = useState<BookDraft[]>([])
   const [searching, setSearching] = useState(false)
@@ -47,6 +50,7 @@ export default function BookSearch({ submitLabel, busy, onSubmit, onCancel }: Pr
     setTitle(r.title)
     setAuthor(r.author)
     setCover(r.cover_url)
+    if (r.total_pages && !pages) setPages(String(r.total_pages))
     setPicked(true)
     setResults([])
   }
@@ -54,7 +58,8 @@ export default function BookSearch({ submitLabel, busy, onSubmit, onCancel }: Pr
   function submit(e: FormEvent) {
     e.preventDefault()
     if (!title.trim()) return
-    onSubmit({ title: title.trim(), author: author.trim(), cover_url: cover })
+    const n = Number(pages)
+    onSubmit({ title: title.trim(), author: author.trim(), cover_url: cover, total_pages: askPages && Number.isInteger(n) && n > 0 && n <= 10000 ? n : null })
   }
 
   return (
@@ -75,6 +80,18 @@ export default function BookSearch({ submitLabel, busy, onSubmit, onCancel }: Pr
             autoFocus
           />
           <input value={author} onChange={(e) => setAuthor(e.target.value)} placeholder="Autor (opcional)" maxLength={80} />
+          {askPages && (
+            <input
+              type="number"
+              inputMode="numeric"
+              min={1}
+              max={10000}
+              value={pages}
+              onChange={(e) => setPages(e.target.value)}
+              placeholder="Total de páginas (opcional)"
+              aria-label="Total de páginas (opcional)"
+            />
+          )}
         </div>
       </div>
 

@@ -11,23 +11,31 @@ let inflight: Promise<Member[]> | null = null
 const listeners = new Set<(members: Member[]) => void>()
 
 async function fetchMembers(): Promise<Member[]> {
-  const [first, reading] = await Promise.all([
-    supabase.from('profiles').select('id,username,avatar_path,cover_path,bio,exercises').order('username'),
-    supabase.from('books').select('user_id,title,author,cover_url').is('finished_at', null).is('abandoned_at', null),
+  const readingQuery = (fields: string) => supabase.from('books').select(fields).is('finished_at', null).is('abandoned_at', null)
+  const profilesQuery = (fields: string) => supabase.from('profiles').select(fields).order('username')
+  let [first, reading] = await Promise.all([
+    profilesQuery('id,username,avatar_path,cover_path,bio,exercises,featured_badges'),
+    readingQuery('user_id,title,author,cover_url,total_pages,current_page'),
   ])
-  // Banco ainda sem a coluna do plano de fundo: busca sem ela.
+  // Banco ainda sem as colunas novas: busca sem elas.
+  if (first.error && /featured_badges/.test(first.error.message))
+    first = await profilesQuery('id,username,avatar_path,cover_path,bio,exercises')
+  if (reading.error && /total_pages|current_page/.test(reading.error.message)) reading = await readingQuery('user_id,title,author,cover_url')
   const profiles = first.error && /cover_path/.test(first.error.message)
-    ? await supabase.from('profiles').select('id,username,avatar_path,bio,exercises').order('username')
+    ? await profilesQuery('id,username,avatar_path,bio,exercises')
     : first
   if (profiles.error) throw profiles.error
-  type Reading = { user_id: string; title: string; author: string | null; cover_url: string | null }
-  const books = new Map(((reading.data ?? []) as Reading[]).map((b) => [b.user_id, b]))
-  const rows = ((profiles.data ?? []) as Omit<Member, 'avatar_url' | 'cover_url' | 'current_book' | 'current_book_author' | 'current_book_cover'>[]).map((r) => ({
+  type Reading = { user_id: string; title: string; author: string | null; cover_url: string | null; total_pages?: number | null; current_page?: number | null }
+  const books = new Map(((reading.data ?? []) as unknown as Reading[]).map((b) => [b.user_id, b]))
+  const rows = ((profiles.data ?? []) as unknown as Omit<Member, 'avatar_url' | 'cover_url' | 'current_book' | 'current_book_author' | 'current_book_cover'>[]).map((r) => ({
     ...r,
     cover_path: r.cover_path ?? null,
     current_book: books.get(r.id)?.title ?? null,
     current_book_author: books.get(r.id)?.author ?? null,
     current_book_cover: books.get(r.id)?.cover_url ?? null,
+    current_book_total_pages: books.get(r.id)?.total_pages ?? null,
+    current_book_page: books.get(r.id)?.current_page ?? null,
+    featured_badges: (r as { featured_badges?: string[] }).featured_badges ?? [],
   }))
   const paths = rows.flatMap((r) => [r.avatar_path, r.cover_path]).filter((p): p is string => !!p)
   // Link de 7 dias, reaproveitado: a foto de perfil não é baixada de novo a cada abertura.

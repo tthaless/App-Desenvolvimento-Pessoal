@@ -46,6 +46,12 @@ export interface Member {
   current_book_author?: string | null
   /** Capa do livro em andamento (Open Library). */
   current_book_cover?: string | null
+  /** Total de páginas do livro em andamento, se a pessoa informou. */
+  current_book_total_pages?: number | null
+  /** Página em que parou no livro em andamento. */
+  current_book_page?: number | null
+  /** Até 3 insígnias em destaque no topo do perfil. */
+  featured_badges?: string[]
   exercises: string | null
 }
 

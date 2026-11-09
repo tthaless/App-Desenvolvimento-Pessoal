@@ -9,6 +9,7 @@ import Bookshelf from './Bookshelf'
 import CurrentBook from './CurrentBook'
 import PdfAttachment from './PdfAttachment'
 import WantList from './WantList'
+import { ReadingProgress } from './ReadingProgress'
 import { SkeletonRows } from './Skeleton'
 
 /** Biblioteca de uma pessoa: contadores, lendo agora, quero ler e concluídos. */
@@ -92,6 +93,7 @@ export default function Library({ ownerId, viewerId }: { ownerId: string; viewer
               <div className="current-info">
                 <p className="book-title">{current.title}</p>
                 {current.author && <p className="muted small">{current.author}</p>}
+                <ReadingProgress page={current.current_page} total={current.total_pages} />
               </div>
             </div>
             <PdfAttachment book={current} viewerId={viewerId} onChanged={loadShelf} />
