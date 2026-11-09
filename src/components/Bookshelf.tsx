@@ -1,15 +1,17 @@
 import { BookMarked } from 'lucide-react'
 import EmptyState from './EmptyState'
 import { useEffect, useRef, useState } from 'react'
-import { daysBetween, deleteBook, formatRating, ratingTier, saveShelfOrder } from '../lib/books'
+import { deleteBook, formatRating, ratingTier, saveShelfOrder } from '../lib/books'
 import { errorMessage } from '../lib/utils'
 import type { Book } from '../lib/books'
-import { openProfile, useMembers } from '../lib/members'
+import { useMembers } from '../lib/members'
 import Avatar from './Avatar'
 import BookCover from './BookCover'
 import CoverPicker from './CoverPicker'
-import PdfAttachment from './PdfAttachment'
-import { Check, FileText, GripVertical, Heart, Pencil, Trash2 } from 'lucide-react'
+import { Check, FileText, GripVertical, Heart, Pencil, PenLine, Star, Trash2 } from 'lucide-react'
+import BookSheet from './BookSheet'
+
+type Filter = 'todos' | 'nota' | 'resumo'
 
 interface Props {
   books: Book[]
@@ -22,10 +24,11 @@ interface Props {
   emptyText?: string
 }
 
-/** Livros terminados: capa, nota, comentário, curtidas e PDF de anotações. */
+/** Livros terminados em grade de capas; tocar abre nota, resumo, PDF e curtida. */
 export default function Bookshelf({ books, viewerId, onChanged, showReader, editable, emptyText = 'Nenhum livro terminado ainda.' }: Props) {
   const members = useMembers()
   const [open, setOpen] = useState<string | null>(null)
+  const [filter, setFilter] = useState<Filter>('todos')
   const [confirming, setConfirming] = useState<string | null>(null)
   const [deleting, setDeleting] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -170,63 +173,70 @@ export default function Bookshelf({ books, viewerId, onChanged, showReader, edit
       </>
     )
 
+  const sorted =
+    filter === 'nota'
+      ? [...books].sort((x, y) => (y.rating ?? 0) - (x.rating ?? 0))
+      : filter === 'resumo'
+        ? books.filter((b) => (b.review ?? '').trim().length > 0 || !!b.attachment_path)
+        : books
+  const selected = books.find((b) => b.id === open)
+
   return (
     <>
-    {toolbar}
-    <div className="bookcase">
-      <div className="bookcase-top" aria-hidden>
-        <span className="cornice" />
-        <span className="frieze">
-          <span className="frieze-block" />
-          <span className="frieze-panel" />
-          <span className="frieze-block" />
-        </span>
+      {toolbar}
+      <div className="shelf-filters" role="tablist" aria-label="Filtrar livros">
+        {(
+          [
+            ['todos', showReader ? 'Recentes' : 'Todos'],
+            ['nota', 'Maior nota'],
+            ['resumo', 'Com resumo'],
+          ] as [Filter, string][]
+        ).map(([id, label]) => (
+          <button key={id} role="tab" aria-selected={filter === id} className={filter === id ? 'on' : ''} onClick={() => setFilter(id)}>
+            {label}
+          </button>
+        ))}
       </div>
-      <ul className="shelf-list bookcase-shelves">
-      {books.map((b) => {
-        const expanded = open === b.id
-        const days = daysBetween(b.started_at, b.finished_at!)
-        const reader = members.find((m) => m.id === b.user_id)
-        return (
-          <li key={b.id} className="shelf-book">
-            <button className="shelf-item" onClick={() => setOpen(expanded ? null : b.id)} aria-expanded={expanded}>
-              <BookCover url={b.cover_url} title={b.title} size="md" />
-              <span className="shelf-info">
-                <span className="shelf-title">{b.title}</span>
-                {b.author && <span className="muted small">{b.author}</span>}
-                <span className="muted small">
-                  {new Date(b.finished_at!).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })} · em {days}{' '}
-                  {days === 1 ? 'dia' : 'dias'}
-                </span>
-                <span className="shelf-badges">
-                  {b.likes > 0 && (
-                    <span className="like-count">
-                      <Heart size={13} fill="currentColor" aria-hidden /> {b.likes}
-                    </span>
-                  )}
-                  {b.attachment_path && (
-                    <span className="muted small icon-text">
-                      <FileText size={13} aria-hidden /> PDF
-                    </span>
-                  )}
-                </span>
-              </span>
-              <span className={`rating-badge tier-${ratingTier(b.rating ?? 0)}`}>{formatRating(b.rating ?? 0)}</span>
-            </button>
-            {showReader && reader && (
-              <button className="by shelf-reader" onClick={() => openProfile(b.user_id)}>
-                <Avatar name={reader.username} url={reader.avatar_url} size="sm" />
-                <span className="muted small">lido por</span> <strong className="small">{reader.username}</strong>
-              </button>
-            )}
-            {b.review && <p className={`shelf-review ${expanded ? 'open' : ''}`}>“{b.review}”</p>}
-            {(expanded || b.user_id !== viewerId) && <PdfAttachment book={b} viewerId={viewerId} onChanged={onChanged} />}
-          </li>
-        )
-      })}
-      </ul>
-      <div className="bookcase-base" aria-hidden />
-    </div>
+      {sorted.length === 0 ? (
+        <p className="muted small shelf-none">Nenhum livro com resumo ou PDF ainda.</p>
+      ) : (
+        <ul className="book-grid">
+          {sorted.map((b) => {
+            const reader = members.find((m) => m.id === b.user_id)
+            const tier = ratingTier(b.rating ?? 0)
+            return (
+              <li key={b.id}>
+                <button className="book-tile" onClick={() => setOpen(b.id)}>
+                  <span className="book-tile-cover">
+                    <BookCover url={b.cover_url} title={b.title} author={b.author} size="fill" />
+                    {showReader && reader && (
+                      <span className="book-tile-reader">
+                        <Avatar name={reader.username} url={reader.avatar_url} size="sm" />
+                      </span>
+                    )}
+                    {(b.attachment_path || (b.review ?? '').trim()) && (
+                      <span className="book-tile-flags" aria-hidden>
+                        {(b.review ?? '').trim() && <PenLine size={11} />}
+                        {b.attachment_path && <FileText size={11} />}
+                      </span>
+                    )}
+                  </span>
+                  <span className="book-tile-title">{b.title}</span>
+                  <span className={`book-tile-rating tier-${tier}`}>
+                    <Star size={11} fill="currentColor" aria-hidden /> {formatRating(b.rating ?? 0)}
+                    {b.likes > 0 && (
+                      <span className="book-tile-likes">
+                        <Heart size={11} fill="currentColor" aria-hidden /> {b.likes}
+                      </span>
+                    )}
+                  </span>
+                </button>
+              </li>
+            )
+          })}
+        </ul>
+      )}
+      {selected && <BookSheet book={selected} viewerId={viewerId} onClose={() => setOpen(null)} onChanged={onChanged} />}
     </>
   )
 }
