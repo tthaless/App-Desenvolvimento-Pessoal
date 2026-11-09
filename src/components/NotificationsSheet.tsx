@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { BellOff, BellRing, BookOpen, Bookmark, Dumbbell, Heart, Lightbulb, MessageCircle, Target, X } from 'lucide-react'
+import { BellOff, BookOpen, Bookmark, Dumbbell, Heart, Lightbulb, MessageCircle, Pointer, Target, X } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import {
   clearNotifications,
@@ -62,7 +62,7 @@ function iconOf(n: AppNotification): { Icon: LucideIcon; tone: string } {
   if (n.kind === 'want_too') return { Icon: Bookmark, tone: 'reading' }
   if (n.kind === 'challenge_vote') return { Icon: Target, tone: 'challenge' }
   if (n.kind === 'tip') return { Icon: Lightbulb, tone: 'gold' }
-  if (n.kind === 'nudge') return { Icon: BellRing, tone: 'brand' }
+  if (n.kind === 'nudge') return { Icon: Pointer, tone: 'brand' }
   if (n.kind === 'last_one') return n.detail === 'leitura' ? { Icon: BookOpen, tone: 'reading' } : { Icon: Dumbbell, tone: 'exercise' }
   if (n.kind.startsWith('story')) {
     if (n.detail === 'exercicio') return { Icon: Dumbbell, tone: 'exercise' }

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { BellRing, Check, Crown } from 'lucide-react'
+import { Check, Crown, Pointer } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { openProfile, useMembers } from '../lib/members'
 import { useCamera } from '../lib/camera'
@@ -115,7 +115,7 @@ export default function RankingSection({ userId }: { userId: string }) {
                   disabled={nudged.has(r.user_id) || nudging === r.user_id}
                   aria-label={nudged.has(r.user_id) ? `Você já cutucou ${r.username} hoje` : `Cutucar ${r.username}`}
                 >
-                  {nudged.has(r.user_id) ? <Check size={15} strokeWidth={2.6} aria-hidden /> : <BellRing size={15} aria-hidden />}
+                  {nudged.has(r.user_id) ? <Check size={15} strokeWidth={2.6} aria-hidden /> : <Pointer size={17} strokeWidth={2.2} aria-hidden />}
                 </button>
               )}
               <span className="rank-pts">
