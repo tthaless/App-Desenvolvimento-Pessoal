@@ -1,9 +1,11 @@
-import { useEffect } from 'react'
-import { Camera, Check, ChevronRight } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { Camera, Check, Play, X } from 'lucide-react'
+import { markRetroSeen, pendingRetro, periodLabel } from '../lib/retro'
+import type { Period } from '../lib/retro'
+import RetroStory from './RetroStory'
 import { refreshMembers, useMembers } from '../lib/members'
 import { openCamera, useCamera } from '../lib/camera'
-import type { ProofKind } from '../lib/camera'
-import { challengeDaysOf, streakOf, useToday } from '../lib/today'
+import { streakOf, useToday } from '../lib/today'
 import { streakBonus } from '../lib/utils'
 import ActivityIcon from './ActivityIcon'
 import { FlameMark } from './Logo'
@@ -26,6 +28,7 @@ export default function Home({ userId }: { userId: string }) {
       <TopBar />
       <Stories userId={userId} />
       <PushOffer show={posted > 0} />
+      <RetroBanner userId={userId} />
       <TodayCard userId={userId} />
       <RankingSection userId={userId} />
     </div>
@@ -43,12 +46,11 @@ function TodayCard({ userId }: { userId: string }) {
   const weekday = new Date(`${today.day}T12:00:00`).getDay()
   const weekend = weekday === 0 || weekday === 6
 
-  const rows: { kind: ProofKind; title: string; sub: string; done: boolean; streak?: number; bonus?: number }[] = (
-    ['exercicio', 'leitura'] as const
-  ).map((a) => {
+  const rows = (['exercicio', 'leitura'] as const).map((a) => {
     const done = today.done[a].has(userId)
     const streak = streakOf(today, userId, a)
-    const context = a === 'leitura' ? (me?.current_book ? `Lendo ${me.current_book}` : null) : me?.exercises
+    const pct = me?.current_book_total_pages && me.current_book_page ? Math.min(100, Math.round((me.current_book_page / me.current_book_total_pages) * 100)) : null
+    const context = a === 'leitura' ? (me?.current_book ? `${me.current_book}${pct !== null ? ` · ${pct}%` : ''}` : null) : me?.exercises
     return {
       kind: a,
       title: a === 'exercicio' ? 'Exercício' : 'Leitura',
@@ -58,17 +60,8 @@ function TodayCard({ userId }: { userId: string }) {
       bonus: streakBonus(done ? streak : streak + 1),
     }
   })
-  if (today.challenge) {
-    const days = challengeDaysOf(today, userId)
-    rows.push({
-      kind: 'desafio',
-      title: today.challenge.title,
-      sub: days.has(today.day) ? `Cumprido hoje · ${days.size} de 7` : `${days.size} de 7 na semana`,
-      done: days.has(today.day),
-    })
-  }
 
-  const pending = rows.filter((r) => !r.done && r.kind !== 'desafio').length
+  const pending = rows.filter((r) => !r.done).length
   const hint =
     pending === 0
       ? weekday === 5
@@ -100,7 +93,6 @@ function TodayCard({ userId }: { userId: string }) {
             <button
               className={`today-item act-${r.kind} ${r.done ? 'done' : ''}`}
               onClick={() => openCamera(r.kind)}
-              disabled={r.kind === 'desafio' && r.done}
               aria-label={`${r.title}: ${r.sub}${r.done ? '' : '. Tocar para postar a prova'}`}
             >
               <span className="today-icon">
@@ -118,14 +110,10 @@ function TodayCard({ userId }: { userId: string }) {
                   {!!r.bonus && <span className="bonus-chip">+{r.bonus} bônus</span>}
                 </span>
               </span>
-              {r.streak !== undefined ? (
-                <span className="today-streak" aria-label={`${r.streak} dias seguidos`}>
-                  <FlameMark size={16} />
-                  {r.streak}
-                </span>
-              ) : (
-                !r.done && <ChevronRight size={18} className="today-chevron" aria-hidden />
-              )}
+              <span className="today-streak" aria-label={`${r.streak} dias seguidos`}>
+                <FlameMark size={16} />
+                {r.streak}
+              </span>
             </button>
           </li>
         ))}
@@ -139,5 +127,46 @@ function TodayCard({ userId }: { userId: string }) {
         </button>
       )}
     </section>
+  )
+}
+
+/** Aviso no Início quando a retrospectiva da semana (ou do mês) passada fica pronta. */
+function RetroBanner({ userId }: { userId: string }) {
+  const [period, setPeriod] = useState<Period | null>(() => pendingRetro())
+  const [open, setOpen] = useState(false)
+  if (!period) return null
+  const close = () => {
+    markRetroSeen(period)
+    setPeriod(null)
+  }
+  return (
+    <>
+      <section className={`retro-banner ${period.kind}`}>
+        <button className="retro-banner-main" onClick={() => setOpen(true)}>
+          <span className="retro-banner-play" aria-hidden>
+            <Play size={18} fill="currentColor" />
+          </span>
+          <span>
+            <span className="retro-banner-title">
+              {period.kind === 'semana' ? 'Sua retrospectiva da semana chegou' : `Sua retrospectiva de ${periodLabel(period)} chegou`}
+            </span>
+            <span className="retro-banner-sub">{period.kind === 'semana' ? periodLabel(period) : 'Gráficos e números do mês'}</span>
+          </span>
+        </button>
+        <button className="retro-banner-x" onClick={close} aria-label="Dispensar">
+          <X size={16} aria-hidden />
+        </button>
+      </section>
+      {open && (
+        <RetroStory
+          period={period}
+          userId={userId}
+          onClose={() => {
+            setOpen(false)
+            setPeriod(null)
+          }}
+        />
+      )}
+    </>
   )
 }

@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react'
 import type { Session } from '@supabase/supabase-js'
-import { BookOpen, Camera, House, Target } from 'lucide-react'
+import { BookOpen, Camera, ChartColumn, House } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { openedFromRecovery, supabase } from './lib/supabase'
 import Auth from './components/Auth'
 import Home from './components/Home'
 import ReadingTab from './components/ReadingTab'
-import Challenges from './components/Challenges'
+import Stats from './components/Stats'
 import Profile from './components/Profile'
 import ProfileSheet from './components/ProfileSheet'
 import CameraFlow from './components/CameraFlow'
@@ -20,12 +20,12 @@ import NotificationsSheet from './components/NotificationsSheet'
 import Welcome, { shouldShowWelcome } from './components/Welcome'
 import { clearNavTarget, startNotifications, stopNotifications, useNavTarget } from './lib/notifications'
 
-type Tab = 'inicio' | 'desafio' | 'leitura' | 'perfil'
+type Tab = 'inicio' | 'leitura' | 'evolucao' | 'perfil'
 
 const TABS: { id: Tab; label: string; Icon?: LucideIcon }[] = [
   { id: 'inicio', label: 'Início', Icon: House },
-  { id: 'desafio', label: 'Desafio', Icon: Target },
   { id: 'leitura', label: 'Leitura', Icon: BookOpen },
+  { id: 'evolucao', label: 'Evolução', Icon: ChartColumn },
   { id: 'perfil', label: 'Perfil' },
 ]
 
@@ -144,8 +144,8 @@ export default function App() {
     <div className="app" data-tab={tab}>
       <main className="content" key={tab}>
         {tab === 'inicio' && <Home userId={userId} />}
-        {tab === 'desafio' && <Challenges userId={userId} />}
         {tab === 'leitura' && <ReadingTab userId={userId} />}
+        {tab === 'evolucao' && <Stats userId={userId} />}
         {tab === 'perfil' && <Profile userId={userId} />}
       </main>
       <nav className="tabbar" aria-label="Navegação principal">
