@@ -1,3 +1,5 @@
+import { useId } from 'react'
+
 /** Foguinho da sequência de dias. */
 export function FlameMark({ size = 24, className = '' }: { size?: number; className?: string }) {
   return (
@@ -8,53 +10,68 @@ export function FlameMark({ size = 24, className = '' }: { size?: number; classN
   )
 }
 
-/** Esferas de XP em volta da ponta da seta: [x, y, raio, cor]. */
-const ORBS_FULL: [number, number, number, string][] = [
-  [22, 44, 8, '#ff9b3d'],
-  [36, 17, 3.5, 'var(--gold)'],
-  [93, 25, 6, 'var(--gold)'],
-  [104, 47, 2.5, '#ff9b3d'],
+const FLASK = 'M60 12 L91 60 Q94 66 87 66 H70 V104 Q70 110 64 110 H56 Q50 110 50 104 V66 H33 Q26 66 29 60 Z'
+const LEVEL = 46
+
+/** Esferas de XP entrando pela ponta da seta: [x, y, raio, cor, brilho]. */
+const ORBS_FULL: [number, number, number, string, boolean][] = [
+  [24, 30, 7.5, '#f2b632', true],
+  [96, 22, 6, '#f2b632', true],
+  [40, 10, 3.5, '#e07b2e', false],
+  [104, 44, 2.6, '#e07b2e', false],
 ]
-const ORBS_SMALL: [number, number, number, string][] = [
-  [22, 42, 8.5, '#ff9b3d'],
-  [37, 15, 5, 'var(--gold)'],
-  [95, 24, 7, 'var(--gold)'],
+const ORBS_SMALL: [number, number, number, string, boolean][] = [
+  [22, 32, 9, '#f2b632', false],
+  [96, 22, 7.5, '#f2b632', false],
+  [40, 9, 4.5, '#e07b2e', false],
 ]
 
-/** Frasco em forma de seta para cima com esferas de XP, a marca do app. */
-export function ArrowMark({ size = 24, className = '' }: { size?: number; className?: string }) {
-  // Em tamanhos pequenos, menos esferas (maiores) e contorno mais grosso.
+/** Frasco em forma de seta enchendo de experiência (líquido dourado e esferas de XP), a marca do app. */
+export function ArrowMark({ size = 24, className = '', stroke = 'var(--text)' }: { size?: number; className?: string; stroke?: string }) {
+  const uid = useId().replace(/:/g, '')
+  // Em tamanhos pequenos: menos esferas, maiores, sem rastro nem bolhas, e contorno mais grosso.
   const small = size < 40
   const orbs = small ? ORBS_SMALL : ORBS_FULL
   return (
-    <svg className={`arrow-mark ${className}`} width={size} height={size} viewBox="4 2 108 110" aria-hidden>
-      <path
-        d="M38 52 Q49 46 60 52 T82 52 L87 59 Q89 62 85 62 H66 V102 Q66 105 63 105 H57 Q54 105 54 102 V62 H35 Q31 62 33 59 Z"
-        fill="var(--brand)"
-      />
+    <svg className={`arrow-mark ${className}`} width={size} height={size} viewBox="0 0 116 116" aria-hidden>
+      <defs>
+        <linearGradient id={`xp${uid}`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#f7c84a" />
+          <stop offset="1" stopColor="#d9861c" />
+        </linearGradient>
+        <clipPath id={`fl${uid}`}>
+          <path d={FLASK} />
+        </clipPath>
+      </defs>
+      {!small && <path d={FLASK} fill="#f7c84a" opacity=".16" transform="translate(60 60) scale(1.12) translate(-60 -60)" />}
+      <g clipPath={`url(#fl${uid})`}>
+        <rect x="20" y={LEVEL} width="80" height={120 - LEVEL} fill={`url(#xp${uid})`} />
+        <path d={`M20 ${LEVEL} Q40 ${LEVEL - 5} 60 ${LEVEL} T100 ${LEVEL} V${LEVEL + 4} H20Z`} fill="#f7c84a" />
+        {!small && (
+          <>
+            <path d={`M20 ${LEVEL + 1} Q40 ${LEVEL - 4} 60 ${LEVEL + 1} T100 ${LEVEL + 1}`} stroke="#fff" strokeOpacity=".5" strokeWidth="2" fill="none" />
+            <circle cx="60" cy="80" r="3" fill="#fff" opacity=".55" />
+            <circle cx="63" cy="92" r="2" fill="#fff" opacity=".55" />
+            <circle cx="57" cy="70" r="1.8" fill="#fff" opacity=".55" />
+            <rect x="52" y={LEVEL} width="5" height={108 - LEVEL} rx="2.5" fill="#fff" opacity=".22" />
+          </>
+        )}
+      </g>
+      <path d={FLASK} fill="none" stroke={stroke} strokeWidth={small ? 9 : 6} strokeLinejoin="round" />
       {!small && (
-        <>
-          <circle cx="60" cy="92" r="2.6" fill="var(--gold)" />
-          <circle cx="58" cy="78" r="2" fill="var(--gold)" />
-          <circle cx="66" cy="57" r="2" fill="var(--gold)" />
-        </>
+        <g stroke="#d9861c" strokeWidth="2.2" strokeLinecap="round" fill="none" strokeDasharray="1 5" opacity=".7">
+          <path d="M24 30 Q37 14 50 22" />
+          <path d="M96 22 Q84 14 72 22" />
+        </g>
       )}
-      {orbs.map(([x, y, r, c]) => (
-        <circle key={`h${x}-${y}`} cx={x} cy={y} r={r * 1.7} fill={c} opacity={0.18} />
-      ))}
-      <path
-        d="M60 12 L91 60 Q94 66 87 66 H70 V104 Q70 110 64 110 H56 Q50 110 50 104 V66 H33 Q26 66 29 60 Z"
-        fill="none"
-        stroke="var(--text)"
-        strokeWidth={small ? 9 : 5}
-        strokeLinejoin="round"
-      />
-      {orbs.map(([x, y, r, c]) => (
+      {orbs.map(([x, y, r, c, glow]) => (
         <g key={`${x}-${y}`}>
+          {glow && <circle cx={x} cy={y} r={r * 2} fill={c} opacity=".22" />}
           <circle cx={x} cy={y} r={r} fill={c} />
-          {!small && <circle cx={x - r * 0.35} cy={y - r * 0.35} r={r * 0.35} fill="#fff4d6" />}
+          {!small && <circle cx={x - r * 0.35} cy={y - r * 0.35} r={r * 0.35} fill="#fff" opacity=".85" />}
         </g>
       ))}
+      {!small && <path d="M84 4 L85.2 6.8 L88 8 L85.2 9.2 L84 12 L82.8 9.2 L80 8 L82.8 6.8Z" fill="#f2b632" />}
     </svg>
   )
 }

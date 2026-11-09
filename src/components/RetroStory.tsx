@@ -165,7 +165,7 @@ function buildSlides(data: RetroData, period: Period, userId: string, name: stri
       tone: 'tone-intro',
       body: (
         <>
-          <ArrowMark size={84} className="retro-logo" />
+          <ArrowMark size={84} className="retro-logo" stroke="#f6f6c9" />
           <p className="retro-eyebrow">Retrospectiva · {periodLabel(period)}</p>
           <h2 className="retro-title">
             {title}
