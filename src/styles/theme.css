@@ -254,3 +254,6 @@ button.settings-row:active { background: var(--surface-2); }
 /* Botões − e + da nota: ícone centralizado no círculo em qualquer celular. */
 .rating-steps button { display: grid; place-items: center; padding: 0; line-height: 0; color: var(--text); -webkit-appearance: none; appearance: none; }
 .rating-steps button svg { display: block; }
+/* O bloco do nome passa por cima da linha do botão: só a foto e as insígnias recebem toque. */
+.phero-id { pointer-events: none; }
+.phero-id .phero-avatar, .phero-id .featured-badges { pointer-events: auto; }
