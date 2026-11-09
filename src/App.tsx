@@ -11,6 +11,8 @@ import Profile from './components/Profile'
 import ProfileSheet from './components/ProfileSheet'
 import CameraFlow from './components/CameraFlow'
 import NewPassword from './components/NewPassword'
+import Maintenance from './components/Maintenance'
+import { MANUTENCAO_ATIVA, liberadoNaManutencao } from './lib/maintenance'
 import { refreshMembers, useMembers, useOpenProfile } from './lib/members'
 import { cleanupMyOldPhotos } from './lib/feed'
 import { openCamera } from './lib/camera'
@@ -131,6 +133,11 @@ export default function App() {
   if (loading) return null
   if (recovering && session) return <NewPassword onDone={() => setRecovering(false)} />
   if (!session) return <Auth />
+  if (MANUTENCAO_ATIVA) {
+    // Espera o perfil carregar pra saber o nome; enquanto isso, nada (a splash já saiu).
+    if (!me) return members.length ? <Maintenance /> : null
+    if (!liberadoNaManutencao(me.username)) return <Maintenance name={me.username} />
+  }
 
   const userId = session.user.id
 
