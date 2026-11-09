@@ -18,6 +18,8 @@ import { SkeletonCard } from './Skeleton'
 /** Início: stories, como está o seu dia e o feed do grupo. */
 export default function Home({ userId }: { userId: string }) {
   const { posted } = useCamera()
+  const me = useMembers().find((m) => m.id === userId)
+  const today = useToday()
 
   useEffect(() => {
     refreshMembers().catch(() => {})
@@ -25,7 +27,7 @@ export default function Home({ userId }: { userId: string }) {
 
   return (
     <div className="home">
-      <TopBar />
+      <TopBar title={greeting(me?.username)} subtitle={LONG_DATE.format(new Date(`${today.day}T12:00:00-03:00`))} />
       <Stories userId={userId} />
       <PushOffer show={posted > 0} />
       <RetroBanner userId={userId} />
@@ -71,18 +73,19 @@ function TodayCard({ userId }: { userId: string }) {
         ? 'Fim de semana é livre: postar soma pontos, faltar não quebra o streak.'
         : 'Poste até a meia-noite pra manter o streak.'
 
+  const missing = rows.filter((r) => !r.done).map((r) => r.title.toLowerCase())
+  const headline = pending === 0 ? 'Tudo feito hoje' : pending === 2 ? 'Bora começar o dia' : `Falta a ${missing[0] === 'exercício' ? 'prova de exercício' : 'leitura'}`
+
   return (
     <section className="card day-card" aria-labelledby="today-title">
       <header className="today-head">
+        <DayRing done={2 - pending} />
         <div>
-          <p className="eyebrow">{LONG_DATE.format(new Date(`${today.day}T12:00:00-03:00`))}</p>
           <h2 id="today-title" className="today-title">
-            Seu dia
+            {headline}
           </h2>
+          <p className="today-hint">{hint}</p>
         </div>
-        <span className={`today-progress ${pending === 0 ? 'complete' : ''}`} aria-label={`${2 - pending} de 2 atividades feitas`}>
-          {2 - pending}/2
-        </span>
       </header>
 
       {today.error && <p className="msg error">{today.error}</p>}
@@ -118,8 +121,6 @@ function TodayCard({ userId }: { userId: string }) {
           </li>
         ))}
       </ul>
-
-      <p className="today-hint">{hint}</p>
 
       {pending > 0 && (
         <button className="btn primary big-btn" onClick={() => openCamera()}>
@@ -185,5 +186,27 @@ function RetroBanner({ userId }: { userId: string }) {
         />
       )}
     </>
+  )
+}
+
+/** Saudação pelo horário de São Paulo. */
+function greeting(name?: string) {
+  const h = Number(new Intl.DateTimeFormat('pt-BR', { hour: 'numeric', hourCycle: 'h23', timeZone: 'America/Sao_Paulo' }).format(new Date()))
+  const part = h < 5 ? 'Boa noite' : h < 12 ? 'Bom dia' : h < 18 ? 'Boa tarde' : 'Boa noite'
+  return name ? `${part}, ${name}` : part
+}
+
+/** Anel de progresso do dia, como os anéis de atividade do relógio. */
+function DayRing({ done }: { done: number }) {
+  const r = 24
+  const c = 2 * Math.PI * r
+  return (
+    <svg className={`day-ring ${done === 2 ? 'complete' : ''}`} width="58" height="58" viewBox="0 0 58 58" role="img" aria-label={`${done} de 2 provas feitas hoje`}>
+      <circle cx="29" cy="29" r={r} className="day-ring-track" />
+      <circle cx="29" cy="29" r={r} className="day-ring-fill" strokeDasharray={`${(done / 2) * c} ${c}`} transform="rotate(-90 29 29)" />
+      <text x="29" y="34" textAnchor="middle">
+        {done}/2
+      </text>
+    </svg>
   )
 }

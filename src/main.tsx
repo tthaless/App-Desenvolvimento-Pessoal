@@ -10,6 +10,7 @@ import './index.css'
 import './styles/app.css'
 import './styles/features.css'
 import './styles/system.css'
+import './styles/theme.css'
 import App from './App.tsx'
 
 createRoot(document.getElementById('root')!).render(

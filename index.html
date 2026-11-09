@@ -1,18 +1,18 @@
 <!doctype html>
-<html lang="pt-BR" style="background:#1b1b1f">
+<html lang="pt-BR" style="background:#f7f6e8">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="theme-color" content="#1b1b1f" />
+    <meta name="theme-color" content="#f7f6e8" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="Streak" />
     <meta name="description" content="Treinou? Leu? Prova com foto. Quem não falta, ganha." />
-    <meta name="color-scheme" content="dark" />
+    <meta name="color-scheme" content="light" />
     <link rel="apple-touch-startup-image" href="/splash/750x1334.png" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" />
     <link rel="apple-touch-startup-image" href="/splash/1242x2208.png" media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
     <link rel="apple-touch-startup-image" href="/splash/1125x2436.png" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
@@ -26,7 +26,7 @@
     <link rel="apple-touch-startup-image" href="/splash/1320x2868.png" media="(device-width: 440px) and (device-height: 956px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
     <title>Streak</title>
     <style>
-      #boot { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; background: #1b1b1f; transition: opacity .35s ease; }
+      #boot { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; background: #f7f6e8; transition: opacity .35s ease; }
       #boot.gone { opacity: 0; pointer-events: none; }
       #boot svg { animation: boot-float 1.6s ease-in-out infinite; }
       @keyframes boot-float { 50% { transform: translateY(-6px); } }
@@ -34,7 +34,7 @@
     </style>
   </head>
   <body>
-    <div id="boot" role="status" aria-label="Carregando"><svg viewBox="4 2 108 110" width="96" height="96" aria-hidden="true"><path d="M38 52 Q49 46 60 52 T82 52 L87 59 Q89 62 85 62 H66 V102 Q66 105 63 105 H57 Q54 105 54 102 V62 H35 Q31 62 33 59 Z" fill="#ff6a2b"/><circle cx="60" cy="92" r="2.6" fill="#f7c84a"/><circle cx="58" cy="78" r="2" fill="#f7c84a"/><circle cx="66" cy="57" r="2" fill="#f7c84a"/><circle cx="22" cy="44" r="13.6" fill="#ff9b3d" opacity=".18"/><circle cx="36" cy="17" r="5.95" fill="#f7c84a" opacity=".18"/><circle cx="93" cy="25" r="10.2" fill="#f7c84a" opacity=".18"/><circle cx="104" cy="47" r="4.25" fill="#ff9b3d" opacity=".18"/><path d="M60 12 L91 60 Q94 66 87 66 H70 V104 Q70 110 64 110 H56 Q50 110 50 104 V66 H33 Q26 66 29 60 Z" fill="none" stroke="#f5f5f4" stroke-width="5" stroke-linejoin="round"/><circle cx="22" cy="44" r="8" fill="#ff9b3d"/><circle cx="19.2" cy="41.2" r="2.8" fill="#fff4d6"/><circle cx="36" cy="17" r="3.5" fill="#f7c84a"/><circle cx="34.775" cy="15.775" r="1.225" fill="#fff4d6"/><circle cx="93" cy="25" r="6" fill="#f7c84a"/><circle cx="90.9" cy="22.9" r="2.1" fill="#fff4d6"/><circle cx="104" cy="47" r="2.5" fill="#ff9b3d"/><circle cx="103.125" cy="46.125" r="0.875" fill="#fff4d6"/></svg></div>
+    <div id="boot" role="status" aria-label="Carregando"><svg viewBox="4 2 108 110" width="96" height="96" aria-hidden="true"><path d="M38 52 Q49 46 60 52 T82 52 L87 59 Q89 62 85 62 H66 V102 Q66 105 63 105 H57 Q54 105 54 102 V62 H35 Q31 62 33 59 Z" fill="#ff6a2b"/><circle cx="60" cy="92" r="2.6" fill="#f7c84a"/><circle cx="58" cy="78" r="2" fill="#f7c84a"/><circle cx="66" cy="57" r="2" fill="#f7c84a"/><circle cx="22" cy="44" r="13.6" fill="#ff9b3d" opacity=".18"/><circle cx="36" cy="17" r="5.95" fill="#f7c84a" opacity=".18"/><circle cx="93" cy="25" r="10.2" fill="#f7c84a" opacity=".18"/><circle cx="104" cy="47" r="4.25" fill="#ff9b3d" opacity=".18"/><path d="M60 12 L91 60 Q94 66 87 66 H70 V104 Q70 110 64 110 H56 Q50 110 50 104 V66 H33 Q26 66 29 60 Z" fill="none" stroke="#153462" stroke-width="5" stroke-linejoin="round"/><circle cx="22" cy="44" r="8" fill="#ff9b3d"/><circle cx="19.2" cy="41.2" r="2.8" fill="#fff4d6"/><circle cx="36" cy="17" r="3.5" fill="#f7c84a"/><circle cx="34.775" cy="15.775" r="1.225" fill="#fff4d6"/><circle cx="93" cy="25" r="6" fill="#f7c84a"/><circle cx="90.9" cy="22.9" r="2.1" fill="#fff4d6"/><circle cx="104" cy="47" r="2.5" fill="#ff9b3d"/><circle cx="103.125" cy="46.125" r="0.875" fill="#fff4d6"/></svg></div>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
