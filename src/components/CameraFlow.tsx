@@ -389,7 +389,7 @@ function Review({
         {kind === 'leitura' && book && (
           <label className="cam-page">
             <span>
-              Página em que parou em <strong>{book.current_book}</strong>
+              Página em que parou <span className="muted">(opcional)</span>
             </span>
             <span className="cam-page-row">
               <input
@@ -400,13 +400,15 @@ function Review({
                 value={page}
                 onChange={(e) => setPage(e.target.value)}
                 placeholder={lastPage ? String(lastPage) : 'ex: 42'}
-                aria-describedby="cam-page-hint"
+                aria-describedby={pageError ? 'cam-page-hint' : undefined}
               />
               {total && <span className="cam-page-total">de {total}</span>}
             </span>
-            <span id="cam-page-hint" className={`cam-page-hint ${pageError ? 'error' : ''}`}>
-              {pageError ?? (lastPage ? `Na última prova você estava na página ${lastPage}. Opcional.` : 'Opcional. Serve pra mostrar seu progresso e suas estatísticas.')}
-            </span>
+            {pageError && (
+              <span id="cam-page-hint" className="cam-page-hint error">
+                {pageError}
+              </span>
+            )}
           </label>
         )}
 
@@ -420,7 +422,6 @@ function Review({
             aria-label="Legenda"
           />
         )}
-        {kind === 'leitura' && !book && <p className="cam-note">Dica: comece um livro em Perfil → Leitura pra acompanhar páginas e progresso.</p>}
         {chosen?.done && <p className="cam-note">Você já postou essa hoje. A foto vai pros stories, mas não soma pontos de novo.</p>}
         {error && <p className="msg error">{error}</p>}
 

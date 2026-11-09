@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { BellOff, BookOpen, Bookmark, Dumbbell, Heart, MessageCircle, Target, X } from 'lucide-react'
+import { BellOff, BookOpen, Bookmark, Dumbbell, Heart, Lightbulb, MessageCircle, Target, X } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import {
   clearNotifications,
@@ -48,10 +48,18 @@ function describe(n: AppNotification) {
   }
 }
 
+/** Dicas que o app manda nos primeiros livros, em vez de textos fixos na tela. */
+function tipText(n: AppNotification) {
+  const livro = n.preview ? <em>{n.preview}</em> : 'seu livro'
+  if (n.detail === 'total') return <>informe o total de páginas de {livro} pra mostrar a porcentagem lida no seu perfil. Toque aqui.</>
+  return <>nas provas de leitura de {livro}, diga em que página parou. Assim aparecem seu progresso e as páginas lidas na Evolução.</>
+}
+
 function iconOf(n: AppNotification): { Icon: LucideIcon; tone: string } {
   if (n.kind === 'book_like') return { Icon: Heart, tone: 'like' }
   if (n.kind === 'want_too') return { Icon: Bookmark, tone: 'reading' }
   if (n.kind === 'challenge_vote') return { Icon: Target, tone: 'challenge' }
+  if (n.kind === 'tip') return { Icon: Lightbulb, tone: 'gold' }
   if (n.kind === 'last_one') return n.detail === 'leitura' ? { Icon: BookOpen, tone: 'reading' } : { Icon: Dumbbell, tone: 'exercise' }
   if (n.kind.startsWith('story')) {
     if (n.detail === 'exercicio') return { Icon: Dumbbell, tone: 'exercise' }
@@ -128,7 +136,7 @@ export default function NotificationsSheet() {
                 onClick={() => target && goTo(target)}
               >
                 <span className="notif-avatar">
-                  {n.kind === 'last_one' ? (
+                  {n.kind === 'last_one' || n.kind === 'tip' ? (
                     <span className="avatar md notif-app">
                       <ArrowMark size={30} />
                     </span>
@@ -140,7 +148,11 @@ export default function NotificationsSheet() {
                   </span>
                 </span>
                 <span className="notif-text">
-                  {n.kind === 'last_one' ? (
+                  {n.kind === 'tip' ? (
+                    <span>
+                      <strong>Dica:</strong> {tipText(n)}
+                    </span>
+                  ) : n.kind === 'last_one' ? (
                     <span>
                       <strong>Só falta você!</strong> O resto do grupo já {n.detail === 'leitura' ? 'leu' : 'treinou'} hoje. Vai ficar de
                       fora?
@@ -150,7 +162,7 @@ export default function NotificationsSheet() {
                       <strong>{name}</strong> {describe(n)}
                     </span>
                   )}
-                  {n.preview && <span className="notif-preview">“{n.preview}”</span>}
+                  {n.preview && n.kind !== 'tip' && <span className="notif-preview">“{n.preview}”</span>}
                   <span className="notif-time">
                     {timeAgo(n.created_at)}
                     {expired && (n.kind === 'last_one' ? ' · o dia acabou' : ' · já sumiu')}

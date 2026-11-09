@@ -284,15 +284,7 @@ function PagesEditor({ book, onSaved }: { book: Book; onSaved: () => Promise<voi
   if (!editing)
     return (
       <div className="pages-line">
-        {book.total_pages ? (
-          book.current_page ? (
-            <ReadingProgress page={book.current_page} total={book.total_pages} />
-          ) : (
-            <p className="muted small">{book.total_pages} páginas · informe a página nas provas de leitura pra ver o progresso.</p>
-          )
-        ) : (
-          <p className="muted small">Informe o total de páginas pra mostrar a porcentagem lida no perfil. É opcional.</p>
-        )}
+        {book.total_pages && book.current_page ? <ReadingProgress page={book.current_page} total={book.total_pages} /> : null}
         <button className="link-btn" onClick={() => setEditing(true)}>
           {book.total_pages ? 'Editar páginas' : 'Informar páginas'}
         </button>

@@ -34,13 +34,7 @@ export default function Badges({ member, isMe }: { member: Member; isMe: boolean
           </p>
           <p className="muted small">insígnias conquistadas</p>
         </div>
-        {isMe && (
-          <p className="muted small badges-tip">
-            {earned === 0
-              ? 'A mais rápida de pegar: 7 dias seguidos de exercício dão a Chama do treino. Toque em qualquer uma pra ver como conquistar.'
-              : 'Toque numa insígnia conquistada pra destacar no topo do perfil. Até 3.'}
-          </p>
-        )}
+
       </section>
 
       {BADGE_GROUPS.map((g) => (

@@ -11,6 +11,7 @@ export type NotificationKind =
   | 'want_too'
   | 'challenge_vote'
   | 'last_one'
+  | 'tip'
 
 export interface AppNotification {
   id: string
@@ -150,7 +151,7 @@ export function isExpired(n: AppNotification) {
 export function targetOf(n: AppNotification): NavTarget | null {
   if ((n.kind === 'story_comment' || n.kind === 'story_reply') && n.story_key) return { type: 'story', key: n.story_key }
   if ((n.kind === 'feed_comment' || n.kind === 'feed_reply') && n.feed_post_id) return { type: 'feed', postId: n.feed_post_id }
-  if (n.kind === 'book_like' || n.kind === 'want_too') return { type: 'library' }
+  if (n.kind === 'book_like' || n.kind === 'want_too' || n.kind === 'tip') return { type: 'library' }
   if (n.kind === 'last_one') return { type: 'camera', activity: n.detail === 'leitura' ? 'leitura' : 'exercicio' }
   return null
 }
