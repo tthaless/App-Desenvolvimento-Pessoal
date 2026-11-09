@@ -86,9 +86,9 @@ export default function WantList({ loading, ownerId, viewerId, all, onChanged, o
       )}
       {loading && <SkeletonRows count={2} cover />}
       {!loading && items.length === 0 && !adding && (
-        <p className="muted small">{isMe ? 'Sua lista está vazia.' : 'Lista vazia.'}</p>
+        <p className="muted small want-empty">{isMe ? 'Anote aqui os livros que você quer ler depois. Toque em Adicionar.' : 'Nenhum livro na lista ainda.'}</p>
       )}
-      <ul className="want-list want-paper">
+      {items.length > 0 && <ul className="want-list want-paper">
         {items.map((w) => {
           const others = othersWanting(w.title)
           const alreadyMine = mine.some((m) => sameTitle(m.title, w.title))
@@ -156,7 +156,7 @@ export default function WantList({ loading, ownerId, viewerId, all, onChanged, o
             </li>
           )
         })}
-      </ul>
+      </ul>}
     </section>
   )
 }

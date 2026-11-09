@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Camera, Check, Play, X } from 'lucide-react'
-import { markRetroSeen, pendingRetro, periodLabel } from '../lib/retro'
+import { fetchRetro, markRetroSeen, pendingRetro, periodLabel } from '../lib/retro'
 import type { Period } from '../lib/retro'
 import RetroStory from './RetroStory'
 import { refreshMembers, useMembers } from '../lib/members'
@@ -132,8 +132,25 @@ function TodayCard({ userId }: { userId: string }) {
 
 /** Aviso no Início quando a retrospectiva da semana (ou do mês) passada fica pronta. */
 function RetroBanner({ userId }: { userId: string }) {
-  const [period, setPeriod] = useState<Period | null>(() => pendingRetro())
+  const [candidate] = useState<Period | null>(() => pendingRetro())
+  const [period, setPeriod] = useState<Period | null>(null)
   const [open, setOpen] = useState(false)
+
+  // Só avisa se a pessoa postou alguma prova no período (senão a retrospectiva sai em branco).
+  useEffect(() => {
+    if (!candidate) return
+    let active = true
+    fetchRetro(candidate)
+      .then((d) => {
+        const me = d.pessoas.find((p) => p.user_id === userId)
+        if (active && me && me.provas > 0) setPeriod(candidate)
+      })
+      .catch(() => {})
+    return () => {
+      active = false
+    }
+  }, [candidate, userId])
+
   if (!period) return null
   const close = () => {
     markRetroSeen(period)

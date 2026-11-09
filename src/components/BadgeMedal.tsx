@@ -93,7 +93,10 @@ export default function BadgeMedal({ icon, tier, levels = 1, level = 0, size = 5
       <path d={OUTER} fill={`url(#m${uid})`} stroke={dark} strokeWidth="1" />
       <path d={INNER} fill={`url(#c${uid})`} stroke={dark} strokeOpacity=".6" strokeWidth="1" />
       {!locked && <path d="M12 20.2 L32 9 L52 20.2 L52 27 Q32 19 12 27Z" fill={`url(#s${uid})`} opacity=".35" />}
-      <Icon x={20} y={20} width={24} height={24} color={ink} strokeWidth={2.1} />
+      {/* O halter do ícone vem inclinado: aqui fica deitado. */}
+      <g transform={icon === 'dumbbell' ? 'rotate(-45 32 32)' : undefined}>
+        <Icon x={20} y={20} width={24} height={24} color={ink} strokeWidth={2.1} />
+      </g>
       {tier === 4 && (
         <path d="M50 8 l1.4 3.2 3.2 1.4 -3.2 1.4 -1.4 3.2 -1.4 -3.2 -3.2 -1.4 3.2 -1.4z" fill="#fff" opacity=".9" />
       )}

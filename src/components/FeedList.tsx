@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { useSignedUrls } from '../lib/signed'
@@ -14,11 +15,13 @@ interface Props {
   /** Mostra só os posts desta pessoa (no perfil). */
   authorId?: string
   emptyText: string
+  /** Tela vazia mais completa, no lugar do texto. */
+  empty?: ReactNode
   /** Muda quando alguém posta por aqui, para recarregar na hora. */
   refreshKey?: number
 }
 
-export default function FeedList({ userId, authorId, emptyText, refreshKey }: Props) {
+export default function FeedList({ userId, authorId, emptyText, empty, refreshKey }: Props) {
   const [posts, setPosts] = useState<FeedPost[]>([])
   const [loaded, setLoaded] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -75,7 +78,7 @@ export default function FeedList({ userId, authorId, emptyText, refreshKey }: Pr
     <>
       {error && <p className="msg error">{error}</p>}
       {!loaded && <SkeletonRows count={3} />}
-      {loaded && posts.length === 0 && !error && <p className="muted small center empty">{emptyText}</p>}
+      {loaded && posts.length === 0 && !error && (empty ?? <p className="muted small center empty">{emptyText}</p>)}
       <div className="feed-list">
         {posts.map((p) => (
           <FeedPostCard

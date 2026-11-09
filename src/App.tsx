@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import type { Session } from '@supabase/supabase-js'
 import { BookOpen, Camera, ChartColumn, House } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
@@ -11,10 +11,12 @@ import Profile from './components/Profile'
 import ProfileSheet from './components/ProfileSheet'
 import CameraFlow from './components/CameraFlow'
 import NewPassword from './components/NewPassword'
-import { useMembers, useOpenProfile } from './lib/members'
+import { refreshMembers, useMembers, useOpenProfile } from './lib/members'
 import { cleanupMyOldPhotos } from './lib/feed'
 import { openCamera } from './lib/camera'
-import { resetToday } from './lib/today'
+import { reloadToday, resetToday } from './lib/today'
+import { haptic } from './lib/toast'
+import Toaster from './components/Toaster'
 import Avatar from './components/Avatar'
 import NotificationsSheet from './components/NotificationsSheet'
 import Welcome, { shouldShowWelcome } from './components/Welcome'
@@ -111,7 +113,14 @@ export default function App() {
     closeProfile()
   }, [navTarget, closeProfile])
 
+  // Internet voltou: atualiza o que está na tela.
+  const reconnect = useCallback(() => {
+    reloadToday()
+    refreshMembers().catch(() => {})
+  }, [])
+
   function go(next: Tab) {
+    haptic()
     if (next === tab) window.scrollTo({ top: 0, behavior: 'smooth' })
     else {
       setTab(next)
@@ -152,13 +161,21 @@ export default function App() {
       <nav className="tabbar" aria-label="Navegação principal">
         {TABS.slice(0, 2).map(tabButton)}
         <div className="tab-camera-slot">
-          <button className="tab-camera" onClick={() => openCamera()} aria-label="Postar prova">
+          <button
+            className="tab-camera"
+            onClick={() => {
+              haptic()
+              openCamera()
+            }}
+            aria-label="Postar prova"
+          >
             <Camera size={26} strokeWidth={2.2} aria-hidden />
           </button>
         </div>
         {TABS.slice(2).map(tabButton)}
       </nav>
       <CameraFlow userId={userId} />
+      <Toaster onReconnect={reconnect} />
       <NotificationsSheet />
       {welcome && <Welcome userId={userId} onClose={() => setWelcome(false)} onGoToProfile={() => setTab('perfil')} />}
       {profileId && <ProfileSheet userId={profileId} viewerId={userId} onClose={closeProfile} />}

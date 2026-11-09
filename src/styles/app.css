@@ -300,3 +300,7 @@ button.settings-row:active { background: rgba(255, 255, 255, .05); }
 
 /* Comemoração por cima da câmera: fundo fechado pra não misturar com a tela de trás. */
 .camera .celebration { background: rgba(10, 10, 12, .94); }
+
+/* O halter da biblioteca de ícones vem inclinado: no app ele fica deitado. */
+.lucide-dumbbell { transform: rotate(-45deg); }
+.badge-medal .lucide-dumbbell { transform: none; }

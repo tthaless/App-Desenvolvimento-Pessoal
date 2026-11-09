@@ -6,7 +6,9 @@ import { errorMessage } from '../lib/utils'
 import CoverPicker from './CoverPicker'
 import BookSearch from './BookSearch'
 import PdfAttachment from './PdfAttachment'
-import { Check, FileText, PenLine, Sparkles } from 'lucide-react'
+import { BookOpen, Check, FileText, PenLine, Sparkles } from 'lucide-react'
+import EmptyState from './EmptyState'
+import { toast } from '../lib/toast'
 import { ReadingProgress } from './ReadingProgress'
 import { useDragToClose } from '../lib/useDragToClose'
 import { SkeletonCard } from './Skeleton'
@@ -109,10 +111,18 @@ export default function CurrentBook({ userId, refreshKey, onShelfChanged, onLoad
         <BookSearch askPages submitLabel="Começar" busy={busy} onSubmit={start} onCancel={() => setStarting(false)} />
       ) : (
         <>
-          <p className="muted">Nenhum livro em andamento.</p>
-          <button className="btn primary full" onClick={() => setStarting(true)}>
-            Começar um livro
-          </button>
+          <EmptyState
+            bare
+            tone="reading"
+            icon={<BookOpen size={28} />}
+            title="Nenhum livro em andamento"
+            text={`Comece um livro pra acompanhar páginas e porcentagem. Terminando com resumo ou PDF, vale +${BOOK_BONUS} pontos.`}
+            action={
+              <button className="btn primary full" onClick={() => setStarting(true)}>
+                Começar um livro
+              </button>
+            }
+          />
         </>
       )}
 
@@ -142,6 +152,8 @@ function FinishSheet({ book, onClose, onDone }: { book: Book; onClose: () => voi
     setError(null)
     try {
       await finishBook(book.id, rating, review)
+      const bonus = !!book.attachment_path || review.trim().length >= SUMMARY_MIN
+      toast(bonus ? `Livro na estante. +${BOOK_BONUS} pontos de bônus!` : 'Livro na estante')
       onDone()
     } catch (e) {
       setError(errorMessage(e))
@@ -259,6 +271,7 @@ function PagesEditor({ book, onSaved }: { book: Book; onSaved: () => Promise<voi
     setError(null)
     try {
       await setBookPages(book.id, t, c)
+      toast('Páginas salvas')
       setEditing(false)
       await onSaved()
     } catch (e) {

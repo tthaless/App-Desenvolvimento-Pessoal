@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { supabase } from '../lib/supabase'
+import { Plus } from 'lucide-react'
 import { useMembers } from '../lib/members'
+import { openCamera } from '../lib/camera'
 import { loadSeen, saveSeen } from '../lib/utils'
 import type { StoryItem } from '../types'
 import Avatar from './Avatar'
@@ -85,27 +87,46 @@ export default function Stories({ userId }: { userId: string }) {
   }, [])
 
   const memberOf = (id: string) => members.find((m) => m.id === id)
+  const me = memberOf(userId)
 
   return (
     <>
       <section className="stories" aria-label="Stories das últimas 24 horas">
         {!loaded && <SkeletonStories />}
-        {circles.length === 0 && loaded && <p className="muted small">Ninguém postou nas últimas 24h. Seja o primeiro.</p>}
+        {loaded && !circles.some((c) => c.userId === userId) && (
+          <button className="story add" onClick={() => openCamera()} aria-label="Postar sua prova">
+            <span className="story-add-wrap">
+              <Avatar name={me?.username ?? '?'} url={me?.avatar_url} size="lg" />
+              <span className="story-plus" aria-hidden>
+                <Plus size={14} strokeWidth={3} />
+              </span>
+            </span>
+            <span className="story-name">Sua prova</span>
+          </button>
+        )}
+        {circles.length === 0 && loaded && <p className="muted small stories-empty">Ninguém postou nas últimas 24h. Seja o primeiro.</p>}
         {circles.map((c) => {
           const m = memberOf(c.userId)
           const name = m?.username ?? '?'
+          const mine = c.userId === userId
           return (
-            <button
-              key={c.userId}
-              className={`story ${c.ids.some((id) => !seen.has(id)) ? 'unseen' : ''}`}
-              onClick={() => {
-                setStartInChat(false)
-                setViewerStart(c.start)
-              }}
-            >
-              <Avatar name={name} url={m?.avatar_url} size="lg" />
-              <span className="story-name">{c.userId === userId ? 'Você' : name}</span>
-            </button>
+            <div key={c.userId} className="story-slot">
+              <button
+                className={`story ${c.ids.some((id) => !seen.has(id)) ? 'unseen' : ''}`}
+                onClick={() => {
+                  setStartInChat(false)
+                  setViewerStart(c.start)
+                }}
+              >
+                <Avatar name={name} url={m?.avatar_url} size="lg" />
+                <span className="story-name">{mine ? 'Você' : name}</span>
+              </button>
+              {mine && (
+                <button className="story-plus" onClick={() => openCamera()} aria-label="Postar outra prova">
+                  <Plus size={14} strokeWidth={3} aria-hidden />
+                </button>
+              )}
+            </div>
           )
         })}
       </section>

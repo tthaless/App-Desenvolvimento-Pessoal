@@ -9,6 +9,7 @@ import { refreshMembers, useMembers } from '../lib/members'
 import { compressImage, errorMessage } from '../lib/utils'
 import ActivityIcon from './ActivityIcon'
 import Celebration from './Celebration'
+import { haptic, toast } from '../lib/toast'
 
 type Facing = 'environment' | 'user'
 type CamStatus = 'starting' | 'live' | 'unavailable' | 'denied'
@@ -148,7 +149,7 @@ function Capture({ onPhoto, onClose }: { onPhoto: (file: File) => void; onClose:
     }
     ctx.drawImage(v, (vw - cw) / 2, (vh - ch) / 2, cw, ch, 0, 0, cw, ch)
     setFlash(true)
-    navigator.vibrate?.(15)
+    haptic()
     canvas.toBlob(
       (blob) => {
         if (!blob) return
@@ -336,7 +337,10 @@ function Review({
           unit: before + 1 === 1 ? 'dia seguido' : 'dias seguidos',
           title: activity === 'leitura' ? 'Leitura do dia feita!' : 'Treino do dia feito!',
         })
-      else onClose()
+      else {
+        toast('Foto postada nos stories')
+        onClose()
+      }
     } catch (e) {
       setError(errorMessage(e))
       setSending(false)

@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
-import { ArrowUpRight, BookOpen, CalendarDays, Clock, Dumbbell, Layers, Play, Sparkles } from 'lucide-react'
+import { ArrowUpRight, BookOpen, CalendarDays, Camera, ChartColumn, Clock, Dumbbell, Layers, Play, Sparkles } from 'lucide-react'
 import { BADGES, progressOf, unitOf, useBadgeStats } from '../lib/badges'
-import { useCamera } from '../lib/camera'
+import { openCamera, useCamera } from '../lib/camera'
+import EmptyState from './EmptyState'
 import {
   WEEKDAYS_SHORT,
   daysIn,
@@ -123,6 +124,20 @@ function PeriodStats({ data, period, userId }: { data: RetroData; period: Period
   const maxPages = Math.max(1, ...s.myDays.map((d) => d.pages))
   const pagesTotal = me?.paginas ?? 0
   const today = data.fim
+
+  if (!me || me.provas === 0)
+    return (
+      <EmptyState
+        icon={<ChartColumn size={28} />}
+        title={period.kind === 'semana' ? 'Sua semana começa aqui' : 'Seu mês começa aqui'}
+        text="Cada prova vira ponto, dia no gráfico e página lida. Compare com a média do grupo conforme a semana anda."
+        action={
+          <button className="btn primary full" onClick={() => openCamera()}>
+            <Camera size={18} aria-hidden /> Postar prova
+          </button>
+        }
+      />
+    )
 
   return (
     <>

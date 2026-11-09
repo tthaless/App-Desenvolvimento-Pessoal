@@ -1,3 +1,5 @@
+import { BookMarked } from 'lucide-react'
+import EmptyState from './EmptyState'
 import { useEffect, useRef, useState } from 'react'
 import { daysBetween, deleteBook, formatRating, ratingTier, saveShelfOrder } from '../lib/books'
 import { errorMessage } from '../lib/utils'
@@ -103,7 +105,8 @@ export default function Bookshelf({ books, viewerId, onChanged, showReader, edit
     }
   }
 
-  if (books.length === 0) return <p className="muted small center empty">{emptyText}</p>
+  if (books.length === 0)
+    return <EmptyState icon={<BookMarked size={28} />} tone="reading" title={emptyText} text={editable ? 'Quando você terminar um livro, ele ganha um lugar aqui, com nota e resumo.' : undefined} />
 
   const toolbar = editable && books.length > 0 && (
     <div className="shelf-tools">

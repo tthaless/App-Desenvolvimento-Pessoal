@@ -13,6 +13,7 @@ import { FeaturedBadges } from './Badges'
 import { Camera, ImagePlus, Settings as SettingsIcon, Trash2 } from 'lucide-react'
 import ProfileHero from './ProfileHero'
 import Settings from './Settings'
+import { toast } from '../lib/toast'
 import TopBar from './TopBar'
 import { SkeletonBlock, SkeletonCard } from './Skeleton'
 
@@ -62,6 +63,7 @@ export default function Profile({ userId }: { userId: string }) {
     if (error) return setError(errorMessage(error))
     await refreshMembers()
     setEditing(false)
+    toast('Perfil salvo')
   }
 
   async function changeAvatar(file: File | undefined) {
@@ -80,6 +82,7 @@ export default function Profile({ userId }: { userId: string }) {
       }
       if (me.avatar_path) await supabase.storage.from('provas').remove([me.avatar_path])
       await refreshMembers()
+      toast('Foto de perfil atualizada')
     } catch (e) {
       setError(errorMessage(e))
     } finally {
@@ -104,6 +107,7 @@ export default function Profile({ userId }: { userId: string }) {
       }
       if (me.cover_path) await supabase.storage.from('provas').remove([me.cover_path])
       await refreshMembers()
+      toast('Plano de fundo atualizado')
     } catch (e) {
       setError(errorMessage(e))
     } finally {
@@ -121,6 +125,7 @@ export default function Profile({ userId }: { userId: string }) {
     else {
       await supabase.storage.from('provas').remove([me.cover_path])
       await refreshMembers()
+      toast('Plano de fundo removido')
     }
     setCoverBusy(false)
   }

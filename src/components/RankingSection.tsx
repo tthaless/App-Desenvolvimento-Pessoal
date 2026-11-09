@@ -61,6 +61,9 @@ export default function RankingSection({ userId }: { userId: string }) {
 
       {error && <p className="msg error">{error}</p>}
 
+      {rows && rows.length > 0 && rows.every((r) => r.pontos === 0) && (
+        <p className="rank-hint">{periodo === 'semana' ? 'Semana começando: ninguém pontuou ainda.' : 'Mês começando: ninguém pontuou ainda.'} A primeira prova já te coloca na frente.</p>
+      )}
       <ol className="card rank-card">
         {rows === null && <SkeletonRows count={5} />}
         {(rows ?? []).map((r, i) => {

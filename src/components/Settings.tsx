@@ -9,6 +9,7 @@ import type { LegalDoc } from './LegalSheet'
 import PasswordInput from './PasswordInput'
 import PushSettings from './PushSettings'
 import Sheet from './Sheet'
+import { toast } from '../lib/toast'
 
 type Panel = 'menu' | 'senha' | 'excluir'
 
@@ -119,6 +120,7 @@ function ChangePassword({ onDone }: { onDone: () => void }) {
     try {
       await changePassword(password)
       setOk(true)
+      toast('Senha trocada')
       setTimeout(onDone, 1400)
     } catch (err) {
       setError(errorMessage(err))

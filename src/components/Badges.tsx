@@ -7,6 +7,7 @@ import { errorMessage } from '../lib/utils'
 import type { Member } from '../types'
 import BadgeMedal from './BadgeMedal'
 import Sheet from './Sheet'
+import { toast } from '../lib/toast'
 import { SkeletonRows } from './Skeleton'
 
 const fmt = (n: number) => n.toLocaleString('pt-BR')
@@ -33,7 +34,13 @@ export default function Badges({ member, isMe }: { member: Member; isMe: boolean
           </p>
           <p className="muted small">insígnias conquistadas</p>
         </div>
-        {isMe && <p className="muted small badges-tip">Toque numa insígnia conquistada pra destacar no topo do perfil. Até 3.</p>}
+        {isMe && (
+          <p className="muted small badges-tip">
+            {earned === 0
+              ? 'A mais rápida de pegar: 7 dias seguidos de exercício dão a Chama do treino. Toque em qualquer uma pra ver como conquistar.'
+              : 'Toque numa insígnia conquistada pra destacar no topo do perfil. Até 3.'}
+          </p>
+        )}
       </section>
 
       {BADGE_GROUPS.map((g) => (
@@ -82,6 +89,7 @@ function BadgeSheet({ progress, member, isMe, onClose }: { progress: BadgeProgre
     try {
       await saveFeatured(member.id, isFeatured ? featured.filter((f) => f !== def.id) : [...featured, def.id])
       await refreshMembers()
+      toast(isFeatured ? 'Tirada do destaque' : 'Insígnia em destaque no perfil')
       onClose()
     } catch (e) {
       setError(errorMessage(e))

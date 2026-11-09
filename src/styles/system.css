@@ -1,0 +1,111 @@
+/*
+ * Sistema visual: a última camada, que deixa títulos, cartões e espaçamentos iguais em todas as telas.
+ * Sem color-mix() aqui (cores em rgba).
+ */
+
+:root {
+  --radius: 18px;
+  --radius-sm: 12px;
+}
+
+/* ---------- Títulos ---------- */
+/* Título de seção fora de cartão: o mesmo em todas as abas. */
+.section-heading,
+.section > .section-label,
+.shelf-head .section-label,
+.section-title,
+.ranking-section .section-heading {
+  font-family: var(--display);
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  margin: 0;
+}
+.section > .section-label { margin-bottom: 10px; }
+.section-title { margin: 6px 2px 0; }
+/* Rótulo dentro de cartão: pequeno, em caixa alta. */
+.card .section-label,
+.card > p.section-label {
+  font-family: var(--body);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0 0 10px;
+}
+.day-card .today-title { font-size: 22px; margin-bottom: 0; }
+.topbar-title { font-size: 26px; letter-spacing: -0.03em; }
+
+/* ---------- Cartões ---------- */
+.card { border-radius: var(--radius); padding: 16px; }
+.feed-list, .rank-card, .settings-list { border-radius: var(--radius); }
+.btn { border-radius: 14px; }
+
+/* ---------- Ritmo vertical das abas ---------- */
+.home, .stats, .reading, .profile, .library, .badges { gap: 18px; }
+.reading, .library { display: flex; flex-direction: column; }
+.section-head { min-height: 36px; }
+
+/* ---------- Estado vazio ---------- */
+.empty-state { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px; padding: 28px 20px 24px; }
+.empty-state.bare { padding: 12px 4px 4px; }
+.empty-state-art { position: relative; width: 72px; height: 72px; display: grid; place-items: center; border-radius: 22px; margin-bottom: 6px; color: var(--brand); background: rgba(255, 106, 43, .12); }
+.empty-state-ring { position: absolute; inset: -8px; border-radius: 28px; border: 1px dashed rgba(255, 106, 43, .35); }
+.empty-state.tone-reading .empty-state-art { color: var(--reading); background: rgba(111, 156, 255, .12); }
+.empty-state.tone-reading .empty-state-ring { border-color: rgba(111, 156, 255, .35); }
+.empty-state.tone-gold .empty-state-art { color: var(--gold); background: rgba(247, 200, 74, .12); }
+.empty-state.tone-ok .empty-state-art { color: var(--ok); background: rgba(52, 211, 153, .12); }
+.empty-state-title { margin: 0; font-family: var(--display); font-size: 18px; font-weight: 800; letter-spacing: -0.01em; }
+.empty-state-text { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.5; max-width: 34ch; }
+.empty-state-action { width: 100%; max-width: 320px; margin-top: 8px; }
+.want-empty { margin: 0; line-height: 1.5; }
+
+/* ---------- Avisos rápidos ---------- */
+.toaster {
+  position: fixed; left: 0; right: 0; z-index: 60; pointer-events: none;
+  bottom: calc(var(--tabbar-h) + 24px + env(safe-area-inset-bottom));
+  display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 0 16px;
+}
+.toast {
+  pointer-events: auto; display: flex; align-items: center; gap: 10px; max-width: 420px; width: max-content;
+  padding: 11px 16px; border-radius: 14px; border: 1px solid rgba(255, 255, 255, .08);
+  background: rgba(46, 46, 52, .97); color: var(--text); font-size: 14px; font-weight: 600; text-align: left;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, .45);
+  animation: toast-in .32s var(--ease-out) both;
+}
+.toast svg { flex: none; }
+.toast.ok svg { color: var(--ok); }
+.toast.info svg { color: var(--reading); }
+.toast.error svg { color: #ff8b99; }
+.toast.offline { background: rgba(74, 52, 20, .97); border-color: rgba(247, 200, 74, .3); font-weight: 500; }
+.toast.offline svg { color: var(--gold); }
+@keyframes toast-in { from { opacity: 0; transform: translateY(12px) scale(.96); } to { opacity: 1; transform: none; } }
+/* Com a câmera ou a retrospectiva abertas, os avisos ficam por cima. */
+body.no-scroll .toaster { bottom: calc(24px + env(safe-area-inset-bottom)); }
+
+/* ---------- Stories: a sua bolinha com "+" ---------- */
+.story-slot { position: relative; flex: none; }
+.story-add-wrap { position: relative; display: block; }
+.story.add .avatar { box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px rgba(255, 255, 255, .14); }
+.story-plus {
+  position: absolute; right: -2px; top: 42px; width: 24px; height: 24px; border-radius: 50%;
+  display: grid; place-items: center; padding: 0; border: 2.5px solid var(--bg);
+  background: var(--brand); color: #1a1006;
+}
+.story-add-wrap .story-plus { top: auto; bottom: -2px; }
+.stories-empty { align-self: center; max-width: 22ch; line-height: 1.4; }
+
+/* ---------- Ranking sem pontos ainda ---------- */
+.rank-hint { margin: 0 2px 10px; font-size: var(--text-sm); color: var(--muted); line-height: 1.45; }
+
+/* ---------- Nome legível sobre o plano de fundo ---------- */
+.hero-cover::after {
+  background: linear-gradient(180deg, rgba(27, 27, 31, .1) 0%, rgba(27, 27, 31, .45) 30%, rgba(27, 27, 31, .86) 56%, rgba(27, 27, 31, .97) 100%);
+}
+.profile-hero.has-cover .profile-name { text-shadow: 0 2px 4px rgba(0, 0, 0, .6), 0 0 24px rgba(0, 0, 0, .55); }
+
+@media (prefers-reduced-motion: reduce) {
+  .toast { animation: none; }
+}
