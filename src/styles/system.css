@@ -109,3 +109,6 @@ body.no-scroll .toaster { bottom: calc(24px + env(safe-area-inset-bottom)); }
 @media (prefers-reduced-motion: reduce) {
   .toast { animation: none; }
 }
+
+/* Abas internas (Biblioteca/Do grupo, Perfil/Estante/Insígnias) grudam logo abaixo do topo, sem passar por trás dele. */
+.content .subtabs { top: calc(var(--topbar-h, 61px) + env(safe-area-inset-top)); }
