@@ -7,4 +7,7 @@ if (!url || !anonKey) {
   console.warn('Supabase não configurado: copie .env.example para .env e preencha as chaves.')
 }
 
+/** O app foi aberto pelo link de "esqueci minha senha" (lido antes do cliente limpar o endereço). */
+export const openedFromRecovery = typeof location !== 'undefined' && /type=recovery/.test(location.hash + location.search)
+
 export const supabase = createClient(url ?? '', anonKey ?? '')

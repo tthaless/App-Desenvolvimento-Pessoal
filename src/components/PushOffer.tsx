@@ -43,7 +43,7 @@ export default function PushOffer({ show }: { show: boolean }) {
       ) : (
         <>
           <p className="push-offer-title">Quer ser avisado no celular?</p>
-          <p className="muted small">Lembrete às 20h se faltar prova, e quando comentarem nas suas fotos. Dá pra mudar depois no Perfil.</p>
+          <p className="muted small">Lembrete às 20h se faltar prova, e quando comentarem nas suas fotos. Dá pra mudar depois em Perfil → Ajustes.</p>
           {error && <p className="msg error">{error}</p>}
           <div className="row">
             <button className="btn ghost" onClick={close} disabled={busy}>

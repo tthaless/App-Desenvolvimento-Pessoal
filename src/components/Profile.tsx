@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import type { FormEvent } from 'react'
 import { supabase } from '../lib/supabase'
-import { clearMembers, refreshMembers, useMembers } from '../lib/members'
+import { refreshMembers, useMembers } from '../lib/members'
 import { compressImage, errorMessage, squareAvatar } from '../lib/utils'
 import { LONG_CACHE } from '../lib/signed'
 import type { StreakRow } from '../types'
@@ -9,10 +9,9 @@ import Avatar from './Avatar'
 import FeedList from './FeedList'
 import ProfileDetails from './ProfileDetails'
 import ProfileTabs from './ProfileTabs'
-import { Camera, ImagePlus, Trash2 } from 'lucide-react'
+import { Camera, ImagePlus, Settings as SettingsIcon, Trash2 } from 'lucide-react'
 import ProfileHero from './ProfileHero'
-import PushSettings from './PushSettings'
-import { disablePush } from '../lib/push'
+import Settings from './Settings'
 import TopBar from './TopBar'
 import { SkeletonBlock, SkeletonCard } from './Skeleton'
 
@@ -27,6 +26,7 @@ export default function Profile({ userId }: { userId: string }) {
   const fileRef = useRef<HTMLInputElement>(null)
   const coverRef = useRef<HTMLInputElement>(null)
   const [coverBusy, setCoverBusy] = useState(false)
+  const [settings, setSettings] = useState(false)
 
   useEffect(() => {
     supabase.rpc('streaks').then(({ data }) => setStreaks(((data ?? []) as StreakRow[]).filter((r) => r.user_id === userId)))
@@ -124,13 +124,6 @@ export default function Profile({ userId }: { userId: string }) {
     setCoverBusy(false)
   }
 
-  async function signOut() {
-    // Este aparelho para de receber os avisos dessa conta.
-    await disablePush().catch(() => {})
-    clearMembers()
-    await supabase.auth.signOut()
-  }
-
   if (!me)
     return (
       <div className="profile">
@@ -144,9 +137,15 @@ export default function Profile({ userId }: { userId: string }) {
       </div>
     )
 
+  const settingsButton = (
+    <button className="icon-btn topbar-btn" onClick={() => setSettings(true)} aria-label="Ajustes">
+      <SettingsIcon size={19} aria-hidden />
+    </button>
+  )
+
   return (
     <div className="profile">
-      <TopBar title="Perfil" />
+      <TopBar title="Perfil" right={settingsButton} />
 
       <ProfileHero
         coverUrl={me.cover_url}
@@ -229,11 +228,7 @@ export default function Profile({ userId }: { userId: string }) {
         </ProfileTabs>
       )}
 
-      {!editing && <PushSettings />}
-
-      <button className="btn ghost full" onClick={signOut}>
-        Sair da conta
-      </button>
+      {settings && <Settings userId={userId} onClose={() => setSettings(false)} />}
     </div>
   )
 }
