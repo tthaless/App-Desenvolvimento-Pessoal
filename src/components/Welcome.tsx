@@ -54,11 +54,11 @@ const STEPS: Step[] = [
         <Trophy size={64} strokeWidth={1.6} />
       </span>
     ),
-    title: 'Ranking e desafio',
+    title: 'Ranking e insígnias',
     text: (
       <>
-        <strong>10 pontos</strong> por atividade no dia e <strong>+5</strong> fazendo as duas. Toda semana o grupo vota num desafio extra
-        que vale até <strong>+40</strong>. Quem fizer mais pontos na semana leva a vitória.
+        <strong>10 pontos</strong> por atividade no dia e <strong>+5</strong> fazendo as duas. Terminou um livro com resumo ou PDF de
+        anotações? <strong>+30</strong>. Vitórias, streaks e leituras viram <strong>insígnias</strong> no seu perfil.
       </>
     ),
   },

@@ -1,20 +1,16 @@
 import { useEffect, useSyncExternalStore } from 'react'
 import type { RealtimeChannel } from '@supabase/supabase-js'
 import { supabase } from './supabase'
-import { fetchActive, fetchCheckins } from './challenges'
-import type { Challenge, Checkin } from './challenges'
 import { errorMessage, todaySP } from './utils'
 import type { Activity, StreakRow } from '../types'
 
-/** O dia de hoje no grupo: quem já postou cada atividade, streaks e o desafio da semana. */
+/** O dia de hoje no grupo: quem já postou cada atividade e os streaks. */
 export interface TodayState {
   loaded: boolean
   error: string | null
   day: string
   done: Record<Activity, Set<string>>
   streaks: StreakRow[]
-  challenge: Challenge | null
-  checkins: Checkin[]
 }
 
 const empty = (): TodayState => ({
@@ -23,8 +19,6 @@ const empty = (): TodayState => ({
   day: todaySP(),
   done: { exercicio: new Set(), leitura: new Set() },
   streaks: [],
-  challenge: null,
-  checkins: [],
 })
 
 let state = empty()
@@ -41,17 +35,15 @@ export function reloadToday(): Promise<void> {
   pending = (async () => {
     const day = todaySP()
     try {
-      const [posts, streaks, challenge] = await Promise.all([
+      const [posts, streaks] = await Promise.all([
         supabase.from('posts').select('user_id,activity').eq('day', day),
         supabase.rpc('streaks'),
-        fetchActive().catch(() => null),
       ])
       const err = posts.error ?? streaks.error
       if (err) throw err
       const done: TodayState['done'] = { exercicio: new Set(), leitura: new Set() }
       for (const p of (posts.data ?? []) as { user_id: string; activity: Activity }[]) done[p.activity]?.add(p.user_id)
-      const checkins = challenge ? await fetchCheckins(challenge.id).catch(() => []) : []
-      state = { loaded: true, error: null, day, done, streaks: (streaks.data ?? []) as StreakRow[], challenge, checkins }
+      state = { loaded: true, error: null, day, done, streaks: (streaks.data ?? []) as StreakRow[] }
     } catch (e) {
       state = { ...state, loaded: true, error: errorMessage(e) }
     }
@@ -69,7 +61,6 @@ function subscribe(l: () => void) {
     channel = supabase
       .channel('hoje')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'posts' }, () => reloadToday())
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'challenge_checkins' }, () => reloadToday())
       .subscribe()
   }
   return () => {
@@ -102,8 +93,4 @@ export function resetToday() {
 /** Atalhos de leitura do estado. */
 export function streakOf(s: TodayState, userId: string, activity: Activity) {
   return s.streaks.find((r) => r.user_id === userId && r.activity === activity)?.current_streak ?? 0
-}
-
-export function challengeDaysOf(s: TodayState, userId: string) {
-  return new Set(s.checkins.filter((c) => c.user_id === userId).map((c) => c.day))
 }

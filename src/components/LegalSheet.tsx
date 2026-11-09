@@ -69,7 +69,7 @@ function Privacy() {
           <strong>Perfil:</strong> nome no grupo, foto, plano de fundo, descrição e exercícios que você faz.
         </li>
         <li>
-          <strong>Atividade:</strong> provas (foto, legenda, data), check-ins do desafio, ideias e votos, posts, comentários e curtidas.
+          <strong>Atividade:</strong> provas (foto, legenda, página do livro, data), posts, comentários e curtidas.
         </li>
         <li>
           <strong>Leitura:</strong> livros que você lê, terminou ou quer ler, notas, resenhas, capas e PDFs que você anexar.
@@ -81,7 +81,7 @@ function Privacy() {
 
       <h3>Por quanto tempo</h3>
       <ul>
-        <li>Fotos de prova, do desafio e do feed: apagadas depois de cerca de 24 horas. Fica só o registro de que você postou.</li>
+        <li>Fotos de prova e do feed: apagadas depois de cerca de 24 horas. Fica só o registro de que você postou.</li>
         <li>Avisos dentro do app: apagados depois de 14 dias.</li>
         <li>O resto: enquanto sua conta existir. Ao excluir a conta, tudo isso é apagado.</li>
       </ul>

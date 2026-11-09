@@ -1,12 +1,12 @@
 import { useSyncExternalStore } from 'react'
-import type { StoryItem } from '../types'
+import type { Activity } from '../types'
 
-/** Atividade de uma prova: exercício, leitura ou o desafio da semana. */
-export type ProofKind = StoryItem['activity']
+/** Atividade de uma prova. */
+export type ProofKind = Activity
 
 interface State {
   open: boolean
-  /** Atividade já escolhida ao abrir (pelo desafio, pelo cartão do dia ou por um aviso). */
+  /** Atividade já escolhida ao abrir (pelo cartão do dia ou por um aviso). */
   preset: ProofKind | null
   /** Sobe a cada prova enviada, pra as telas recarregarem. */
   posted: number

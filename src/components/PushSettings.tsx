@@ -8,7 +8,7 @@ const OPTIONS: { key: keyof PushPrefs; label: string; hint: string }[] = [
   { key: 'reminder', label: 'Lembrete das 20h', hint: 'Se ainda faltar alguma prova do dia' },
   { key: 'last_one', label: 'Só falta você', hint: 'Quando o resto do grupo já postou' },
   { key: 'comments', label: 'Comentários', hint: 'Nas suas provas, posts e respostas' },
-  { key: 'social', label: 'Curtidas, votos e listas', hint: 'Livros, ideias de desafio e "quero ler também"' },
+  { key: 'social', label: 'Curtidas e listas', hint: 'Curtidas nos seus livros e "quero ler também"' },
 ]
 
 /** Ligar/desligar as notificações no celular e escolher o que receber. */

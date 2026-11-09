@@ -23,7 +23,7 @@ export default function RankingSection({ userId }: { userId: string }) {
   const avatarOf = (id: string) => members.find((m) => m.id === id)?.avatar_url
 
   // Recarrega ao trocar o período e quando alguém posta (pontos mudam).
-  const doneKey = today.done.exercicio.size + today.done.leitura.size + today.checkins.length
+  const doneKey = today.done.exercicio.size + today.done.leitura.size
   useEffect(() => {
     let active = true
     supabase.rpc('ranking', { periodo }).then(({ data, error }) => {
@@ -103,7 +103,7 @@ export default function RankingSection({ userId }: { userId: string }) {
           <li>10 pontos por atividade feita no dia (várias fotos contam uma vez só)</li>
           <li>+5 no dia em que você faz exercício e leitura</li>
           <li>Bônus de streak, por atividade, em cada dia com prova: +2 a partir do 3º dia seguido, +3 a partir do 7º, +4 a partir do 14º e +5 a partir do 30º</li>
-          <li>Desafio da semana: +30 com 5 dias, +40 com os 7</li>
+          <li>+30 ao terminar um livro com resumo (140 letras ou mais) ou com PDF de anotações</li>
           <li>A semana começa na segunda</li>
           <li>Fim de semana é livre: postar no sábado ou domingo soma pontos e dias no streak, e não postar não tira ponto nem quebra o streak</li>
           <li>O streak só quebra quando falta um dia de segunda a sexta</li>

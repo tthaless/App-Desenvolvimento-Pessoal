@@ -8,7 +8,7 @@ import StoryViewer from './StoryViewer'
 import { SkeletonStories } from './Skeleton'
 import { clearNavTarget, useNavTarget } from '../lib/notifications'
 
-/** Barra única de stories: provas de exercício, leitura e desafio das últimas 24h. */
+/** Barra única de stories: provas de exercício e leitura das últimas 24h. */
 export default function Stories({ userId }: { userId: string }) {
   const members = useMembers()
   const [posts, setPosts] = useState<StoryItem[]>([])
@@ -20,30 +20,12 @@ export default function Stories({ userId }: { userId: string }) {
 
   const load = useCallback(async () => {
     const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
-    const [provas, desafios] = await Promise.all([
-      supabase
-        .from('posts')
-        .select('id,user_id,activity,photo_path,caption,created_at')
-        .gte('created_at', since),
-      supabase
-        .from('challenge_checkins')
-        .select('idea_id,user_id,day,photo_path,created_at,challenge_ideas(title)')
-        .gte('created_at', since),
-    ])
+    const provas = await supabase
+      .from('posts')
+      .select('id,user_id,activity,photo_path,caption,created_at')
+      .gte('created_at', since)
     const items: StoryItem[] = [
       ...((provas.data ?? []) as Omit<StoryItem, 'key'>[]).map((p) => ({ ...p, key: `post:${p.id}` })),
-      ...(desafios.data ?? []).map((row) => {
-        const c = row as unknown as { idea_id: string; user_id: string; day: string; photo_path: string; created_at: string; challenge_ideas: { title: string } | null }
-        return {
-          id: `desafio-${c.idea_id}-${c.user_id}-${c.day}`,
-          key: `desafio:${c.idea_id}:${c.user_id}:${c.day}`,
-          user_id: c.user_id,
-          activity: 'desafio' as const,
-          photo_path: c.photo_path,
-          caption: c.challenge_ideas?.title ?? null,
-          created_at: c.created_at,
-        }
-      }),
     ].sort((a, b) => a.created_at.localeCompare(b.created_at))
     setPosts(items)
     setLoaded(true)
@@ -54,7 +36,6 @@ export default function Stories({ userId }: { userId: string }) {
     const channel = supabase
       .channel('stories')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'posts' }, () => load())
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'challenge_checkins' }, () => load())
       .subscribe()
     return () => {
       supabase.removeChannel(channel)

@@ -111,7 +111,7 @@ export default function NotificationsSheet() {
             <div className="notif-empty">
               <BellOff size={28} aria-hidden />
               <p>Nada por aqui ainda.</p>
-              <p className="muted small">Comentários nas suas provas e posts, curtidas nos seus livros, votos nas suas ideias de desafio e o aviso de quando só falta você postar aparecem aqui.</p>
+              <p className="muted small">Comentários nas suas provas e posts, curtidas nos seus livros e o aviso de quando só falta você postar aparecem aqui.</p>
             </div>
           )}
           {items.map((n) => {
