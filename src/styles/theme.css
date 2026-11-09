@@ -274,3 +274,12 @@ button.settings-row:active { background: var(--surface-2); }
 }
 .pin-options button.on { background: var(--navy); border-color: var(--navy); color: #fff; }
 .pin-options button:disabled { opacity: .45; }
+
+/* ---------- Feed: caixa de postar em uma linha ---------- */
+.new-post-closed {
+  display: flex; align-items: center; gap: 12px; width: 100%; padding: 10px 14px; text-align: left;
+  border: 1px solid var(--line); border-radius: 99px; background: var(--surface); color: var(--muted); font-size: 16px;
+}
+.new-post-closed span:nth-child(2) { flex: 1; min-width: 0; }
+.new-post-closed svg { flex: none; color: var(--muted); }
+.new-post-closed .avatar { width: 34px; height: 34px; }

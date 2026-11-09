@@ -3,7 +3,7 @@ import { createPost } from '../lib/feed'
 import { useMembers } from '../lib/members'
 import Avatar from './Avatar'
 import Composer from './Composer'
-import { MessageCircle } from 'lucide-react'
+import { ImagePlus, MessageCircle } from 'lucide-react'
 import { toast } from '../lib/toast'
 import EmptyState from './EmptyState'
 import FeedList from './FeedList'
@@ -12,6 +12,7 @@ import FeedList from './FeedList'
 export default function FeedSection({ userId }: { userId: string }) {
   const me = useMembers().find((m) => m.id === userId)
   const [refreshKey, setRefreshKey] = useState(0)
+  const [writing, setWriting] = useState(false)
 
   return (
     <section className="section feed" aria-labelledby="feed-title">
@@ -20,18 +21,28 @@ export default function FeedSection({ userId }: { userId: string }) {
           Feed
         </h2>
       </div>
-      <section className="card new-post">
-        <Avatar name={me?.username ?? '?'} url={me?.avatar_url} size="md" />
-        <Composer
-          placeholder="O que está rolando?"
-          submitLabel="Postar"
-          onSubmit={async (body, file) => {
-            await createPost(userId, body, file)
-            setRefreshKey((k) => k + 1)
-            toast('Postado no feed')
-          }}
-        />
-      </section>
+      {writing ? (
+        <section className="card new-post">
+          <Avatar name={me?.username ?? '?'} url={me?.avatar_url} size="md" />
+          <Composer
+            autoFocus
+            placeholder="O que está rolando?"
+            submitLabel="Postar"
+            onSubmit={async (body, file) => {
+              await createPost(userId, body, file)
+              setRefreshKey((k) => k + 1)
+              setWriting(false)
+              toast('Postado no feed')
+            }}
+          />
+        </section>
+      ) : (
+        <button className="new-post-closed" onClick={() => setWriting(true)}>
+          <Avatar name={me?.username ?? '?'} url={me?.avatar_url} size="sm" />
+          <span>O que está rolando?</span>
+          <ImagePlus size={19} aria-hidden />
+        </button>
+      )}
       <FeedList
         userId={userId}
         emptyText="Nada no feed nas últimas 24h."
