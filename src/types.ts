@@ -15,13 +15,13 @@ export interface Post {
   day: string
 }
 
-/** Item dos stories: prova de exercício, de leitura ou check-in do desafio. */
+/** Item dos stories: prova de exercício ou de leitura. */
 export interface StoryItem {
   id: string
-  /** Identifica a prova nos comentários: "post:<id>" ou "desafio:<ideia>:<pessoa>:<dia>". */
+  /** Identifica a prova nos comentários: "post:<id>". */
   key: string
   user_id: string
-  activity: Activity | 'desafio'
+  activity: Activity
   photo_path: string
   caption: string | null
   created_at: string
@@ -32,7 +32,6 @@ export interface StoryItem {
 export const STORY_LABEL: Record<StoryItem['activity'], string> = {
   exercicio: 'Exercício',
   leitura: 'Leitura',
-  desafio: 'Desafio',
 }
 
 export interface Member {

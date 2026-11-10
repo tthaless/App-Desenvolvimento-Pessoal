@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { BellOff, BookOpen, Bookmark, Dumbbell, Heart, Lightbulb, MessageCircle, Pointer, Target, X } from 'lucide-react'
+import { BellOff, BookOpen, Bookmark, Dumbbell, Heart, Lightbulb, MessageCircle, Pointer, X } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import {
   clearNotifications,
@@ -21,7 +21,6 @@ import { SkeletonRows } from './Skeleton'
 const PROVA: Record<string, string> = {
   exercicio: 'prova de exercício',
   leitura: 'prova de leitura',
-  desafio: 'check-in do desafio',
 }
 
 /** O que aconteceu, sem o nome de quem fez (ele vem em negrito antes). */
@@ -41,8 +40,6 @@ function describe(n: AppNotification) {
       return <>curtiu que você terminou {livro}</>
     case 'want_too':
       return <>também quer ler {livro}, da sua lista</>
-    case 'challenge_vote':
-      return <>votou na sua ideia de desafio {n.detail ? <em>{n.detail}</em> : ''}</>
     case 'nudge':
       return <>te cutucou: {n.detail === 'leitura' ? 'falta a sua leitura de hoje' : n.detail === 'exercicio' ? 'falta o seu exercício de hoje' : 'faltam as suas provas de hoje'}</>
     case 'last_one':
@@ -60,14 +57,13 @@ function tipText(n: AppNotification) {
 function iconOf(n: AppNotification): { Icon: LucideIcon; tone: string } {
   if (n.kind === 'book_like') return { Icon: Heart, tone: 'like' }
   if (n.kind === 'want_too') return { Icon: Bookmark, tone: 'reading' }
-  if (n.kind === 'challenge_vote') return { Icon: Target, tone: 'challenge' }
   if (n.kind === 'tip') return { Icon: Lightbulb, tone: 'gold' }
   if (n.kind === 'nudge') return { Icon: Pointer, tone: 'brand' }
   if (n.kind === 'last_one') return n.detail === 'leitura' ? { Icon: BookOpen, tone: 'reading' } : { Icon: Dumbbell, tone: 'exercise' }
   if (n.kind.startsWith('story')) {
     if (n.detail === 'exercicio') return { Icon: Dumbbell, tone: 'exercise' }
     if (n.detail === 'leitura') return { Icon: BookOpen, tone: 'reading' }
-    return { Icon: Target, tone: 'challenge' }
+    return { Icon: MessageCircle, tone: 'brand' }
   }
   return { Icon: MessageCircle, tone: 'brand' }
 }

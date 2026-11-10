@@ -193,7 +193,7 @@ export default function StoryViewer({ posts, start, startInChat = false, current
 
       {confirming && (
         <div className="viewer-confirm" role="alertdialog" aria-label="Excluir prova">
-          <p className="viewer-confirm-title">Excluir esta {post.activity === 'desafio' ? 'foto do desafio' : 'prova'}?</p>
+          <p className="viewer-confirm-title">Excluir esta prova?</p>
           <p className="muted small">
             A foto e os comentários somem. Se era a única do dia, o dia deixa de contar na sequência e no ranking.
           </p>

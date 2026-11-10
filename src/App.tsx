@@ -19,7 +19,6 @@ import { haptic } from './lib/toast'
 import Toaster from './components/Toaster'
 import Avatar from './components/Avatar'
 import NotificationsSheet from './components/NotificationsSheet'
-import Welcome, { shouldShowWelcome } from './components/Welcome'
 import { clearNavTarget, startNotifications, stopNotifications, useNavTarget } from './lib/notifications'
 
 type Tab = 'inicio' | 'perfil'
@@ -45,7 +44,6 @@ export default function App() {
   const [profileId, closeProfile] = useOpenProfile()
   const members = useMembers()
   const me = members.find((m) => m.id === session?.user.id)
-  const [welcome, setWelcome] = useState(false)
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -77,14 +75,9 @@ export default function App() {
     }
   }, [sessionUserId])
 
-  // Apaga do armazenamento as fotos (provas, desafio e feed) que já passaram de 24h.
+  // Apaga do armazenamento as fotos (provas e feed) que já passaram de 24h.
   useEffect(() => {
     if (sessionUserId) cleanupMyOldPhotos(sessionUserId).catch(() => {})
-  }, [sessionUserId])
-
-  // Boas-vindas na primeira vez de cada pessoa neste aparelho.
-  useEffect(() => {
-    if (sessionUserId) setWelcome(shouldShowWelcome(sessionUserId))
   }, [sessionUserId])
 
   // Avisos de comentários, curtidas e "quero ler também".
@@ -178,7 +171,6 @@ export default function App() {
       <CameraFlow userId={userId} />
       <Toaster onReconnect={reconnect} />
       <NotificationsSheet />
-      {welcome && <Welcome userId={userId} onClose={() => setWelcome(false)} onGoToProfile={() => setTab('perfil')} />}
       {profileId && <ProfileSheet userId={profileId} viewerId={userId} onClose={closeProfile} />}
     </div>
   )

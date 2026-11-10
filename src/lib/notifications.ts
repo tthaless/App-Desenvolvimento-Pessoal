@@ -9,7 +9,6 @@ export type NotificationKind =
   | 'feed_reply'
   | 'book_like'
   | 'want_too'
-  | 'challenge_vote'
   | 'last_one'
   | 'tip'
   | 'nudge'

@@ -131,7 +131,7 @@ export function expiresIn(createdAt: string): string {
 }
 
 /**
- * Apaga do armazenamento as fotos do feed, das provas e do desafio que esta pessoa postou há mais de 24h
+ * Apaga do armazenamento as fotos do feed, e das provas que esta pessoa postou há mais de 24h
  * (o registro do dia continua: sequência e ranking não mudam, só a foto some junto com o story).
  * Roda no máximo uma vez por hora em cada aparelho.
  */
@@ -146,14 +146,14 @@ export async function cleanupMyOldPhotos(userId: string) {
   const limit = Date.now() - DAY - 60 * 60 * 1000
   const [feed, root] = await Promise.all([
     supabase.storage.from('provas').list(`${userId}/feed`, { limit: 1000 }),
-    // Fotos das provas e do desafio ficam na raiz da pasta (as pastas avatar/, capa/ e feed/ ficam de fora).
+    // Fotos das provas ficam na raiz da pasta (as pastas avatar/, capa/ e feed/ ficam de fora).
     supabase.storage.from('provas').list(userId, { limit: 1000, sortBy: { column: 'created_at', order: 'asc' } }),
   ])
   const oldFeed = (feed.data ?? [])
     .filter((f) => Number(f.name.split('.')[0]) < limit)
     .map((f) => `${userId}/feed/${f.name}`)
   const oldProofs = (root.data ?? [])
-    .filter((f) => f.id && /^(exercicio|leitura|desafio)-\d+\.jpg$/.test(f.name))
+    .filter((f) => f.id && /^(exercicio|leitura)-\d+\.jpg$/.test(f.name))
     .filter((f) => Number(f.name.replace(/\D/g, '')) < limit)
     .map((f) => `${userId}/${f.name}`)
   const old = [...oldFeed, ...oldProofs]
