@@ -12,6 +12,7 @@ import { toast } from '../lib/toast'
 import { ReadingProgress } from './ReadingProgress'
 import { useDragToClose } from '../lib/useDragToClose'
 import { SkeletonCard } from './Skeleton'
+import { ask } from '../lib/confirm'
 
 interface Props {
   userId: string
@@ -66,7 +67,7 @@ export default function CurrentBook({ userId, refreshKey, onShelfChanged, onLoad
   }
 
   async function abandon() {
-    if (!book || !confirm(`Largar "${book.title}"? Ele não vai pra estante.`)) return
+    if (!book || !(await ask({ title: `Largar "${book.title}"?`, text: 'Ele não vai pra estante.', action: 'Largar' }))) return
     try {
       await abandonBook(book.id)
       await afterChange()

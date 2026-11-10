@@ -4,6 +4,7 @@ import { MAX_PDF_MB, MAX_PDF_PAGES, removeAttachment, setAttachmentPublic, uploa
 import { errorMessage } from '../lib/utils'
 import PdfViewer from './PdfViewer'
 import { FileText, Lock, Paperclip, Trash2, Users } from 'lucide-react'
+import { ask } from '../lib/confirm'
 
 interface Props {
   book: Book
@@ -64,7 +65,9 @@ export default function PdfAttachment({ book, viewerId, onChanged }: Props) {
               <button
                 className="pdf-remove"
                 disabled={busy}
-                onClick={() => confirm('Apagar o PDF?') && run(() => removeAttachment(book.id, book.attachment_path!))}
+                onClick={async () => {
+                  if (await ask({ title: 'Apagar o PDF?', action: 'Apagar' })) run(() => removeAttachment(book.id, book.attachment_path!))
+                }}
                 aria-label="Apagar PDF"
               >
                 <Trash2 size={17} />

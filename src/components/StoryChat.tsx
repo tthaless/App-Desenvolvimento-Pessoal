@@ -9,6 +9,7 @@ import Avatar from './Avatar'
 import { Trash2, X } from 'lucide-react'
 import { useDragToClose } from '../lib/useDragToClose'
 import { SkeletonRows } from './Skeleton'
+import { ask } from '../lib/confirm'
 
 interface Props {
   storyKey: string
@@ -77,7 +78,7 @@ export default function StoryChat({ storyKey, ownerId, currentUserId, members, o
   }
 
   async function remove(c: StoryComment) {
-    if (!confirm('Apagar este comentário?')) return
+    if (!(await ask({ title: 'Apagar este comentário?', action: 'Apagar' }))) return
     try {
       await deleteStoryComment(c.id)
       await load()

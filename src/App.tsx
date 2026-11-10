@@ -19,6 +19,7 @@ import { haptic } from './lib/toast'
 import Toaster from './components/Toaster'
 import Avatar from './components/Avatar'
 import NotificationsSheet from './components/NotificationsSheet'
+import ConfirmDialog from './components/ConfirmDialog'
 import { clearNavTarget, startNotifications, stopNotifications, useNavTarget } from './lib/notifications'
 
 type Tab = 'inicio' | 'perfil'
@@ -171,6 +172,7 @@ export default function App() {
       <CameraFlow userId={userId} />
       <Toaster onReconnect={reconnect} />
       <NotificationsSheet />
+      <ConfirmDialog />
       {profileId && <ProfileSheet userId={profileId} viewerId={userId} onClose={closeProfile} />}
     </div>
   )

@@ -11,6 +11,8 @@ import BookCover from './BookCover'
 import { ArrowMark } from './Logo'
 import PdfAttachment from './PdfAttachment'
 import { SkeletonBlock } from './Skeleton'
+import { ask } from '../lib/confirm'
+import { toast } from '../lib/toast'
 
 interface Props {
   post: FeedPost
@@ -30,12 +32,12 @@ export default function FeedPostCard({ post, userId, photoUrl, onOpenThread, onD
 function UserPost({ post, userId, photoUrl, onOpenThread, onDeleted }: Props) {
   const author = useMembers().find((m) => m.id === post.user_id)
   async function remove() {
-    if (!confirm('Apagar este post?')) return
+    if (!(await ask({ title: 'Apagar este post?', text: 'A foto e os comentários somem junto.', action: 'Apagar' }))) return
     try {
       await deletePost(post)
       onDeleted?.()
     } catch (e) {
-      alert(errorMessage(e))
+      toast(errorMessage(e), 'error')
     }
   }
 
@@ -102,7 +104,7 @@ function BookFinishedPost({ post, book, userId, onOpenThread }: { post: FeedPost
     } catch (e) {
       setLiked(!next)
       setCount((c) => c + (next ? -1 : 1))
-      alert(errorMessage(e))
+      toast(errorMessage(e), 'error')
     }
   }
 

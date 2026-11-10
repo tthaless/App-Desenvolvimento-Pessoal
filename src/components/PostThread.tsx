@@ -11,6 +11,8 @@ import FeedPostCard from './FeedPostCard'
 import { X } from 'lucide-react'
 import { useDragToClose } from '../lib/useDragToClose'
 import { SkeletonRows } from './Skeleton'
+import { ask } from '../lib/confirm'
+import { toast } from '../lib/toast'
 
 interface Props {
   post: FeedPost
@@ -100,12 +102,12 @@ function CommentItem({ comment, userId, photoUrl, onChanged }: { comment: FeedCo
   const author = useMembers().find((m) => m.id === comment.user_id)
   const name = author?.username ?? '?'
   async function remove() {
-    if (!confirm('Apagar este comentário?')) return
+    if (!(await ask({ title: 'Apagar este comentário?', action: 'Apagar' }))) return
     try {
       await deleteComment(comment)
       onChanged()
     } catch (e) {
-      alert(errorMessage(e))
+      toast(errorMessage(e), 'error')
     }
   }
 
