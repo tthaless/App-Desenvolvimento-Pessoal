@@ -96,7 +96,7 @@ export default function Library({ ownerId, viewerId }: { ownerId: string; viewer
                 <ReadingProgress page={current.current_page} total={current.total_pages} />
               </div>
             </div>
-            <PdfAttachment book={current} viewerId={viewerId} onChanged={loadShelf} />
+            {current.attachment_path && <PdfAttachment book={current} viewerId={viewerId} onChanged={loadShelf} />}
           </section>
         )
       )}

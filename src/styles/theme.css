@@ -309,3 +309,13 @@ button.settings-row:active { background: var(--surface-2); }
 
 /* ---------- Selo de foto da galeria, no story ---------- */
 .chip.from-gallery { color: #fff; background: rgba(255, 255, 255, .2); }
+
+/* ---------- Topo sem transparência: o conteúdo não aparece por trás ---------- */
+.topbar { background: var(--bg); backdrop-filter: none; -webkit-backdrop-filter: none; }
+
+/* ---------- Contagem do sino, pequena no canto ---------- */
+.bell-badge {
+  top: -3px; right: -3px; box-sizing: border-box; min-width: 17px; height: 17px; padding: 0 4px;
+  border: 0; font-size: 10.5px; line-height: 17px; box-shadow: 0 0 0 2px var(--bg);
+}
+
