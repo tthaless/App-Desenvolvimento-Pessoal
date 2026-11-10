@@ -42,7 +42,7 @@ function Terms() {
       <ul>
         <li>O app é mantido por pessoas do grupo, sem garantia de funcionamento contínuo. Pode ficar fora do ar ou mudar.</li>
         <li>Fotos de prova e do feed somem depois de cerca de 24 horas. Não use o app como backup das suas fotos.</li>
-        <li>Pontos, streaks e ranking são uma brincadeira entre amigos e não valem prêmio nenhum.</li>
+        <li>Pontos, sequências e ranking são uma brincadeira entre amigos e não valem prêmio nenhum.</li>
       </ul>
 
       <h3>Mudanças</h3>
@@ -107,7 +107,7 @@ function Privacy() {
 
       <h3>No seu aparelho</h3>
       <p>
-        O app guarda no navegador o seu login, algumas preferências e cópias temporárias de imagens, para abrir mais rápido. Sair da conta
+        O app guarda no navegador o seu login, algumas preferências, cópias temporárias de imagens e os arquivos do próprio app, para abrir mais rápido. Sair da conta
         encerra o login neste aparelho.
       </p>
 

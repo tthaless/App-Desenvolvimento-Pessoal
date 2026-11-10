@@ -70,11 +70,11 @@ function TodayCard({ userId }: { userId: string }) {
   const hint =
     pending === 0
       ? weekday === 5
-        ? 'Tudo feito! Fim de semana é livre: faltar não quebra o streak.'
-        : 'Tudo feito hoje. Volte amanhã pra manter o streak.'
+        ? 'Tudo feito! Fim de semana é livre: faltar não quebra a sequência.'
+        : 'Tudo feito hoje. Volte amanhã pra manter a sequência.'
       : weekend
-        ? 'Fim de semana é livre: postar soma pontos, faltar não quebra o streak.'
-        : 'Poste até a meia-noite pra manter o streak.'
+        ? 'Fim de semana é livre: postar soma pontos, faltar não quebra a sequência.'
+        : 'Poste até a meia-noite pra manter a sequência.'
 
   const missing = rows.filter((r) => !r.done).map((r) => r.title.toLowerCase())
   const headline = pending === 0 ? 'Tudo feito hoje' : pending === 2 ? 'Bora começar o dia' : `Falta a ${missing[0] === 'exercício' ? 'prova de exercício' : 'leitura'}`

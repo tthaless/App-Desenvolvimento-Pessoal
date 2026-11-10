@@ -37,6 +37,8 @@ export default function RankingSection({ userId }: { userId: string }) {
       setNudging(null)
     }
   }
+  // Fim de semana é livre: não tem o que cobrar.
+  const weekday = ![0, 6].includes(new Date(`${today.day}T12:00:00`).getDay())
   const avatarOf = (id: string) => members.find((m) => m.id === id)?.avatar_url
 
   // Recarrega ao trocar o período e quando alguém posta (pontos mudam).
@@ -108,7 +110,7 @@ export default function RankingSection({ userId }: { userId: string }) {
                   </span>
                 ))}
               </span>
-              {today.loaded && r.user_id !== userId && did.length < 2 && (
+              {today.loaded && weekday && r.user_id !== userId && did.length < 2 && (
                 <button
                   className={`rank-nudge ${nudged.has(r.user_id) ? 'done' : ''}`}
                   onClick={() => poke(r.user_id, r.username)}
@@ -132,11 +134,11 @@ export default function RankingSection({ userId }: { userId: string }) {
         <ul>
           <li>10 pontos por atividade feita no dia (várias fotos contam uma vez só)</li>
           <li>+5 no dia em que você faz exercício e leitura</li>
-          <li>Bônus de streak, por atividade, em cada dia com prova: +2 a partir do 3º dia seguido, +3 a partir do 7º, +4 a partir do 14º e +5 a partir do 30º</li>
+          <li>Bônus de sequência, por atividade, em cada dia com prova: +2 a partir do 3º dia seguido, +3 a partir do 7º, +4 a partir do 14º e +5 a partir do 30º</li>
           <li>+30 ao terminar um livro com resumo (140 letras ou mais) ou com PDF de anotações</li>
           <li>A semana começa na segunda</li>
-          <li>Fim de semana é livre: postar no sábado ou domingo soma pontos e dias no streak, e não postar não tira ponto nem quebra o streak</li>
-          <li>O streak só quebra quando falta um dia de segunda a sexta</li>
+          <li>Fim de semana é livre: postar no sábado ou domingo soma pontos e dias na sequência, e não postar não tira ponto nem quebra a sequência</li>
+          <li>A sequência só quebra quando falta um dia de segunda a sexta</li>
         </ul>
       </details>
     </section>

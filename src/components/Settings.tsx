@@ -184,7 +184,7 @@ function DeleteAccount({ userId, onCancel }: { userId: string; onCancel: () => v
       <p>Isso apaga de vez a sua conta e tudo o que está nela:</p>
       <ul className="danger-list">
         <li>perfil, foto e plano de fundo</li>
-        <li>provas, streaks e pontos no ranking</li>
+        <li>provas, sequências e pontos no ranking</li>
         <li>livros, notas, resenhas e PDFs</li>
         <li>posts, comentários, curtidas e votos</li>
       </ul>
