@@ -217,7 +217,6 @@
 .retro-chip { margin: 8px 0 0; padding: 7px 14px; border-radius: 99px; background: rgba(255, 255, 255, .18); font-weight: 600; font-size: 14px; }
 .retro.tone-points .retro-chip { background: rgba(0, 0, 0, .12); }
 .retro-logo { margin-bottom: 14px; }
-.retro-flame { margin-bottom: -6px; }
 
 .retro-dots { display: grid; grid-template-columns: repeat(7, 26px); gap: 8px; margin: 14px 0 4px; }
 .retro-dots.month { grid-template-columns: repeat(7, 20px); gap: 6px; }

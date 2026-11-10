@@ -17,7 +17,7 @@ import { useMembers } from '../lib/members'
 import type { Member } from '../types'
 import Avatar from './Avatar'
 import { errorMessage } from '../lib/utils'
-import { ArrowMark, FlameMark } from './Logo'
+import { ArrowMark } from './Logo'
 
 const SLIDE_MS = 6500
 const fmt = (n: number) => Math.round(n).toLocaleString('pt-BR')
@@ -185,7 +185,7 @@ function buildSlides(data: RetroData, period: Period, userId: string, name: stri
         <>
           <p className="retro-eyebrow">Constância</p>
           <h2 className="retro-title">Esse período passou em branco</h2>
-          <p className="retro-text">Sem problema. Cada dia é uma chance nova de começar o streak. Uma foto hoje já conta.</p>
+          <p className="retro-text">Sem problema. Cada dia é uma chance nova de começar uma sequência. Uma foto hoje já conta.</p>
         </>
       ),
     })
@@ -363,7 +363,6 @@ function buildSlides(data: RetroData, period: Period, userId: string, name: stri
       body: (
         <>
           <p className="retro-eyebrow">Sequência</p>
-          <FlameMark size={90} className="retro-flame" />
           <CountUp value={best} />
           <p className="retro-lead">dias seguidos de {me.streak_exercicio >= me.streak_leitura ? 'exercício' : 'leitura'}</p>
           <p className="retro-text">Foi a sua maior sequência no período.</p>
