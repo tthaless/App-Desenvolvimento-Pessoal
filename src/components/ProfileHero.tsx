@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { isMod } from '../lib/mods'
 
 interface Props {
   coverUrl: string | null
@@ -28,7 +29,14 @@ export default function ProfileHero({ coverUrl, corner, avatar, action, name, ba
         <div className="phero-id">
           <div className="phero-avatar">{avatar}</div>
           <div className="phero-id-text">
-            <h2 className="phero-name">{name}</h2>
+            <h2 className="phero-name">
+              {name}
+              {isMod(name) && (
+                <span className="mod-tag" title="Moderador do grupo">
+                  mod
+                </span>
+              )}
+            </h2>
             {badges}
           </div>
         </div>

@@ -332,3 +332,11 @@ button.settings-row:active { background: var(--surface-2); }
 .confirm-title { font-family: var(--display); font-size: 19px; font-weight: 800; line-height: 1.25; overflow-wrap: anywhere; }
 .confirm-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
 .confirm-actions .btn { justify-content: center; }
+
+/* ---------- Selo de moderador, ao lado do nome ---------- */
+.mod-tag {
+  display: inline-block; margin-left: 8px; padding: 2px 7px; border-radius: 6px; vertical-align: middle; position: relative; top: -2px;
+  font-family: var(--body); font-size: 11px; font-weight: 700; letter-spacing: .02em; line-height: 1.4; text-shadow: none;
+  background: rgba(21, 52, 98, .1); color: var(--navy);
+}
+.phero.has-cover .mod-tag { background: rgba(255, 255, 255, .22); color: #fff; }
