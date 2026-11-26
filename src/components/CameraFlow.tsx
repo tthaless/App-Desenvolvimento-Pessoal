@@ -227,7 +227,7 @@ function Capture({ onPhoto, onClose }: { onPhoto: (file: File, gallery: boolean)
         <button className="cam-round" onClick={onClose} aria-label="Fechar câmera">
           <X size={22} aria-hidden />
         </button>
-        <span className="cam-title">{kind === 'role' ? 'Novo rolê' : 'Nova prova'}</span>
+        <span className="cam-title">Nova prova</span>
         <span className="cam-round-spacer" aria-hidden />
       </header>
 
@@ -371,7 +371,7 @@ function Review({
         <button className="cam-round" onClick={onRetake} disabled={sending} aria-label="Tirar outra foto">
           <RefreshCw size={20} aria-hidden />
         </button>
-        <span className="cam-title">Nova prova</span>
+        <span className="cam-title">{kind === 'role' ? 'Novo rolê' : 'Nova prova'}</span>
         <button className="cam-round" onClick={onClose} disabled={sending} aria-label="Cancelar">
           <X size={22} aria-hidden />
         </button>
