@@ -12,6 +12,7 @@ import ProfileDetails from './ProfileDetails'
 import ProfileTabs from './ProfileTabs'
 import { FeaturedBadges } from './Badges'
 import { useDragToClose } from '../lib/useDragToClose'
+import { toast } from '../lib/toast'
 
 // Um "visitante" que não é ninguém do grupo: assim nada aparece como se fosse seu.
 const VISITOR = '00000000-0000-0000-0000-000000000000'
@@ -32,7 +33,10 @@ export default function ProfileSheet({ userId, viewerId, onClose }: Props) {
   const sheetRef = useDragToClose<HTMLDivElement>(onClose, !!member)
 
   useEffect(() => {
-    supabase.rpc('streaks').then(({ data }) => setStreaks(((data ?? []) as StreakRow[]).filter((r) => r.user_id === userId)))
+    supabase.rpc('streaks').then(({ data, error }) => {
+      if (error) toast('Não deu pra carregar as sequências agora.', 'error')
+      else setStreaks(((data ?? []) as StreakRow[]).filter((r) => r.user_id === userId))
+    })
   }, [userId])
 
   useEffect(() => {

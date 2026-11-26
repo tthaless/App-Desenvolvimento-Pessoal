@@ -37,7 +37,10 @@ export default function Profile({ userId }: { userId: string }) {
   const [pins, setPins] = useState<string[]>([])
 
   useEffect(() => {
-    supabase.rpc('streaks').then(({ data }) => setStreaks(((data ?? []) as StreakRow[]).filter((r) => r.user_id === userId)))
+    supabase.rpc('streaks').then(({ data, error }) => {
+      if (error) toast('Não deu pra carregar as sequências agora.', 'error')
+      else setStreaks(((data ?? []) as StreakRow[]).filter((r) => r.user_id === userId))
+    })
   }, [userId])
 
   function startEditing() {

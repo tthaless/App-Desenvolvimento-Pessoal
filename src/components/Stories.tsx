@@ -9,12 +9,14 @@ import Avatar from './Avatar'
 import StoryViewer from './StoryViewer'
 import { SkeletonStories } from './Skeleton'
 import { clearNavTarget, useNavTarget } from '../lib/notifications'
+import LoadError from './LoadError'
 
 /** Barra única de stories: provas de exercício e leitura das últimas 24h. */
 export default function Stories({ userId }: { userId: string }) {
   const members = useMembers()
   const [posts, setPosts] = useState<StoryItem[]>([])
   const [loaded, setLoaded] = useState(false)
+  const [failed, setFailed] = useState(false)
   const [seen, setSeen] = useState<Set<string>>(loadSeen)
   const [viewerStart, setViewerStart] = useState<number | null>(null)
   const [startInChat, setStartInChat] = useState(false)
@@ -26,6 +28,11 @@ export default function Stories({ userId }: { userId: string }) {
       .from('posts')
       .select('*')
       .gte('created_at', since)
+    setFailed(!!provas.error)
+    if (provas.error) {
+      setLoaded(true)
+      return
+    }
     const items: StoryItem[] = [
       ...((provas.data ?? []) as Omit<StoryItem, 'key'>[]).map((p) => ({ ...p, key: `post:${p.id}` })),
     ].sort((a, b) => a.created_at.localeCompare(b.created_at))
@@ -104,7 +111,8 @@ export default function Stories({ userId }: { userId: string }) {
             <span className="story-name">Sua prova</span>
           </button>
         )}
-        {circles.length === 0 && loaded && <p className="muted small stories-empty">Ninguém postou nas últimas 24h. Seja o primeiro.</p>}
+        {failed && <LoadError text="Não deu pra carregar os stories." onRetry={load} />}
+        {circles.length === 0 && loaded && !failed && <p className="muted small stories-empty">Ninguém postou nas últimas 24h. Seja o primeiro.</p>}
         {circles.map((c) => {
           const m = memberOf(c.userId)
           const name = m?.username ?? '?'

@@ -7,6 +7,7 @@ import {
   goTo,
   isExpired,
   markAllRead,
+  reloadNotifications,
   targetOf,
   useNotificationState,
 } from '../lib/notifications'
@@ -17,6 +18,7 @@ import { useDragToClose } from '../lib/useDragToClose'
 import Avatar from './Avatar'
 import { ArrowMark } from './Logo'
 import { SkeletonRows } from './Skeleton'
+import LoadError from './LoadError'
 
 const PROVA: Record<string, string> = {
   exercicio: 'prova de exercício',
@@ -74,7 +76,7 @@ function iconOf(n: AppNotification): { Icon: LucideIcon; tone: string } {
 }
 
 export default function NotificationsSheet() {
-  const { items, loaded, open } = useNotificationState()
+  const { items, loaded, failed, open } = useNotificationState()
   const members = useMembers()
   const sheetRef = useDragToClose<HTMLDivElement>(closeNotifications, open)
   // O que era novo quando abriu continua destacado enquanto a lista está aberta.
@@ -119,7 +121,8 @@ export default function NotificationsSheet() {
 
         <div className="notif-list">
           {!loaded && <SkeletonRows count={4} />}
-          {loaded && items.length === 0 && (
+          {failed && <LoadError text="Não deu pra carregar os avisos." onRetry={reloadNotifications} />}
+          {loaded && !failed && items.length === 0 && (
             <div className="notif-empty">
               <BellOff size={28} aria-hidden />
               <p>Nada por aqui ainda.</p>

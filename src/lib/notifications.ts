@@ -41,11 +41,13 @@ export type NavTarget =
 interface State {
   items: AppNotification[]
   loaded: boolean
+  /** A última tentativa de carregar falhou. */
+  failed: boolean
   open: boolean
   target: NavTarget | null
 }
 
-let state: State = { items: [], loaded: false, open: false, target: null }
+let state: State = { items: [], loaded: false, failed: false, open: false, target: null }
 const listeners = new Set<() => void>()
 let currentUser: string | null = null
 let channel: RealtimeChannel | null = null
@@ -64,6 +66,10 @@ function subscribe(l: () => void) {
   }
 }
 
+export async function reloadNotifications() {
+  return load()
+}
+
 async function load() {
   if (!currentUser) return
   const { data, error } = await supabase
@@ -71,8 +77,9 @@ async function load() {
     .select('*')
     .order('created_at', { ascending: false })
     .limit(60)
-  // Antes do banco ter a tabela, simplesmente não mostra nada.
-  set({ items: error ? [] : ((data ?? []) as AppNotification[]), loaded: true })
+  // Se falhar, mantém o que já estava na tela e avisa.
+  if (error) return set({ loaded: true, failed: true })
+  set({ items: (data ?? []) as AppNotification[], loaded: true, failed: false })
 }
 
 function reloadSoon() {

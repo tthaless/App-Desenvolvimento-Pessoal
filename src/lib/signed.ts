@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { supabase } from './supabase'
+import { toast } from './toast'
 
 // Links temporários para as fotos do bucket privado.
 // Ficam guardados (também entre aberturas do app) para o link não mudar à toa:
@@ -39,7 +40,8 @@ export async function signPaths(paths: string[], ttl = 60 * 60): Promise<Record<
   const unique = [...new Set(paths.filter(Boolean))]
   const missing = unique.filter((p) => (cache.get(p)?.expires ?? 0) < now + margin)
   if (missing.length) {
-    const { data } = await supabase.storage.from('provas').createSignedUrls(missing, ttl)
+    const { data, error } = await supabase.storage.from('provas').createSignedUrls(missing, ttl)
+    if (error) warnPhotos()
     data?.forEach((d) => {
       if (d.path && d.signedUrl) cache.set(d.path, { url: d.signedUrl, expires: Date.now() + ttl * 1000 })
     })
@@ -61,6 +63,14 @@ export function useSignedUrls(paths: (string | null | undefined)[]): Record<stri
   }, [key])
 
   return urls
+}
+
+let warnedAt = 0
+/** Avisa (no máximo uma vez por minuto) que algumas fotos não carregaram. */
+function warnPhotos() {
+  if (Date.now() - warnedAt < 60_000) return
+  warnedAt = Date.now()
+  toast('Não deu pra carregar algumas fotos. Confira a internet.', 'error')
 }
 
 function fromCache(paths: (string | null | undefined)[]) {

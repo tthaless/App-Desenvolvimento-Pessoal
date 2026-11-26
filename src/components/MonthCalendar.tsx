@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { todaySP } from '../lib/utils'
+import LoadError from './LoadError'
 
 const WEEKDAYS = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S']
 const MONTHS = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro']
@@ -14,6 +15,8 @@ export default function MonthCalendar({ userId }: { userId: string }) {
   const first = `${today.slice(0, 7)}-01`
   const [days, setDays] = useState<Record<string, Set<string>> | null>(null)
   const [picked, setPicked] = useState<string | null>(null)
+  const [failed, setFailed] = useState(false)
+  const [attempt, setAttempt] = useState(0)
 
   useEffect(() => {
     let active = true
@@ -22,8 +25,10 @@ export default function MonthCalendar({ userId }: { userId: string }) {
       .select('day,activity')
       .eq('user_id', userId)
       .gte('day', first)
-      .then(({ data }) => {
+      .then(({ data, error }) => {
         if (!active) return
+        setFailed(!!error)
+        if (error) return
         const map: Record<string, Set<string>> = {}
         for (const r of (data ?? []) as { day: string; activity: string }[]) if (r.activity !== 'role') (map[r.day] ??= new Set()).add(r.activity)
         setDays(map)
@@ -31,7 +36,7 @@ export default function MonthCalendar({ userId }: { userId: string }) {
     return () => {
       active = false
     }
-  }, [userId, first])
+  }, [userId, first, attempt])
 
   const cells = useMemo(() => {
     const total = new Date(Date.UTC(year, month, 0)).getUTCDate()
@@ -63,6 +68,8 @@ export default function MonthCalendar({ userId }: { userId: string }) {
           </span>
         )}
       </header>
+
+      {failed && <LoadError text="Não deu pra carregar o calendário." onRetry={() => setAttempt((a) => a + 1)} />}
 
       <div className="month-grid" role="grid">
         {WEEKDAYS.map((w, i) => (
