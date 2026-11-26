@@ -1,5 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "crons": [{ "path": "/api/limpar-fotos", "schedule": "0 7 * * *" }],
   "headers": [
     {
       "source": "/(.*)",
