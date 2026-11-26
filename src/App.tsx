@@ -20,6 +20,7 @@ import Toaster from './components/Toaster'
 import Avatar from './components/Avatar'
 import NotificationsSheet from './components/NotificationsSheet'
 import ConfirmDialog from './components/ConfirmDialog'
+import ErrorBoundary from './components/ErrorBoundary'
 import { clearNavTarget, startNotifications, stopNotifications, useNavTarget } from './lib/notifications'
 
 type Tab = 'inicio' | 'perfil'
@@ -150,8 +151,10 @@ export default function App() {
   return (
     <div className="app" data-tab={tab}>
       <main className="content" key={tab}>
-        {tab === 'inicio' && <Home userId={userId} />}
-        {tab === 'perfil' && <Profile userId={userId} />}
+        <ErrorBoundary inline>
+          {tab === 'inicio' && <Home userId={userId} />}
+          {tab === 'perfil' && <Profile userId={userId} />}
+        </ErrorBoundary>
       </main>
       <nav className="tabbar" aria-label="Navegação principal">
         {TABS.slice(0, 1).map(tabButton)}

@@ -345,3 +345,14 @@ button.settings-row:active { background: var(--surface-2); }
 .cam-option.act-role { --tone: var(--flame); --tone-bg: rgba(224, 123, 46, .12); }
 .chip.act-role { color: #ffc79a; }
 .notif-kind.tone-role { background: var(--flame); }
+
+/* ---------- Algo deu errado ---------- */
+.crash {
+  min-height: 100dvh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
+  padding: 32px 24px; text-align: center; background: var(--bg); color: var(--text);
+}
+.crash.inline { min-height: 60dvh; }
+.crash p { margin: 0; }
+.crash-title { font-family: var(--display); font-size: 22px; font-weight: 800; }
+.crash-actions { display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 280px; margin-top: 14px; }
+.crash-actions .btn { justify-content: center; }
