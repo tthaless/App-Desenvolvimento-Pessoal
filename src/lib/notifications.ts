@@ -1,6 +1,7 @@
 import { useSyncExternalStore } from 'react'
 import type { RealtimeChannel } from '@supabase/supabase-js'
 import { supabase } from './supabase'
+import type { ProofKind } from './camera'
 
 export type NotificationKind =
   | 'story_comment'
@@ -12,6 +13,7 @@ export type NotificationKind =
   | 'last_one'
   | 'tip'
   | 'nudge'
+  | 'news'
 
 export interface AppNotification {
   id: string
@@ -34,7 +36,7 @@ export type NavTarget =
   | { type: 'feed'; postId: string }
   | { type: 'library' }
   | { type: 'tab'; tab: 'inicio' }
-  | { type: 'camera'; activity?: 'exercicio' | 'leitura' }
+  | { type: 'camera'; activity?: ProofKind }
 
 interface State {
   items: AppNotification[]
@@ -152,6 +154,7 @@ export function targetOf(n: AppNotification): NavTarget | null {
   if ((n.kind === 'story_comment' || n.kind === 'story_reply') && n.story_key) return { type: 'story', key: n.story_key }
   if ((n.kind === 'feed_comment' || n.kind === 'feed_reply') && n.feed_post_id) return { type: 'feed', postId: n.feed_post_id }
   if (n.kind === 'book_like' || n.kind === 'want_too' || n.kind === 'tip') return { type: 'library' }
+  if (n.kind === 'news') return n.detail === 'role' ? { type: 'camera', activity: 'role' } : null
   if (n.kind === 'nudge') return { type: 'camera', activity: n.detail === 'leitura' || n.detail === 'exercicio' ? n.detail : undefined }
   if (n.kind === 'last_one') return { type: 'camera', activity: n.detail === 'leitura' ? 'leitura' : 'exercicio' }
   return null

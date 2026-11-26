@@ -1,8 +1,8 @@
 import { useSyncExternalStore } from 'react'
-import type { Activity } from '../types'
+import type { PostKind } from '../types'
 
-/** Atividade de uma prova. */
-export type ProofKind = Activity
+/** Tipo da foto: exercício, leitura ou rolê. */
+export type ProofKind = PostKind
 
 interface State {
   open: boolean

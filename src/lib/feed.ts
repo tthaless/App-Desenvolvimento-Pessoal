@@ -153,7 +153,7 @@ export async function cleanupMyOldPhotos(userId: string) {
     .filter((f) => Number(f.name.split('.')[0]) < limit)
     .map((f) => `${userId}/feed/${f.name}`)
   const oldProofs = (root.data ?? [])
-    .filter((f) => f.id && /^(exercicio|leitura)-\d+\.jpg$/.test(f.name))
+    .filter((f) => f.id && /^(exercicio|leitura|role)-\d+\.jpg$/.test(f.name))
     .filter((f) => Number(f.name.replace(/\D/g, '')) < limit)
     .map((f) => `${userId}/${f.name}`)
   const old = [...oldFeed, ...oldProofs]

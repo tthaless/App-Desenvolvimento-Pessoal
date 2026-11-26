@@ -25,7 +25,7 @@ export default function MonthCalendar({ userId }: { userId: string }) {
       .then(({ data }) => {
         if (!active) return
         const map: Record<string, Set<string>> = {}
-        for (const r of (data ?? []) as { day: string; activity: string }[]) (map[r.day] ??= new Set()).add(r.activity)
+        for (const r of (data ?? []) as { day: string; activity: string }[]) if (r.activity !== 'role') (map[r.day] ??= new Set()).add(r.activity)
         setDays(map)
       })
     return () => {

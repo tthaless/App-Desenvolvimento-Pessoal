@@ -1,5 +1,8 @@
 export type Activity = 'exercicio' | 'leitura'
 
+/** Tipo da foto postada: as duas atividades que valem ponto, ou um rolê (não vale ponto). */
+export type PostKind = Activity | 'role'
+
 export const ACTIVITY: Record<Activity, { label: string; verb: string }> = {
   exercicio: { label: 'Exercício', verb: 'Treinei hoje' },
   leitura: { label: 'Leitura', verb: 'Li hoje' },
@@ -8,20 +11,20 @@ export const ACTIVITY: Record<Activity, { label: string; verb: string }> = {
 export interface Post {
   id: string
   user_id: string
-  activity: Activity
+  activity: PostKind
   photo_path: string
   caption: string | null
   created_at: string
   day: string
 }
 
-/** Item dos stories: prova de exercício ou de leitura. */
+/** Item dos stories: prova de exercício, de leitura ou foto de rolê. */
 export interface StoryItem {
   id: string
   /** Identifica a prova nos comentários: "post:<id>". */
   key: string
   user_id: string
-  activity: Activity
+  activity: PostKind
   photo_path: string
   caption: string | null
   created_at: string
@@ -32,6 +35,7 @@ export interface StoryItem {
 export const STORY_LABEL: Record<StoryItem['activity'], string> = {
   exercicio: 'Exercício',
   leitura: 'Leitura',
+  role: 'Rolê',
 }
 
 export interface Member {

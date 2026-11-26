@@ -227,7 +227,7 @@ function Capture({ onPhoto, onClose }: { onPhoto: (file: File, gallery: boolean)
         <button className="cam-round" onClick={onClose} aria-label="Fechar câmera">
           <X size={22} aria-hidden />
         </button>
-        <span className="cam-title">Nova prova</span>
+        <span className="cam-title">{kind === 'role' ? 'Novo rolê' : 'Nova prova'}</span>
         <span className="cam-round-spacer" aria-hidden />
       </header>
 
@@ -280,15 +280,18 @@ function Review({
   const [sending, setSending] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const options = (['exercicio', 'leitura'] as const).map((a) => {
-    const done = today.done[a].has(userId)
-    return {
-      kind: a,
-      label: a === 'exercicio' ? 'Exercício' : 'Leitura',
-      detail: done ? 'Feito hoje' : `${streakOf(today, userId, a)} dias seguidos`,
-      done,
-    }
-  })
+  const options: { kind: ProofKind; label: string; detail: string; done: boolean }[] = [
+    ...(['exercicio', 'leitura'] as const).map((a) => {
+      const done = today.done[a].has(userId)
+      return {
+        kind: a,
+        label: a === 'exercicio' ? 'Exercício' : 'Leitura',
+        detail: done ? 'Feito hoje' : `${streakOf(today, userId, a)} dias seguidos`,
+        done,
+      }
+    }),
+    { kind: 'role', label: 'Rolê', detail: 'Não vale ponto', done: false },
+  ]
   const chosen = options.find((o) => o.kind === kind)
 
   const book = me?.current_book ? me : null
@@ -330,7 +333,14 @@ function Review({
       }
       if (ins.error) {
         await supabase.storage.from('provas').remove([path])
+        if (activity === 'role' && /role/.test(ins.error.message)) throw new Error('Falta rodar o SQL do rolê no Supabase.')
         throw ins.error
+      }
+      if (activity === 'role') {
+        notifyPosted()
+        toast('Rolê postado nos stories')
+        onClose()
+        return
       }
       const before = streakOf(today, userId, activity)
       const first = !chosen.done
@@ -373,9 +383,9 @@ function Review({
 
       <section className="cam-panel" aria-label="Escolher atividade">
         <p className="cam-question" id="cam-question">
-          Essa prova é de quê?
+          O que é essa foto?
         </p>
-        <div className="cam-options" role="radiogroup" aria-labelledby="cam-question">
+        <div className="cam-options n3" role="radiogroup" aria-labelledby="cam-question">
           {options.map((o) => (
             <button
               key={o.kind}
@@ -425,7 +435,7 @@ function Review({
             className="cam-caption"
             value={caption}
             onChange={(e) => setCaption(e.target.value)}
-            placeholder={kind === 'leitura' ? 'Legenda (opcional)' : 'Qual foi o treino? (opcional)'}
+            placeholder={kind === 'leitura' ? 'Legenda (opcional)' : kind === 'role' ? 'Onde foi? (opcional)' : 'Qual foi o treino? (opcional)'}
             maxLength={140}
             aria-label="Legenda"
           />
@@ -434,7 +444,7 @@ function Review({
         {error && <p className="msg error">{error}</p>}
 
         <button className="btn primary big-btn" onClick={send} disabled={!chosen || !!pageError || sending}>
-          {sending ? 'Enviando…' : chosen ? `Postar prova de ${chosen.label.toLowerCase()}` : 'Escolha a atividade'}
+          {sending ? 'Enviando…' : chosen ? (chosen.kind === 'role' ? 'Postar rolê' : `Postar prova de ${chosen.label.toLowerCase()}`) : 'Escolha uma opção'}
         </button>
       </section>
     </div>

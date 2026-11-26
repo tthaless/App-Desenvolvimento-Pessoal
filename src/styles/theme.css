@@ -340,3 +340,8 @@ button.settings-row:active { background: var(--surface-2); }
   background: rgba(21, 52, 98, .1); color: var(--navy);
 }
 .phero.has-cover .mod-tag { background: rgba(255, 255, 255, .22); color: #fff; }
+
+/* ---------- Rolê: foto que não vale ponto ---------- */
+.cam-option.act-role { --tone: var(--flame); --tone-bg: rgba(224, 123, 46, .12); }
+.chip.act-role { color: #ffc79a; }
+.notif-kind.tone-role { background: var(--flame); }

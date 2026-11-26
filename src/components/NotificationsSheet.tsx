@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { BellOff, BookOpen, Bookmark, Dumbbell, Heart, Lightbulb, MessageCircle, Pointer, X } from 'lucide-react'
+import { BellOff, BookOpen, Bookmark, Dumbbell, Heart, Lightbulb, MessageCircle, PartyPopper, Pointer, X } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import {
   clearNotifications,
@@ -21,6 +21,7 @@ import { SkeletonRows } from './Skeleton'
 const PROVA: Record<string, string> = {
   exercicio: 'prova de exercício',
   leitura: 'prova de leitura',
+  role: 'foto de rolê',
 }
 
 /** O que aconteceu, sem o nome de quem fez (ele vem em negrito antes). */
@@ -43,6 +44,8 @@ function describe(n: AppNotification) {
     case 'nudge':
       return <>te cutucou: {n.detail === 'leitura' ? 'falta a sua leitura de hoje' : n.detail === 'exercicio' ? 'falta o seu exercício de hoje' : 'faltam as suas provas de hoje'}</>
     case 'last_one':
+    case 'tip':
+    case 'news':
       return null
   }
 }
@@ -58,11 +61,13 @@ function iconOf(n: AppNotification): { Icon: LucideIcon; tone: string } {
   if (n.kind === 'book_like') return { Icon: Heart, tone: 'like' }
   if (n.kind === 'want_too') return { Icon: Bookmark, tone: 'reading' }
   if (n.kind === 'tip') return { Icon: Lightbulb, tone: 'gold' }
+  if (n.kind === 'news') return { Icon: PartyPopper, tone: 'role' }
   if (n.kind === 'nudge') return { Icon: Pointer, tone: 'brand' }
   if (n.kind === 'last_one') return n.detail === 'leitura' ? { Icon: BookOpen, tone: 'reading' } : { Icon: Dumbbell, tone: 'exercise' }
   if (n.kind.startsWith('story')) {
     if (n.detail === 'exercicio') return { Icon: Dumbbell, tone: 'exercise' }
     if (n.detail === 'leitura') return { Icon: BookOpen, tone: 'reading' }
+    if (n.detail === 'role') return { Icon: PartyPopper, tone: 'role' }
     return { Icon: MessageCircle, tone: 'brand' }
   }
   return { Icon: MessageCircle, tone: 'brand' }
@@ -135,7 +140,7 @@ export default function NotificationsSheet() {
                 onClick={() => target && goTo(target)}
               >
                 <span className="notif-avatar">
-                  {n.kind === 'last_one' || n.kind === 'tip' ? (
+                  {n.kind === 'last_one' || n.kind === 'tip' || n.kind === 'news' ? (
                     <span className="avatar md notif-app">
                       <ArrowMark size={30} />
                     </span>
@@ -151,6 +156,10 @@ export default function NotificationsSheet() {
                     <span>
                       <strong>Dica:</strong> {tipText(n)}
                     </span>
+                  ) : n.kind === 'news' ? (
+                    <span>
+                      <strong>Novidade:</strong> {n.preview}
+                    </span>
                   ) : n.kind === 'last_one' ? (
                     <span>
                       <strong>Só falta você!</strong> O resto do grupo já {n.detail === 'leitura' ? 'leu' : 'treinou'} hoje. Vai ficar de
@@ -161,7 +170,7 @@ export default function NotificationsSheet() {
                       <strong>{name}</strong> {describe(n)}
                     </span>
                   )}
-                  {n.preview && n.kind !== 'tip' && <span className="notif-preview">“{n.preview}”</span>}
+                  {n.preview && n.kind !== 'tip' && n.kind !== 'news' && <span className="notif-preview">“{n.preview}”</span>}
                   <span className="notif-time">
                     {timeAgo(n.created_at)}
                     {expired && (n.kind === 'last_one' || n.kind === 'nudge' ? ' · o dia acabou' : ' · já sumiu')}
