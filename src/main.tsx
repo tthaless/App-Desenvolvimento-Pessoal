@@ -11,6 +11,8 @@ import './styles/app.css'
 import './styles/features.css'
 import './styles/system.css'
 import './styles/theme.css'
+import './styles/dark.css'
+import './lib/theme'
 import App from './App.tsx'
 import ErrorBoundary from './components/ErrorBoundary'
 

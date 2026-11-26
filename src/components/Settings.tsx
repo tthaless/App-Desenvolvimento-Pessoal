@@ -10,6 +10,7 @@ import PasswordInput from './PasswordInput'
 import PushSettings from './PushSettings'
 import Sheet from './Sheet'
 import { toast } from '../lib/toast'
+import { ThemePicker } from './ThemeButton'
 
 type Panel = 'menu' | 'senha' | 'excluir'
 
@@ -30,6 +31,10 @@ export default function Settings({ userId, onClose }: { userId: string; onClose:
       <Sheet title={title} onClose={onClose} className="settings">
         {panel === 'menu' && (
           <>
+            <SettingsGroup label="Aparência">
+              <ThemePicker />
+            </SettingsGroup>
+
             <PushSettings />
 
             <SettingsGroup label="Conta">

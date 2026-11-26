@@ -14,6 +14,7 @@ import RankingSection from './RankingSection'
 import Stories from './Stories'
 import TopBar from './TopBar'
 import { SkeletonCard } from './Skeleton'
+import ThemeButton from './ThemeButton'
 
 const RetroStory = lazyScreen(() => import('./RetroStory'))
 
@@ -29,7 +30,7 @@ export default function Home({ userId }: { userId: string }) {
 
   return (
     <div className="home">
-      <TopBar title={greeting(me?.username)} subtitle={LONG_DATE.format(new Date(`${today.day}T12:00:00-03:00`))} />
+      <TopBar title={greeting(me?.username)} subtitle={LONG_DATE.format(new Date(`${today.day}T12:00:00-03:00`))} right={<ThemeButton />} />
       <Stories userId={userId} />
       <PushOffer show={posted > 0} />
       <RetroBanner userId={userId} />

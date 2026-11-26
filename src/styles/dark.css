@@ -1,0 +1,98 @@
+/* ===================== Tema escuro =====================
+   Grafite: fundo quase preto e neutro, com os mesmos acentos do claro.
+   Ligado por <html data-theme="dark">. Sem color-mix aqui (o build só converte o index.css). */
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #121314;
+  --surface: #1b1c1f;
+  --surface-2: #24262a;
+  --line: #313338;
+  --text: #ecebe3;
+  --muted: #9d9fa6;
+  --brand: #55b3a1;
+  --on-brand: #121314;
+  --exercise: #55b3a1;
+  --reading: #86a7f2;
+  --gold: #e3ab3e;
+  --flame: #f08f45;
+  --sage: #2a3d39;
+  --cream: #f3f1d6;
+  /* Botões fortes: creme com texto escuro (no claro são marinho com texto branco). */
+  --navy: #f3f1d6;
+  --ok: #4fbf84;
+  --danger: #ef6b7d;
+  --chrome: #17181a;
+  --accent-rgb: 85, 179, 161;
+}
+
+/* ---------- Superfícies com cor fixa no tema claro ---------- */
+:root[data-theme="dark"] body { background: var(--bg); color: var(--text); }
+:root[data-theme="dark"] .topbar { background: var(--bg); }
+:root[data-theme="dark"] .tabbar { background: var(--chrome); border-color: var(--line); box-shadow: 0 -4px 24px rgba(0, 0, 0, .35); }
+:root[data-theme="dark"] .tab-camera { color: var(--bg); box-shadow: 0 0 0 5px var(--chrome), 0 8px 20px rgba(0, 0, 0, .45); }
+:root[data-theme="dark"] .card,
+:root[data-theme="dark"] .sheet,
+:root[data-theme="dark"] .story-chat,
+:root[data-theme="dark"] .confirm { box-shadow: 0 1px 0 rgba(255, 255, 255, .02), 0 10px 30px rgba(0, 0, 0, .35); }
+
+/* Botões fortes: creme com texto marinho. */
+:root[data-theme="dark"] .btn.primary,
+:root[data-theme="dark"] .want-paper .btn.primary,
+:root[data-theme="dark"] .pin-options button.on,
+:root[data-theme="dark"] .phero-avatar .avatar-badge { color: #17181b; }
+:root[data-theme="dark"] .btn.ghost { background: var(--surface-2); color: var(--text); }
+:root[data-theme="dark"] .rank-nudge { color: #17181b; }
+:root[data-theme="dark"] .toast { background: var(--cream); color: #17181b; box-shadow: 0 12px 30px rgba(0, 0, 0, .45); }
+
+/* Retrospectiva: cartões continuam escuros, com borda. */
+:root[data-theme="dark"] .retro-banner,
+:root[data-theme="dark"] .retro-card { background: var(--surface-2); color: var(--text); box-shadow: none; border: 1px solid var(--line); }
+:root[data-theme="dark"] .retro-banner.mes,
+:root[data-theme="dark"] .retro-card.month { background: #23514a; color: #fff; border-color: transparent; }
+:root[data-theme="dark"] .retro-banner-play,
+:root[data-theme="dark"] .retro-card-play { background: var(--cream); color: #17181b; }
+
+/* Tons claros (sobre fundo creme) ficam mais fortes no escuro. */
+:root[data-theme="dark"] .today-icon,
+:root[data-theme="dark"] .rank-dot.on.act-exercicio,
+:root[data-theme="dark"] .cam-option { --tone-bg: rgba(85, 179, 161, .16); }
+:root[data-theme="dark"] .today-icon { background: rgba(85, 179, 161, .16); }
+:root[data-theme="dark"] .today-item.act-leitura .today-icon,
+:root[data-theme="dark"] .rank-dot.on.act-leitura { background: rgba(134, 167, 242, .16); }
+:root[data-theme="dark"] .rank-dot.on.act-exercicio { background: rgba(85, 179, 161, .16); }
+:root[data-theme="dark"] .cam-option.act-leitura { --tone-bg: rgba(134, 167, 242, .16); }
+:root[data-theme="dark"] .cam-option.act-role { --tone-bg: rgba(240, 143, 69, .16); }
+:root[data-theme="dark"] .rank-dot { color: #62656c; }
+:root[data-theme="dark"] .bonus-chip { background: rgba(240, 143, 69, .16); color: #f5a868; }
+:root[data-theme="dark"] .rank-pos.m1 { background: rgba(227, 171, 62, .18); color: #f0bf5c; }
+:root[data-theme="dark"] .rank-pos.m2 { background: rgba(170, 182, 200, .16); color: #c3cbd8; }
+:root[data-theme="dark"] .rank-pos.m3 { background: rgba(214, 128, 70, .18); color: #e59a66; }
+:root[data-theme="dark"] .rank-crown { color: #e3ab3e; }
+:root[data-theme="dark"] .msg.error { background: rgba(239, 107, 125, .14); color: #ff9aa7; }
+:root[data-theme="dark"] .msg.ok { background: rgba(79, 191, 132, .14); color: #8fe0b4; }
+:root[data-theme="dark"] .mod-tag { background: rgba(255, 255, 255, .1); color: var(--text); }
+
+/* Feed: post automático e livro. */
+:root[data-theme="dark"] .post.post-auto { background: rgba(85, 179, 161, .07); border-color: rgba(85, 179, 161, .35); box-shadow: none; }
+:root[data-theme="dark"] .post-auto .streak-avatar { background: rgba(85, 179, 161, .14); }
+:root[data-theme="dark"] .post-auto .auto-book { background: rgba(0, 0, 0, .18); border-color: rgba(85, 179, 161, .25); }
+
+/* Calendário do mês, carregando e avisos. */
+:root[data-theme="dark"] .month-day.lv1 { background: rgba(85, 179, 161, .45); }
+:root[data-theme="dark"] .skeleton { background: linear-gradient(90deg, var(--surface-2) 25%, #313338 50%, var(--surface-2) 75%); background-size: 200% 100%; }
+:root[data-theme="dark"] .install-num { background: rgba(85, 179, 161, .18); }
+:root[data-theme="dark"] .bell.has-new { border-color: rgba(85, 179, 161, .6); }
+:root[data-theme="dark"] .confirm-backdrop { background: rgba(0, 0, 0, .55); }
+:root[data-theme="dark"] .phero.no-cover .phero-cover { background: linear-gradient(160deg, #24403b, #24262a); }
+
+/* Quero ler: o papel continua papel, mas mais escuro. */
+:root[data-theme="dark"] .want-paper { filter: brightness(.88) saturate(.9); }
+
+/* ---------- Escolha do tema ---------- */
+.theme-picker { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 4px; border-radius: 14px; background: var(--surface-2); }
+.theme-picker button {
+  min-height: 40px; border: 0; border-radius: 10px; background: transparent; color: var(--muted); font-size: 14px; font-weight: 600;
+  transition: background-color .2s, color .2s;
+}
+.theme-picker button.on { background: var(--surface); color: var(--text); box-shadow: 0 1px 4px rgba(0, 0, 0, .12); }
