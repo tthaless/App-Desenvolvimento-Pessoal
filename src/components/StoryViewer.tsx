@@ -1,13 +1,15 @@
 import { useCallback, useEffect, useState } from 'react'
 import { openProfile } from '../lib/members'
 import { fetchCommentCounts } from '../lib/storyComments'
+import { fetchViews, recordView } from '../lib/storyViews'
+import type { StoryView } from '../lib/storyViews'
 import { signPaths } from '../lib/signed'
 import { timeAgo } from '../lib/utils'
 import { STORY_LABEL } from '../types'
 import type { Member, StoryItem } from '../types'
 import Avatar from './Avatar'
 import StoryChat from './StoryChat'
-import { Images, MessageCircle, Trash2, X } from 'lucide-react'
+import { Eye, Images, MessageCircle, Trash2, X } from 'lucide-react'
 import { deleteStory } from '../lib/stories'
 import { errorMessage } from '../lib/utils'
 import ActivityIcon from './ActivityIcon'
@@ -39,10 +41,12 @@ export default function StoryViewer({ posts, start, startInChat = false, current
   const [round, setRound] = useState(0)
   const [counts, setCounts] = useState<Record<string, number>>({})
   const [confirming, setConfirming] = useState(false)
+  const [views, setViews] = useState<Record<string, StoryView[]>>({})
+  const [viewsOpen, setViewsOpen] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [deleteError, setDeleteError] = useState<string | null>(null)
   // Pausa enquanto lê os comentários ou confirma a exclusão.
-  const paused = chatOpen || confirming
+  const paused = chatOpen || confirming || viewsOpen
   const post = posts[index]
 
   const refreshCounts = useCallback(() => {
@@ -66,6 +70,27 @@ export default function StoryViewer({ posts, start, startInChat = false, current
     if (post) onSeen(post.id)
   }, [post, onSeen])
 
+  // Quem já viu: carrega ao abrir e marca a minha visualização quando a foto aparece.
+  const postIds = posts.map((p) => p.id).join(',')
+  useEffect(() => {
+    let active = true
+    fetchViews(postIds ? postIds.split(',') : []).then((v) => active && setViews(v))
+    return () => {
+      active = false
+    }
+  }, [postIds])
+
+  useEffect(() => {
+    if (!post || loadedId !== post.id || post.user_id === currentUserId) return
+    if (views[post.id]?.some((v) => v.viewer_id === currentUserId)) return
+    const id = post.id
+    recordView(id)
+      .then(() => fetchViews([id]))
+      .then((v) => setViews((cur) => ({ ...cur, [id]: v[id] ?? [] })))
+      .catch(() => {})
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loadedId, post, currentUserId])
+
   // Avança sozinho 5s depois que a foto carregou, menos com os comentários abertos.
   useEffect(() => {
     if (!post || loadedId !== post.id || paused) return
@@ -77,6 +102,7 @@ export default function StoryViewer({ posts, start, startInChat = false, current
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (chatOpen) return
+      if (viewsOpen) return e.key === 'Escape' && closeViews()
       if (e.key === 'Escape') return confirming ? cancelDelete() : onClose()
       if (confirming) return
       if (e.key === 'ArrowRight') next()
@@ -88,6 +114,11 @@ export default function StoryViewer({ posts, start, startInChat = false, current
 
   function closeChat() {
     setChatOpen(false)
+    setRound((r) => r + 1)
+  }
+
+  function closeViews() {
+    setViewsOpen(false)
     setRound((r) => r + 1)
   }
 
@@ -126,6 +157,8 @@ export default function StoryViewer({ posts, start, startInChat = false, current
   const member = members.find((m) => m.id === post.user_id)
   const name = post.user_id === currentUserId ? 'Você' : (member?.username ?? '?')
   const url = urls[post.photo_path]
+  const seenBy = (views[post.id] ?? []).filter((v) => v.viewer_id !== post.user_id)
+  const memberOf = (id: string) => members.find((m) => m.id === id)
 
   return (
     <div className="viewer" ref={viewerRef} role="dialog" aria-label={`Story de ${name}`}>
@@ -183,13 +216,52 @@ export default function StoryViewer({ posts, start, startInChat = false, current
 
       <div className="viewer-bottom">
         {post.caption && <p className="viewer-caption">{post.caption}</p>}
-        <button className="comment-bar" onClick={() => setChatOpen(true)}>
-          <MessageCircle size={18} aria-hidden />
-          {counts[post.key]
-            ? `${counts[post.key]} ${counts[post.key] === 1 ? 'comentário' : 'comentários'}`
-            : 'Comentar…'}
-        </button>
+        <div className="viewer-actions">
+          {seenBy.length > 0 && (
+            <button className="seen-by" onClick={() => setViewsOpen(true)} aria-label={`Visto por ${seenBy.length} ${seenBy.length === 1 ? 'pessoa' : 'pessoas'}`}>
+              <span className="seen-by-faces" aria-hidden>
+                {seenBy.slice(0, 3).map((v) => (
+                  <Avatar key={v.viewer_id} name={memberOf(v.viewer_id)?.username ?? '?'} url={memberOf(v.viewer_id)?.avatar_url} size="sm" />
+                ))}
+              </span>
+              <Eye size={15} aria-hidden />
+              <span>{seenBy.length}</span>
+            </button>
+          )}
+          <button className="comment-bar" onClick={() => setChatOpen(true)}>
+            <MessageCircle size={18} aria-hidden />
+            {counts[post.key]
+              ? `${counts[post.key]} ${counts[post.key] === 1 ? 'comentário' : 'comentários'}`
+              : 'Comentar…'}
+          </button>
+        </div>
       </div>
+
+      {viewsOpen && (
+        <div className="story-chat-backdrop" onClick={closeViews}>
+          <div className="story-chat seen-list" role="dialog" aria-label="Quem viu" onClick={(e) => e.stopPropagation()}>
+            <div className="story-chat-head">
+              <span className="sheet-grip" aria-hidden />
+              <strong>Visto por {seenBy.length}</strong>
+              <button className="viewer-close" onClick={closeViews} aria-label="Fechar">
+                <X size={22} aria-hidden />
+              </button>
+            </div>
+            <ul className="seen-list-items">
+              {seenBy.map((v) => {
+                const m = memberOf(v.viewer_id)
+                return (
+                  <li key={v.viewer_id}>
+                    <Avatar name={m?.username ?? '?'} url={m?.avatar_url} size="md" />
+                    <span className="seen-list-name">{v.viewer_id === currentUserId ? 'Você' : (m?.username ?? 'Alguém')}</span>
+                    <span className="muted small">{timeAgo(v.viewed_at)}</span>
+                  </li>
+                )
+              })}
+            </ul>
+          </div>
+        </div>
+      )}
 
       {confirming && (
         <div className="viewer-confirm" role="alertdialog" aria-label="Excluir prova">

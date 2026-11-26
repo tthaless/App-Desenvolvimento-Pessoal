@@ -361,3 +361,18 @@ button.settings-row:active { background: var(--surface-2); }
 .load-error .btn { flex: none; min-height: 36px; padding: 6px 14px; font-size: 14px; }
 .stories .load-error { flex: 1 0 270px; align-self: center; }
 .month-cal .load-error { grid-column: 1 / -1; }
+
+/* ---------- Quem viu o story (todo o grupo vê) ---------- */
+.viewer-actions { display: flex; align-items: center; gap: 8px; }
+.viewer-actions .comment-bar { flex: 1; min-width: 0; }
+.seen-by {
+  flex: none; display: inline-flex; align-items: center; gap: 6px; height: 46px; padding: 0 12px 0 6px; border-radius: 99px;
+  border: 1px solid rgba(255, 255, 255, .3); background: rgba(255, 255, 255, .12); color: #fff; font-size: 14px; font-weight: 700;
+}
+.seen-by-faces { display: inline-flex; }
+.seen-by-faces .avatar { width: 28px; height: 28px; font-size: 12px; box-shadow: 0 0 0 2px #1d1d1d; }
+.seen-by-faces .avatar + .avatar { margin-left: -9px; }
+.seen-list { max-height: 60dvh; }
+.seen-list-items { list-style: none; margin: 0; padding: 4px 0; display: flex; flex-direction: column; gap: 12px; overflow-y: auto; }
+.seen-list-items li { display: flex; align-items: center; gap: 12px; }
+.seen-list-name { flex: 1; min-width: 0; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
