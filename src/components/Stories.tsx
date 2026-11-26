@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { Plus } from 'lucide-react'
 import { useMembers } from '../lib/members'
@@ -22,12 +22,16 @@ export default function Stories({ userId }: { userId: string }) {
   const [startInChat, setStartInChat] = useState(false)
   const target = useNavTarget()
 
+  const lastLoad = useRef(0)
   const load = useCallback(async () => {
+    // Duas mudanças seguidas: só a resposta mais nova vale.
+    const id = ++lastLoad.current
     const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
     const provas = await supabase
       .from('posts')
       .select('*')
       .gte('created_at', since)
+    if (id !== lastLoad.current) return
     setFailed(!!provas.error)
     if (provas.error) {
       setLoaded(true)

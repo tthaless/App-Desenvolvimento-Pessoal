@@ -25,13 +25,18 @@ let state = empty()
 const listeners = new Set<() => void>()
 let channel: RealtimeChannel | null = null
 let pending: Promise<void> | null = null
+/** Chegou outra mudança enquanto carregava: carrega de novo no fim, pra não perder nenhuma prova. */
+let again = false
 
 function emit() {
   listeners.forEach((l) => l())
 }
 
 export function reloadToday(): Promise<void> {
-  if (pending) return pending
+  if (pending) {
+    again = true
+    return pending
+  }
   pending = (async () => {
     const day = todaySP()
     try {
@@ -50,6 +55,10 @@ export function reloadToday(): Promise<void> {
     emit()
   })().finally(() => {
     pending = null
+    if (again) {
+      again = false
+      reloadToday()
+    }
   })
   return pending
 }
